@@ -1,0 +1,4 @@
+ss_api_backend\node_modules
+ss_api_backend\.env
+ss_api_backend\package-lock.json
+ss_api_backend\package.json
