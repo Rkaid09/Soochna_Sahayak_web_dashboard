@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soochna Sahayak - Police Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/6.6.3/wavesurfer.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <img src="C:\Users\Rajani Kant Jha\Downloads\bhasini soochna sahayk 2.0.png" alt="Soochna Sahayak Logo" class="logo">
+                <h2>Soochna Sahayak</h2>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#" class="nav-link" data-page="cases"><i class="fas fa-folder"></i> FIR Cases</a></li>
+                    <li><a href="#" class="nav-link" data-page="transcriptions"><i class="fas fa-file-audio"></i> Transcriptions</a></li>
+                    <li><a href="#" class="nav-link" data-page="police-stations"><i class="fas fa-building"></i> Police Stations</a></li>
+                    <li><a href="#" class="nav-link" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                    <li><a href="#" class="nav-link" data-page="file-manager"><i class="fas fa-folder-open"></i> File Manager</a></li>
+                    <li><a href="#" class="nav-link" data-page="audio-editor"><i class="fas fa-edit"></i> Transcription Editor</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-info" onclick="openAccountModal()">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="user-name-display">Inspector Rajesh Kumar</span>
+                        <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
+                    </div>
+                    <button class="logout-btn" onclick="logout()" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page active">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>247</h3>
+                            <p>Total FIRs</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>89</h3>
+                            <p>Pending Cases</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon closed">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>142</h3>
+                            <p>Closed Cases</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon progress">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>16</h3>
+                            <p>In Progress</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-charts">
+                    <div class="chart-container">
+                        <h3>Monthly Crime Statistics</h3>
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Case Status Distribution</h3>
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h3>Recent FIR Registrations</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-plus-circle"></i></div>
+                            <div class="activity-content">
+                                <p><strong>FIR #2024001247</strong> - Theft reported by Priya Sharma</p>
+                                <span>Connaught Place Police Station - 2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-edit"></i></div>
+                            <div class="activity-content">
+                                <p><strong>FIR #2024001246</strong> - Status updated to "In Progress"</p>
+                                <span>Karol Bagh Police Station - 4 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-file-audio"></i></div>
+                            <div class="activity-content">
+                                <p><strong>Transcription completed</strong> - FIR #2024001245</p>
+                                <span>Rohini Police Station - 6 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cases Page -->
+            <div id="cases-page" class="page">
+                <div class="page-header">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search FIR cases..." id="case-search">
+                        <button class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="status-filter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="progress">In Progress</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                        <select id="station-filter">
+                            <option value="">All Stations</option>
+                            <option value="cp">Connaught Place</option>
+                            <option value="kb">Karol Bagh</option>
+                            <option value="rh">Rohini</option>
+                            <option value="dl">Delhi Gate</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="cases-grid" id="cases-grid">
+                    <!-- Cases will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Case Detail Modal -->
+            <div id="case-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="modal-case-id">FIR Details</h2>
+                        <span class="close-modal">&times;</span>
+                    </div>
+                    <div class="modal-body" id="case-details">
+                        <!-- Case details will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other pages will be added here -->
+            <div id="transcriptions-page" class="page">
+                <div class="transcription-container">
+                    <h3>Audio Transcriptions</h3>
+                    <div class="transcription-list" id="transcription-list">
+                        <!-- Transcriptions will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="police-stations-page" class="page">
+                <div class="stations-grid" id="stations-grid">
+                    <!-- Police stations will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div id="analytics-page" class="page">
+                <div class="analytics-container">
+                    <div class="chart-row">
+                        <div class="chart-container">
+                            <h3>Crime Types Distribution</h3>
+                            <canvas id="crimeTypesChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Cases by Police Station</h3>
+                            <canvas id="stationChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-container">
+                            <h3>Monthly Trend Analysis</h3>
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="file-manager-page" class="page">
+                <div class="file-manager-container">
+                    <div class="file-toolbar">
+                        <button class="btn btn-primary" onclick="uploadFile()"><i class="fas fa-upload"></i> Upload</button>
+                        <button class="btn btn-secondary" onclick="createFolder()"><i class="fas fa-folder-plus"></i> New Folder</button>
+                        <button class="btn btn-danger" onclick="deleteSelected()"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                    <div class="file-grid" id="file-grid">
+                        <!-- Files will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="audio-editor-page" class="page">
+                <div class="transcription-editor-container">
+                    <div class="editor-toolbar">
+                        <button class="btn btn-primary" onclick="loadAudioFile()"><i class="fas fa-file-audio"></i> Load Audio</button>
+                        <button class="btn btn-secondary" onclick="playPause()"><i class="fas fa-play"></i> Play/Pause</button>
+                        <button class="btn btn-secondary" onclick="cropAudio()"><i class="fas fa-cut"></i> Crop</button>
+                        <button class="btn btn-secondary" onclick="reduceNoise()"><i class="fas fa-volume-down"></i> Reduce Noise</button>
+                        <button class="btn btn-success" onclick="saveAudio()"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                    <div class="waveform-container">
+                        <div id="waveform"></div>
+                    </div>
+                    <div class="audio-controls">
+                        <div class="control-group">
+                            <label>Volume:</label>
+                            <input type="range" id="volume-slider" min="0" max="100" value="50">
+                        </div>
+                        <div class="control-group">
+                            <label>Speed:</label>
+                            <input type="range" id="speed-slider" min="0.5" max="2" step="0.1" value="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Details Modal -->
+    <div id="account-modal" class="modal">
+        <div class="modal-content account-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> Account Details</h2>
+                <span class="close-modal" onclick="closeAccountModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="account-profile">
+                    <div class="profile-image">
+                        <img id="profile-image" src="https://via.placeholder.com/150/3498db/white?text=RK" alt="Profile">
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="profile-name">Rajesh Kumar</h3>
+                        <p id="profile-designation">Inspector</p>
+                        <p id="profile-station">Connaught Place Police Station</p>
+                    </div>
+                </div>
+                
+                <div class="account-details">
+                    <div class="detail-section">
+                        <h4><i class="fas fa-id-badge"></i> Personal Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Employee ID</label>
+                                <span id="profile-employee-id">CP001</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Phone</label>
+                                <span id="profile-phone">+91-9876543201</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Email</label>
+                                <span id="profile-email">rajesh.kumar@delhipolice.gov.in</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Joining Date</label>
+                                <span id="profile-joining">15 March 2018</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-map-marker-alt"></i> Address</h4>
+                        <p id="profile-address">A-45, Police Quarters, Connaught Place, New Delhi - 110001</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-clock"></i> Session Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Last Login</label>
+                                <span id="profile-last-login">15 Jan 2024, 14:30</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Current Session</label>
+                                <span id="profile-session-time">2 hours 15 minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="account-actions">
+                    <button class="btn btn-secondary" onclick="changePassword()">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                    <button class="btn btn-primary" onclick="editProfile()">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                    <button class="btn btn-danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

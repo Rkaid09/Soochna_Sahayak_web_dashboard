@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soochna Sahayak - Login</title>
+    <link rel="stylesheet" href="login-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-background">
+            <div class="background-overlay"></div>
+        </div>
+        
+        <div class="login-form-container">
+            <div class="login-form">
+                <div class="logo-section">
+                    <img src="C:\Users\Rajani Kant Jha\Downloads\bhasini soochna sahayk 2.0.png" alt="Soochna Sahayak Logo" class="logo">
+                    <h1>Soochna Sahayak</h1>
+                    <p>Police Management System</p>
+                </div>
+                
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="username">Username / Employee ID</label>
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="username" name="username" required placeholder="Enter your username">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" required placeholder="Enter your password">
+                            <span class="password-toggle" onclick="togglePassword()">
+                                <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="station">Police Station</label>
+                        <div class="input-group">
+                            <i class="fas fa-building"></i>
+                            <select id="station" name="station" required>
+                                <option value="">Select your station</option>
+                                <option value="cp">Connaught Place Police Station</option>
+                                <option value="kb">Karol Bagh Police Station</option>
+                                <option value="rh">Rohini Police Station</option>
+                                <option value="dl">Delhi Gate Police Station</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="rememberMe">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login to Dashboard
+                    </button>
+                </form>
+                
+                <div class="demo-credentials">
+                    <h4>Demo Credentials:</h4>
+                    <div class="demo-user">
+                        <strong>Username:</strong> rajesh.kumar <br>
+                        <strong>Password:</strong> demo123
+                    </div>
+                    <div class="demo-user">
+                        <strong>Username:</strong> sunita.devi <br>
+                        <strong>Password:</strong> demo123
+                    </div>
+                    <div class="demo-user">
+                        <strong>Username:</strong> vikram.yadav <br>
+                        <strong>Password:</strong> demo123
+                    </div>
+                </div>
+                
+                <div class="login-footer">
+                    <p>&copy; 2024 Soochna Sahayak. Government of India.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="login-script.js"></script>
+</body>
+</html>
