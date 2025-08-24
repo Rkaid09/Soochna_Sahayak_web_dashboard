@@ -2,74 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Soochna Sahayak Dashboard</title>
-    <link rel="stylesheet" href="login-styles.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Soochna Sahayak Police Dashboard - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="login-styles.css?v=20250824">
 </head>
 <body>
     <div class="login-container">
         <div class="login-background"></div>
         <div class="background-overlay"></div>
-        
         <div class="login-form-container">
-            <form id="loginForm" class="login-form">
+            <div class="login-form">
                 <div class="logo-section">
-                    <img src="https://via.placeholder.com/80x80/3498db/ffffff?text=SS" alt="Logo" class="logo">
+                    <img src="https://via.placeholder.com/80x80/3498db/ffffff?text=Logo" alt="Logo" class="logo">
                     <h1>Soochna Sahayak</h1>
                     <p>Police Dashboard Login</p>
                 </div>
-
-                <!-- Updated form fields for Supabase auth -->
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                        <span class="password-toggle" id="passwordToggle" onclick="togglePassword()">
-                            <i class="fas fa-eye" id="passwordToggleIcon"></i>
-                        </span>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                            <span class="password-toggle" onclick="togglePassword()">
+                                <i id="passwordToggleIcon" class="fas fa-eye"></i>
+                            </span>
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-options">
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="rememberMe">
-                        <span class="checkmark"></span>
-                        Remember me
-                    </label>
-                    <a href="#" class="forgot-password">Forgot Password?</a>
-                </div>
-
-                <button type="submit" class="login-btn">
-                    <i class="fas fa-sign-in-alt"></i> Login to Dashboard
-                </button>
-
-                <!-- Demo credentials section -->
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            Remember me
+                            <input type="checkbox" id="remember">
+                            <span class="checkmark"></span>
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                    </button>
+                </form>
                 <div class="demo-credentials">
-                    <h4>Demo Credentials (for testing)</h4>
-                    <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
-                        First create an account using signup.html, then use those credentials here.
-                    </p>
+                    <h4>Demo Credentials (For Testing)</h4>
+                    <div class="demo-user">
+                        <strong>Email:</strong> test@example.com<br>
+                        <strong>Password:</strong> password123
+                    </div>
                 </div>
-
                 <div class="login-footer">
-                    <p>Don't have an account? <a href="signup.html" style="color: #3498db;">Sign up here</a></p>
-                    <p>&copy; 2025 Soochna Sahayak. All rights reserved.</p>
+                    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+                    <p>&copy; 2025 Soochna Sahayak. All Rights Reserved.</p>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
-    <script src="login-script.js"></script>
+    <!-- CRITICAL: Load scripts at the end in correct order -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.5/dist/supabase.min.js"></script>
+    <script src="login-script.js?v=20250824"></script>
 </body>
 </html>
