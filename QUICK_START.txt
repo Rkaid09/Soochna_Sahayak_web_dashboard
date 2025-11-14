@@ -1,0 +1,119 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                  SOOCHNA SAHAYAK - QUICK START                ║
+║              Smart FIR & Transcription Management             ║
+╚═══════════════════════════════════════════════════════════════╝
+
+📋 BEFORE YOU START:
+═══════════════════════════════════════════════════════════════
+1. Save your logo image as "logo.png" in this folder
+2. Make sure Node.js is installed
+3. Make sure ngrok is installed
+
+
+🚀 TO START THE APPLICATION:
+═══════════════════════════════════════════════════════════════
+OPTION 1 (EASIEST):
+  → Double-click: start-with-ngrok.bat
+  → Wait for both windows to open
+  → Copy the ngrok HTTPS URL
+  → Share the URL with users!
+
+OPTION 2 (MANUAL):
+  → Open Terminal 1: npm install
+  → Open Terminal 2: node server.js
+  → Open Terminal 3: ngrok http 3000
+  → Copy the ngrok URL from Terminal 3
+
+
+🌐 ACCESSING THE APP:
+═══════════════════════════════════════════════════════════════
+Local Access:    http://localhost:3000
+Public Access:   https://xxxx.ngrok.io (copy from ngrok window)
+
+✨ Anyone with the ngrok URL can access your app from anywhere!
+
+
+👤 FIRST TIME SETUP:
+═══════════════════════════════════════════════════════════════
+1. Open the application URL in browser
+2. Click "Sign Up" tab
+3. Fill in your details:
+   - Name
+   - Email (will be your login)
+   - Password (minimum 6 characters)
+   - Designation (Inspector, Sub-Inspector, etc.)
+   - Police Station
+   - Badge Number (optional)
+4. Click "Create Account"
+5. You're logged in!
+
+
+🔐 LOGGING IN:
+═══════════════════════════════════════════════════════════════
+1. Click "Login" tab
+2. Enter your email and password
+3. Check "Remember me" for 7-day sessions
+4. Click "Login to Dashboard"
+
+
+💾 YOUR DATA:
+═══════════════════════════════════════════════════════════════
+All data saved in these folders:
+  📁 data/users.json          - User accounts
+  📁 data/cases.json          - FIR cases
+  📁 data/files.json          - File metadata
+  📁 data/transcriptions.json - Transcriptions
+  📂 uploads/                 - All uploaded files
+
+✅ Data persists even after restart!
+✅ All users share the same data!
+
+
+⚡ KEY FEATURES:
+═══════════════════════════════════════════════════════════════
+✓ User Authentication (signup/login)
+✓ FIR Case Management
+✓ Evidence File Uploads
+✓ Audio Transcription (Bhashini ASR)
+✓ Advanced Audio Editor
+✓ File Manager with Folders
+✓ Analytics & Reports
+✓ Multi-user Support
+
+
+⚠️ IMPORTANT NOTES:
+═══════════════════════════════════════════════════════════════
+• Keep BOTH windows open (server + ngrok)
+• Don't close your computer while others are using it
+• Ngrok URL changes every restart (free tier)
+• For permanent URL: Upgrade ngrok or use cloud hosting
+• Logo must be named exactly "logo.png"
+
+
+📞 TROUBLESHOOTING:
+═══════════════════════════════════════════════════════════════
+Problem: "Cannot find module 'bcryptjs'"
+  → Solution: Run "npm install"
+
+Problem: "Logo not showing"
+  → Solution: Save your logo as "logo.png" in this folder
+
+Problem: "Ngrok not found"
+  → Solution: Install ngrok globally
+
+Problem: "Can't login"
+  → Solution: Clear browser cookies, try incognito mode
+
+
+🎯 READY TO USE!
+═══════════════════════════════════════════════════════════════
+1. Save logo as "logo.png"
+2. Double-click "start-with-ngrok.bat"
+3. Copy ngrok URL
+4. Share with users
+5. Create your account
+6. Start managing FIRs!
+
+
+For detailed documentation, see: SETUP_AND_NGROK.md
+═══════════════════════════════════════════════════════════════

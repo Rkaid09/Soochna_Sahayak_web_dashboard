@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Operations Test</title>
+</head>
+<body>
+    <h1>File Operations Test</h1>
+    
+    <div>
+        <h2>Test File Viewing</h2>
+        <button onclick="testFileView()">Test View PDF File</button>
+        <button onclick="testFileMove()">Test Move File</button>
+        <button onclick="testFileList()">List Files</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        async function testFileList() {
+            try {
+                const response = await fetch('/api/files');
+                const files = await response.json();
+                console.log('Files:', files);
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(files, null, 2) + '</pre>';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function testFileView() {
+            // Test file serving directly
+            const fileId = '33465f39-0f64-4a0a-928f-97d706999540'; // PDF file
+            const fileUrl = `/file/${fileId}`;
+            
+            console.log('Testing file view with URL:', fileUrl);
+            
+            // Try to open in new window
+            window.open(fileUrl, '_blank');
+        }
+
+        async function testFileMove() {
+            try {
+                const response = await fetch('/api/files/19bb1e8f-09ea-46a0-89d9-6b8f25c57175/move', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        targetFolder: 'b7d1f027-f401-4658-bbb9-5df3fcc76da3' // cases folder
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('Move result:', result);
+                alert('Move successful: ' + JSON.stringify(result));
+            } catch (error) {
+                console.error('Move error:', error);
+                alert('Move error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
