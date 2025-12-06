@@ -21,7 +21,7 @@ app.use(session({
     secret: 'soochna-sahayak-secret-key-' + uuidv4(),
     resave: false,
     saveUninitialized: false,
-    cookie: { 
+    cookie: {
         secure: false, // Set to true if using HTTPS with ngrok
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
@@ -42,8 +42,8 @@ fs.ensureDirSync(path.join(uploadDir, 'edited_transcriptions'));
 
 // Bhashini API Configuration
 const BHASHINI_CONFIG = {
-    userId: '55f53d25d7-50b9-47ec-87e5-f2fe3be4e164',
-    ulcaApiKey: '1q4ZOnOfbsvLEO1YsCPUJc8f-ubqTFaNv-CSRTUfezUxc_xZr_Jff-G16ba2g1Lr',
+    userId: '21d41f1e0ae54d958d93d8a1c65f96a4',
+    ulcaApiKey: '55f53d25d7-50b9-47ec-87e5-f2fe3be4e164',
     baseURL: 'https://meity-auth.ulcacontrib.org',
     pipelineURL: 'https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline',
     computeURL: 'https://dhruva-api.bhashini.gov.in/services/inference/pipeline'
@@ -81,17 +81,17 @@ const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const folder = req.body.folder || req.query.folder || 'root';
         const caseId = req.body.caseId || req.query.caseId;
-        
+
         let destPath = uploadDir;
-        
+
         console.log('Multer storage - folder:', folder, 'caseId:', caseId);
-        
+
         if (caseId) {
             destPath = path.join(uploadDir, 'cases', caseId);
         } else if (folder && folder !== 'root' && folder !== '') {
             destPath = path.join(uploadDir, folder);
         }
-        
+
         console.log('Multer destination path:', destPath);
         fs.ensureDirSync(destPath);
         cb(null, destPath);
@@ -103,7 +103,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     limits: {
         fileSize: 100 * 1024 * 1024 // 100MB limit
@@ -136,22 +136,22 @@ const formatFileSize = (bytes) => {
 app.post('/api/auth/signup', async (req, res) => {
     try {
         const { name, email, password, designation, station, badgeNumber } = req.body;
-        
+
         // Validation
         if (!name || !email || !password || !designation || !station) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-        
+
         const users = fs.readJsonSync(usersFile);
-        
+
         // Check if user already exists
         if (users.find(u => u.email === email)) {
             return res.status(400).json({ error: 'User with this email already exists' });
         }
-        
+
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+
         // Create new user
         const newUser = {
             id: uuidv4(),
@@ -163,10 +163,10 @@ app.post('/api/auth/signup', async (req, res) => {
             badgeNumber: badgeNumber || 'N/A',
             createdAt: new Date().toISOString()
         };
-        
+
         users.push(newUser);
         fs.writeJsonSync(usersFile, users, { spaces: 2 });
-        
+
         // Set session
         req.session.userId = newUser.id;
         req.session.user = {
@@ -177,9 +177,9 @@ app.post('/api/auth/signup', async (req, res) => {
             station: newUser.station,
             badgeNumber: newUser.badgeNumber
         };
-        
-        res.json({ 
-            success: true, 
+
+        res.json({
+            success: true,
             message: 'Registration successful',
             user: req.session.user
         });
@@ -192,25 +192,25 @@ app.post('/api/auth/signup', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        
+
         if (!email || !password) {
             return res.status(400).json({ error: 'Email and password are required' });
         }
-        
+
         const users = fs.readJsonSync(usersFile);
         const user = users.find(u => u.email === email);
-        
+
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
-        
+
         // Verify password
         const passwordMatch = await bcrypt.compare(password, user.password);
-        
+
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
-        
+
         // Set session
         req.session.userId = user.id;
         req.session.user = {
@@ -221,9 +221,9 @@ app.post('/api/auth/login', async (req, res) => {
             station: user.station,
             badgeNumber: user.badgeNumber
         };
-        
-        res.json({ 
-            success: true, 
+
+        res.json({
+            success: true,
             message: 'Login successful',
             user: req.session.user
         });
@@ -244,9 +244,9 @@ app.post('/api/auth/logout', (req, res) => {
 
 app.get('/api/auth/session', (req, res) => {
     if (req.session && req.session.user) {
-        res.json({ 
-            authenticated: true, 
-            user: req.session.user 
+        res.json({
+            authenticated: true,
+            user: req.session.user
         });
     } else {
         res.json({ authenticated: false });
@@ -258,26 +258,26 @@ app.put('/api/auth/update-profile', async (req, res) => {
         if (!req.session || !req.session.userId) {
             return res.status(401).json({ error: 'Not authenticated' });
         }
-        
+
         const { name, email, designation, badgeNumber } = req.body;
-        
+
         if (!name || !email || !designation) {
             return res.status(400).json({ error: 'Name, email, and designation are required' });
         }
-        
+
         const users = fs.readJsonSync(usersFile);
         const userIndex = users.findIndex(u => u.id === req.session.userId);
-        
+
         if (userIndex === -1) {
             return res.status(404).json({ error: 'User not found' });
         }
-        
+
         // Check if new email is already used by another user
         const existingUser = users.find(u => u.email === email && u.id !== req.session.userId);
         if (existingUser) {
             return res.status(400).json({ error: 'Email already in use by another user' });
         }
-        
+
         // Update user
         users[userIndex] = {
             ...users[userIndex],
@@ -287,9 +287,9 @@ app.put('/api/auth/update-profile', async (req, res) => {
             badgeNumber: badgeNumber || users[userIndex].badgeNumber,
             updatedAt: new Date().toISOString()
         };
-        
+
         fs.writeJsonSync(usersFile, users, { spaces: 2 });
-        
+
         // Update session
         req.session.user = {
             id: users[userIndex].id,
@@ -299,9 +299,9 @@ app.put('/api/auth/update-profile', async (req, res) => {
             station: users[userIndex].station,
             badgeNumber: users[userIndex].badgeNumber
         };
-        
-        res.json({ 
-            success: true, 
+
+        res.json({
+            success: true,
             message: 'Profile updated successfully',
             user: req.session.user
         });
@@ -316,42 +316,42 @@ app.post('/api/auth/change-password', async (req, res) => {
         if (!req.session || !req.session.userId) {
             return res.status(401).json({ error: 'Not authenticated' });
         }
-        
+
         const { currentPassword, newPassword } = req.body;
-        
+
         if (!currentPassword || !newPassword) {
             return res.status(400).json({ error: 'Current and new passwords are required' });
         }
-        
+
         if (newPassword.length < 6) {
             return res.status(400).json({ error: 'New password must be at least 6 characters long' });
         }
-        
+
         const users = fs.readJsonSync(usersFile);
         const userIndex = users.findIndex(u => u.id === req.session.userId);
-        
+
         if (userIndex === -1) {
             return res.status(404).json({ error: 'User not found' });
         }
-        
+
         // Verify current password
         const passwordMatch = await bcrypt.compare(currentPassword, users[userIndex].password);
-        
+
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }
-        
+
         // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        
+
         // Update password
         users[userIndex].password = hashedPassword;
         users[userIndex].updatedAt = new Date().toISOString();
-        
+
         fs.writeJsonSync(usersFile, users, { spaces: 2 });
-        
-        res.json({ 
-            success: true, 
+
+        res.json({
+            success: true,
             message: 'Password changed successfully'
         });
     } catch (error) {
@@ -490,13 +490,13 @@ app.post('/api/files/upload', upload.array('files', 10), (req, res) => {
     try {
         const files = fs.readJsonSync(filesFile);
         const uploadedFiles = [];
-        
+
         const targetFolder = req.body.folder || 'root';
         console.log(`Uploading ${req.files.length} files to folder: ${targetFolder}`);
 
         req.files.forEach(file => {
             console.log(`Processing file: ${file.originalname}, saved to: ${file.path}`);
-            
+
             const fileInfo = {
                 id: uuidv4(),
                 name: file.originalname,
@@ -511,7 +511,7 @@ app.post('/api/files/upload', upload.array('files', 10), (req, res) => {
             };
             files.push(fileInfo);
             uploadedFiles.push(fileInfo);
-            
+
             console.log(`File record created:`, {
                 name: fileInfo.name,
                 folder: fileInfo.folder,
@@ -556,7 +556,7 @@ app.delete('/api/files/:id', (req, res) => {
         }
 
         const fileToDelete = files[index];
-        
+
         // Delete physical file if it exists
         if (fileToDelete.path && fileToDelete.type !== 'folder') {
             try {
@@ -578,12 +578,12 @@ app.delete('/api/files', (req, res) => {
     try {
         const files = fs.readJsonSync(filesFile);
         const fileIds = req.body.fileIds || [];
-        
+
         fileIds.forEach(fileId => {
             const index = files.findIndex(f => f.id === fileId);
             if (index !== -1) {
                 const fileToDelete = files[index];
-                
+
                 // Delete physical file if it exists
                 if (fileToDelete.path && fileToDelete.type !== 'folder') {
                     try {
@@ -592,7 +592,7 @@ app.delete('/api/files', (req, res) => {
                         console.log('File already deleted or not found:', err.message);
                     }
                 }
-                
+
                 files.splice(index, 1);
             }
         });
@@ -609,33 +609,33 @@ app.put('/api/files/move', (req, res) => {
     try {
         const files = fs.readJsonSync(filesFile);
         const { fileIds, targetFolder } = req.body;
-        
+
         fileIds.forEach(fileId => {
             const fileIndex = files.findIndex(f => f.id === fileId);
             if (fileIndex !== -1) {
                 const file = files[fileIndex];
                 const oldPath = file.path;
-                
+
                 // Create new path
                 let newDir = uploadDir;
                 if (targetFolder && targetFolder !== 'root') {
                     newDir = path.join(uploadDir, targetFolder);
                     fs.ensureDirSync(newDir);
                 }
-                
+
                 const newPath = path.join(newDir, path.basename(oldPath));
-                
+
                 // Move physical file
                 if (fs.existsSync(oldPath)) {
                     fs.moveSync(oldPath, newPath);
                 }
-                
+
                 // Update file record
                 files[fileIndex].path = newPath;
                 files[fileIndex].folder = targetFolder || 'root';
             }
         });
-        
+
         fs.writeJsonSync(filesFile, files, { spaces: 2 });
         res.json({ message: 'Files moved successfully' });
     } catch (error) {
@@ -649,19 +649,19 @@ app.put('/api/files/:id/rename', (req, res) => {
         const files = fs.readJsonSync(filesFile);
         const { newName } = req.body;
         const fileIndex = files.findIndex(f => f.id === req.params.id);
-        
+
         if (fileIndex === -1) {
             return res.status(404).json({ error: 'File not found' });
         }
-        
+
         const file = files[fileIndex];
         const oldPath = file.path;
-        
+
         if (file.type !== 'folder') {
             const ext = path.extname(file.name);
             const newFileName = newName.endsWith(ext) ? newName : newName + ext;
             const newPath = path.join(path.dirname(oldPath), newFileName);
-            
+
             if (fs.existsSync(oldPath)) {
                 fs.renameSync(oldPath, newPath);
                 files[fileIndex].path = newPath;
@@ -670,7 +670,7 @@ app.put('/api/files/:id/rename', (req, res) => {
         } else {
             files[fileIndex].name = newName;
         }
-        
+
         fs.writeJsonSync(filesFile, files, { spaces: 2 });
         res.json(files[fileIndex]);
     } catch (error) {
@@ -682,7 +682,7 @@ app.put('/api/files/:id/rename', (req, res) => {
 app.get('/uploads/:filename', (req, res) => {
     const filename = req.params.filename;
     const filePath = path.join(uploadDir, filename);
-    
+
     if (fs.existsSync(filePath)) {
         res.sendFile(path.resolve(filePath));
     } else {
@@ -694,7 +694,7 @@ app.get('/uploads/:filename', (req, res) => {
 app.get('/uploads/:folder/:filename', (req, res) => {
     const { folder, filename } = req.params;
     const filePath = path.join(uploadDir, folder, filename);
-    
+
     if (fs.existsSync(filePath)) {
         res.sendFile(path.resolve(filePath));
     } else {
@@ -707,18 +707,18 @@ app.get('/file/:fileId', (req, res) => {
     try {
         const files = fs.readJsonSync(filesFile);
         const file = files.find(f => f.id === req.params.fileId);
-        
+
         if (!file || file.type === 'folder') {
             return res.status(404).json({ error: 'File not found' });
         }
-        
+
         const filePath = path.resolve(file.path);
         if (!fs.existsSync(filePath)) {
             console.log(`File not found at path: ${filePath}`);
             console.log(`Original path from database: ${file.path}`);
             return res.status(404).json({ error: 'Physical file not found', path: file.path, resolvedPath: filePath });
         }
-        
+
         // Set appropriate MIME type based on file extension
         const ext = path.extname(file.name).toLowerCase();
         const mimeTypes = {
@@ -737,11 +737,11 @@ app.get('/file/:fileId', (req, res) => {
             '.css': 'text/css',
             '.js': 'application/javascript'
         };
-        
+
         if (mimeTypes[ext]) {
             res.setHeader('Content-Type', mimeTypes[ext]);
         }
-        
+
         res.sendFile(path.resolve(filePath));
     } catch (error) {
         console.error('Error serving file:', error);
@@ -752,13 +752,13 @@ app.get('/file/:fileId', (req, res) => {
 // Bhashini ASR Pipeline Configuration
 async function getBhashiniPipeline(language = 'hi') {
     console.log(`Getting pipeline config for language: ${language}`);
-    
+
     // Check cache first
     if (pipelineConfigCache.has(language)) {
         console.log(`Using cached config for ${language}`);
         return pipelineConfigCache.get(language);
     }
-    
+
     try {
         const payload = {
             pipelineTasks: [{
@@ -773,9 +773,9 @@ async function getBhashiniPipeline(language = 'hi') {
                 pipelineId: "64392f96daac500b55c543cd"
             }
         };
-        
+
         console.log('Pipeline request payload:', JSON.stringify(payload, null, 2));
-        
+
         const response = await fetch(BHASHINI_CONFIG.pipelineURL, {
             method: 'POST',
             headers: {
@@ -785,27 +785,27 @@ async function getBhashiniPipeline(language = 'hi') {
             },
             body: JSON.stringify(payload)
         });
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`Pipeline API error - Status: ${response.status}, Response: ${errorText}`);
             throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
         }
-        
+
         const data = await response.json();
         console.log('Pipeline config response:', JSON.stringify(data, null, 2));
-        
+
         // Parse the successful response
-        if (data.pipelineResponseConfig && 
-            data.pipelineResponseConfig[0] && 
+        if (data.pipelineResponseConfig &&
+            data.pipelineResponseConfig[0] &&
             data.pipelineResponseConfig[0].config &&
             data.pipelineResponseConfig[0].config[0] &&
             data.pipelineInferenceAPIEndPoint) {
-            
+
             const authName = (data.pipelineInferenceAPIEndPoint.inferenceApiKey && (data.pipelineInferenceAPIEndPoint.inferenceApiKey.name || data.pipelineInferenceAPIEndPoint.inferenceApiKey.key)) || 'Authorization';
             const authValue = data.pipelineInferenceAPIEndPoint.inferenceApiKey && data.pipelineInferenceAPIEndPoint.inferenceApiKey.value;
             if (!authValue) throw new Error('Missing inference API auth token in pipeline response');
-            
+
             const config = {
                 serviceId: data.pipelineResponseConfig[0].config[0].serviceId,
                 authHeaderName: authName,
@@ -814,7 +814,7 @@ async function getBhashiniPipeline(language = 'hi') {
                 modelId: data.pipelineResponseConfig[0].config[0].modelId,
                 domain: data.pipelineResponseConfig[0].config[0].domain || 'general'
             };
-            
+
             pipelineConfigCache.set(language, config);
             console.log(`Config cached for ${language}:`, config);
             return config;
@@ -833,19 +833,19 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ error: 'No audio file provided' });
         }
-        
+
         const language = req.body.language || 'hi'; // Default to Hindi
         console.log(`Transcribing audio for language: ${language}`);
         console.log(`Audio file: ${req.file.originalname}, size: ${req.file.size} bytes, path: ${req.file.path}`);
-        
+
         // Get Bhashini configuration (no fallback)
         const config = await getBhashiniPipeline(language);
         console.log('Using Bhashini ASR');
-        
+
         // Read audio file and convert to base64 for Bhashini
         const audioData = fs.readFileSync(req.file.path);
         const base64Audio = audioData.toString('base64');
-        
+
         // Determine audio format from mimetype first, then extension
         let audioFormat = 'wav';
         if (req.file.mimetype) {
@@ -861,7 +861,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
             else if (fileExt === '.ogg') audioFormat = 'ogg';
             else if (fileExt === '.mp3') audioFormat = 'mp3';
         }
-        
+
         // Try to detect sampling rate for WAV
         let samplingRate = 16000;
         try {
@@ -871,9 +871,9 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         } catch (e) {
             console.warn('Failed to detect sampling rate, using default 16000');
         }
-        
+
         console.log(`Audio format: ${audioFormat}, samplingRate: ${samplingRate}, size: ${audioData.length} bytes`);
-        
+
         // Prepare inference request with correct structure
         const payload = {
             pipelineTasks: [{
@@ -891,7 +891,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
                 audio: [{ audioContent: base64Audio }]
             }
         };
-        
+
         console.log('ASR compute payload (audio truncated for logging):', JSON.stringify({
             ...payload,
             inputData: {
@@ -899,34 +899,34 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
                 audio: [{ audioContent: `[BASE64_DATA_${base64Audio.length}_CHARS]` }]
             }
         }, null, 2));
-        
+
         // Call Bhashini compute API
         const headers = { 'Content-Type': 'application/json' };
         headers[config.authHeaderName || 'Authorization'] = config.authToken;
-        
+
         const response = await fetch(BHASHINI_CONFIG.computeURL, {
             method: 'POST',
             headers,
             body: JSON.stringify(payload)
         });
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Bhashini API error: ${response.status} - ${errorText}`);
         }
-        
+
         const result = await response.json();
         console.log('ASR compute response:', JSON.stringify(result, null, 2));
-        
+
         // Extract transcription
-        if (result.pipelineResponse && 
-            result.pipelineResponse[0] && 
+        if (result.pipelineResponse &&
+            result.pipelineResponse[0] &&
             result.pipelineResponse[0].output &&
             result.pipelineResponse[0].output[0]) {
-            
+
             const transcription = result.pipelineResponse[0].output[0].source;
             console.log(`Transcription result: ${transcription}`);
-            
+
             // Save transcription result
             const transcriptionData = {
                 id: `ASR-${uuidv4().substring(0, 8)}`,
@@ -938,7 +938,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
                 duration: req.body.duration || null,
                 caseId: req.body.caseId || null
             };
-            
+
             res.json({
                 success: true,
                 transcription: transcription || 'No transcription available',
@@ -949,11 +949,11 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         } else {
             throw new Error('Invalid ASR response format');
         }
-        
+
     } catch (error) {
         console.error('ASR Error:', error);
-        res.status(502).json({ 
-            error: 'Transcription failed', 
+        res.status(502).json({
+            error: 'Transcription failed',
             details: error.message
         });
     }
@@ -963,10 +963,10 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 app.get('/api/test-bhashini', async (req, res) => {
     try {
         console.log('Testing Bhashini connectivity...');
-        
+
         // Test pipeline configuration
         const config = await getBhashiniPipeline('hi');
-        
+
         res.json({
             success: true,
             message: 'Bhashini connection successful',
@@ -992,17 +992,17 @@ app.put('/api/files/:id/move', (req, res) => {
     try {
         const files = fs.readJsonSync(filesFile);
         const fileIndex = files.findIndex(f => f.id === req.params.id);
-        
+
         if (fileIndex === -1) {
             return res.status(404).json({ error: 'File not found' });
         }
-        
+
         const targetFolder = req.body.targetFolder;
         const file = files[fileIndex];
-        
+
         console.log(`Moving file: ${file.name} to folder: ${targetFolder || 'root'}`);
         console.log(`Current file path: ${file.path}`);
-        
+
         // Don't move folders for now, just update their metadata
         if (file.type === 'folder') {
             files[fileIndex] = {
@@ -1013,14 +1013,14 @@ app.put('/api/files/:id/move', (req, res) => {
             fs.writeJsonSync(filesFile, files, { spaces: 2 });
             return res.json(files[fileIndex]);
         }
-        
+
         // For actual files, move the physical file
         const currentPath = path.resolve(file.path || path.join(uploadDir, file.filename || file.name));
-        
+
         // Determine new path based on target folder
         let newDir;
         let targetFolderName = null;
-        
+
         if (targetFolder) {
             // Find the folder name from the folder ID
             const targetFolderObj = files.find(f => f.id === targetFolder && f.type === 'folder');
@@ -1035,20 +1035,20 @@ app.put('/api/files/:id/move', (req, res) => {
         } else {
             newDir = uploadDir; // Root directory
         }
-        
+
         const newPath = path.join(newDir, path.basename(currentPath));
-        
+
         console.log(`Moving from: ${currentPath} to: ${newPath}`);
-        
+
         // Check if source file exists
         if (!fs.existsSync(currentPath)) {
             console.error(`Source file not found: ${currentPath}`);
             return res.status(404).json({ error: 'Source file not found' });
         }
-        
+
         // Move the physical file
         fs.moveSync(currentPath, newPath);
-        
+
         // Update file record - use folder ID for consistency but ensure physical folder name is used for directory
         files[fileIndex] = {
             ...file,
@@ -1056,17 +1056,17 @@ app.put('/api/files/:id/move', (req, res) => {
             path: newPath,
             updatedAt: new Date().toISOString()
         };
-        
+
         console.log(`Updated file metadata:`, {
             id: file.id,
             name: file.name,
             folder: targetFolder,
             path: newPath
         });
-        
+
         fs.writeJsonSync(filesFile, files, { spaces: 2 });
         console.log(`File moved successfully from ${currentPath} to ${newPath}`);
-        
+
         res.json(files[fileIndex]);
     } catch (error) {
         console.error('Move file error:', error);
@@ -1078,18 +1078,18 @@ app.put('/api/files/:id/rename', (req, res) => {
     try {
         const files = fs.readJsonSync(filesFile);
         const fileIndex = files.findIndex(f => f.id === req.params.id);
-        
+
         if (fileIndex === -1) {
             return res.status(404).json({ error: 'File not found' });
         }
-        
+
         const newName = req.body.newName;
         files[fileIndex] = {
             ...files[fileIndex],
             name: newName,
             updatedAt: new Date().toISOString()
         };
-        
+
         fs.writeJsonSync(filesFile, files, { spaces: 2 });
         res.json(files[fileIndex]);
     } catch (error) {

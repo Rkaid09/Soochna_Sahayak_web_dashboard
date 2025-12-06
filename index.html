@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,23 +11,31 @@
     <script src="https://unpkg.com/wavesurfer.js@6.6.3"></script>
     <script src="https://unpkg.com/wavesurfer.js@6.6.3/dist/plugin/wavesurfer.regions.min.js"></script>
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="logo-section">
-                <img src="logo.png" alt="Soochna Sahayak Logo" class="logo" style="width: 80px; height: 80px; object-fit: contain; border-radius: 50%; background: white; padding: 8px; margin-bottom: 10px;">
+                <img src="logo.png" alt="Soochna Sahayak Logo" class="logo"
+                    style="width: 80px; height: 80px; object-fit: contain; border-radius: 50%; background: white; padding: 8px; margin-bottom: 10px;">
                 <h2>Soochna Sahayak</h2>
             </div>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i>
+                            Dashboard</a></li>
                     <li><a href="#" class="nav-link" data-page="cases"><i class="fas fa-folder"></i> FIR Cases</a></li>
-                    <li><a href="#" class="nav-link" data-page="transcriptions"><i class="fas fa-file-audio"></i> Transcriptions</a></li>
-                    <li><a href="#" class="nav-link" data-page="police-stations"><i class="fas fa-building"></i> Police Stations</a></li>
-                    <li><a href="#" class="nav-link" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
-                    <li><a href="#" class="nav-link" data-page="file-manager"><i class="fas fa-folder-open"></i> File Manager</a></li>
-                    <li><a href="#" class="nav-link" data-page="transcription-editor"><i class="fas fa-edit"></i> Transcription Editor</a></li>
+                    <li><a href="#" class="nav-link" data-page="transcriptions"><i class="fas fa-file-audio"></i>
+                            Transcriptions</a></li>
+                    <li><a href="#" class="nav-link" data-page="police-stations"><i class="fas fa-building"></i> Police
+                            Stations</a></li>
+                    <li><a href="#" class="nav-link" data-page="analytics"><i class="fas fa-chart-bar"></i>
+                            Analytics</a></li>
+                    <li><a href="#" class="nav-link" data-page="file-manager"><i class="fas fa-folder-open"></i> File
+                            Manager</a></li>
+                    <li><a href="#" class="nav-link" data-page="transcription-editor"><i class="fas fa-edit"></i>
+                            Transcription Editor</a></li>
                 </ul>
             </nav>
         </div>
@@ -190,9 +199,12 @@
             <div id="file-manager-page" class="page">
                 <div class="file-manager-container">
                     <div class="file-toolbar">
-                        <button class="btn btn-primary" onclick="uploadFile()"><i class="fas fa-upload"></i> Upload</button>
-                        <button class="btn btn-secondary" onclick="createFolder()"><i class="fas fa-folder-plus"></i> New Folder</button>
-                        <button class="btn btn-danger" onclick="deleteSelected()"><i class="fas fa-trash"></i> Delete</button>
+                        <button class="btn btn-primary" onclick="uploadFile()"><i class="fas fa-upload"></i>
+                            Upload</button>
+                        <button class="btn btn-secondary" onclick="createFolder()"><i class="fas fa-folder-plus"></i>
+                            New Folder</button>
+                        <button class="btn btn-danger" onclick="deleteSelected()"><i class="fas fa-trash"></i>
+                            Delete</button>
                     </div>
                     <div class="file-grid" id="file-grid">
                         <!-- Files will be populated by JavaScript -->
@@ -203,10 +215,13 @@
             <div id="audio-editor-page" class="page">
                 <div class="transcription-editor-container">
                     <div class="editor-toolbar">
-                        <button class="btn btn-primary" onclick="loadAudioFile()"><i class="fas fa-file-audio"></i> Load Audio</button>
-                        <button class="btn btn-secondary" onclick="playPause()"><i class="fas fa-play"></i> Play/Pause</button>
+                        <button class="btn btn-primary" onclick="loadAudioFile()"><i class="fas fa-file-audio"></i> Load
+                            Audio</button>
+                        <button class="btn btn-secondary" onclick="playPause()"><i class="fas fa-play"></i>
+                            Play/Pause</button>
                         <button class="btn btn-secondary" onclick="cropAudio()"><i class="fas fa-cut"></i> Crop</button>
-                        <button class="btn btn-secondary" onclick="reduceNoise()"><i class="fas fa-volume-down"></i> Reduce Noise</button>
+                        <button class="btn btn-secondary" onclick="reduceNoise()"><i class="fas fa-volume-down"></i>
+                            Reduce Noise</button>
                         <button class="btn btn-success" onclick="saveAudio()"><i class="fas fa-save"></i> Save</button>
                     </div>
                     <div class="waveform-container">
@@ -224,55 +239,87 @@
                     </div>
                 </div>
             </div>
-            
+
             <div id="transcription-editor-page" class="page">
                 <div class="audio-editor-container">
                     <h3>Audio Transcription Editor</h3>
-                    
-<div class="editor-toolbar">
-                        <button class="btn btn-primary" onclick="loadAudioFileForEditing()"><i class="fas fa-folder-open"></i> Load Audio File</button>
-                        <button class="btn btn-secondary" onclick="recordNewAudio()"><i class="fas fa-microphone"></i> Record New</button>
-                        <button class="btn btn-secondary" onclick="playPauseAudio()" disabled id="play-pause-btn"><i class="fas fa-play"></i> Play</button>
-                        <button class="btn btn-secondary" onclick="stopAudio()" disabled id="stop-btn"><i class="fas fa-stop"></i> Stop</button>
-                        <button class="btn btn-warning" onclick="cropSelectedAudio()" disabled id="crop-btn"><i class="fas fa-cut"></i> Crop Selection</button>
-                        <button class="btn btn-danger" onclick="deleteSelection()" disabled id="delete-btn"><i class="fas fa-backspace"></i> Delete Selection</button>
-<button class="btn btn-secondary" onclick="exportSelection()" disabled id="export-selection-btn"><i class="fas fa-external-link-alt"></i> Export Selection</button>
-                        <button class="btn btn-warning" onclick="undoEdit()" disabled id="undo-btn"><i class="fas fa-undo"></i> Undo</button>
-                        <button class="btn btn-warning" onclick="redoEdit()" disabled id="redo-btn"><i class="fas fa-redo"></i> Redo</button>
-                        <button class="btn btn-info" onclick="transcribeAudio()" disabled id="transcribe-btn"><i class="fas fa-file-text"></i> Transcribe</button>
-                        <button class="btn btn-success" onclick="saveEditedAudio()" disabled id="save-btn"><i class="fas fa-save"></i> Save Audio</button>
+
+                    <div class="editor-toolbar">
+                        <button class="btn btn-primary" onclick="loadAudioFileForEditing()"><i
+                                class="fas fa-folder-open"></i> Load Audio File</button>
+                        <button class="btn btn-secondary" onclick="recordNewAudio()"><i class="fas fa-microphone"></i>
+                            Record New</button>
+                        <button class="btn btn-secondary" onclick="playPauseAudio()" disabled id="play-pause-btn"><i
+                                class="fas fa-play"></i> Play</button>
+                        <button class="btn btn-secondary" onclick="stopAudio()" disabled id="stop-btn"><i
+                                class="fas fa-stop"></i> Stop</button>
+                        <button class="btn btn-warning" onclick="cropSelectedAudio()" disabled id="crop-btn"><i
+                                class="fas fa-cut"></i> Crop Selection</button>
+                        <button class="btn btn-danger" onclick="deleteSelection()" disabled id="delete-btn"><i
+                                class="fas fa-backspace"></i> Delete Selection</button>
+                        <button class="btn btn-secondary" onclick="exportSelection()" disabled
+                            id="export-selection-btn"><i class="fas fa-external-link-alt"></i> Export Selection</button>
+                        <button class="btn btn-warning" onclick="undoEdit()" disabled id="undo-btn"><i
+                                class="fas fa-undo"></i> Undo</button>
+                        <button class="btn btn-warning" onclick="redoEdit()" disabled id="redo-btn"><i
+                                class="fas fa-redo"></i> Redo</button>
+                        <button class="btn btn-info" onclick="transcribeAudio()" disabled id="transcribe-btn"><i
+                                class="fas fa-file-text"></i> Transcribe</button>
+                        <button class="btn btn-success" onclick="saveEditedAudio()" disabled id="save-btn"><i
+                                class="fas fa-save"></i> Save Audio</button>
                     </div>
 
                     <div class="editor-tools" style="margin: 10px 0; display: flex; flex-wrap: wrap; gap: 8px;">
-                        <button class="btn btn-sm btn-secondary" onclick="trimSilence()" disabled id="trim-btn"><i class="fas fa-cut"></i> Trim Silence</button>
-                        <button class="btn btn-sm btn-secondary" onclick="normalizeAudio()" disabled id="normalize-btn"><i class="fas fa-arrows-alt-v"></i> Normalize</button>
-                        <button class="btn btn-sm btn-secondary" onclick="fadeInAudio()" disabled id="fadein-btn"><i class="fas fa-long-arrow-alt-right"></i> Fade In</button>
-                        <button class="btn btn-sm btn-secondary" onclick="fadeOutAudio()" disabled id="fadeout-btn"><i class="fas fa-long-arrow-alt-left"></i> Fade Out</button>
-                        <button class="btn btn-sm btn-secondary" onclick="applyGain(3)" disabled id="gain-plus-btn"><i class="fas fa-plus"></i> Gain +3dB</button>
-                        <button class="btn btn-sm btn-secondary" onclick="applyGain(-3)" disabled id="gain-minus-btn"><i class="fas fa-minus"></i> Gain -3dB</button>
-                        <button class="btn btn-sm btn-secondary" onclick="reverseAudio()" disabled id="reverse-btn"><i class="fas fa-exchange-alt"></i> Reverse</button>
-                        <button class="btn btn-sm btn-secondary" onclick="changeSpeedPrompt()" disabled id="apply-speed-btn"><i class="fas fa-tachometer-alt"></i> Apply Speed</button>
-                        <button class="btn btn-sm btn-secondary" onclick="denoiseBasic()" disabled id="denoise-btn"><i class="fas fa-broom"></i> Denoise</button>
-                        <button class="btn btn-sm btn-secondary" onclick="applySpeechEQ()" disabled id="eq-btn"><i class="fas fa-sliders-h"></i> Speech EQ</button>
-                        <button class="btn btn-sm btn-secondary" onclick="insertSilencePrompt()" disabled id="insert-silence-btn"><i class="fas fa-stopwatch"></i> Insert Silence</button>
-                        <button class="btn btn-sm btn-secondary" onclick="appendAudioFile()" disabled id="append-btn"><i class="fas fa-link"></i> Append File</button>
+                        <button class="btn btn-sm btn-secondary" onclick="trimSilence()" disabled id="trim-btn"><i
+                                class="fas fa-cut"></i> Trim Silence</button>
+                        <button class="btn btn-sm btn-secondary" onclick="normalizeAudio()" disabled
+                            id="normalize-btn"><i class="fas fa-arrows-alt-v"></i> Normalize</button>
+                        <button class="btn btn-sm btn-secondary" onclick="fadeInAudio()" disabled id="fadein-btn"><i
+                                class="fas fa-long-arrow-alt-right"></i> Fade In</button>
+                        <button class="btn btn-sm btn-secondary" onclick="fadeOutAudio()" disabled id="fadeout-btn"><i
+                                class="fas fa-long-arrow-alt-left"></i> Fade Out</button>
+                        <button class="btn btn-sm btn-secondary" onclick="applyGain(3)" disabled id="gain-plus-btn"><i
+                                class="fas fa-plus"></i> Gain +3dB</button>
+                        <button class="btn btn-sm btn-secondary" onclick="applyGain(-3)" disabled id="gain-minus-btn"><i
+                                class="fas fa-minus"></i> Gain -3dB</button>
+                        <button class="btn btn-sm btn-secondary" onclick="reverseAudio()" disabled id="reverse-btn"><i
+                                class="fas fa-exchange-alt"></i> Reverse</button>
+                        <button class="btn btn-sm btn-secondary" onclick="changeSpeedPrompt()" disabled
+                            id="apply-speed-btn"><i class="fas fa-tachometer-alt"></i> Apply Speed</button>
+                        <button class="btn btn-sm btn-secondary" onclick="denoiseBasic()" disabled id="denoise-btn"><i
+                                class="fas fa-broom"></i> Denoise</button>
+                        <button class="btn btn-sm btn-secondary" onclick="applySpeechEQ()" disabled id="eq-btn"><i
+                                class="fas fa-sliders-h"></i> Speech EQ</button>
+                        <button class="btn btn-sm btn-secondary" onclick="insertSilencePrompt()" disabled
+                            id="insert-silence-btn"><i class="fas fa-stopwatch"></i> Insert Silence</button>
+                        <button class="btn btn-sm btn-secondary" onclick="appendAudioFile()" disabled id="append-btn"><i
+                                class="fas fa-link"></i> Append File</button>
                     </div>
-                    
-                    <div class="audio-status" id="audio-status" style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; display: none;">
+
+                    <div class="audio-status" id="audio-status"
+                        style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; display: none;">
                         <i class="fas fa-info-circle"></i> <span id="status-text">No audio loaded</span>
                     </div>
-                    
-                    <div class="waveform-container" style="background: #f8f9fa; border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0; min-height: 250px; position: relative;">
-                        <div id="editor-waveform" style="min-height: 200px; width: 100%; background: #fff; border: 1px solid #ddd; border-radius: 4px;"></div>
-                        <div id="waveform-placeholder" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #666; pointer-events: none;">
-                            <i class="fas fa-music" style="font-size: 48px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
-                            <p style="margin: 0; font-size: 16px;">Load an audio file or record new audio to begin editing</p>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #999;">You'll be able to select regions for cropping and editing</p>
+
+                    <div class="waveform-container"
+                        style="background: #f8f9fa; border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0; min-height: 250px; position: relative;">
+                        <div id="editor-waveform"
+                            style="min-height: 200px; width: 100%; background: #fff; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div id="waveform-placeholder"
+                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #666; pointer-events: none;">
+                            <i class="fas fa-music"
+                                style="font-size: 48px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
+                            <p style="margin: 0; font-size: 16px;">Load an audio file or record new audio to begin
+                                editing</p>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #999;">You'll be able to select regions
+                                for cropping and editing</p>
                         </div>
                     </div>
-                    
+
                     <!-- Audio Time Display -->
-                    <div class="audio-time-display" style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0; padding: 10px; background: #e9ecef; border-radius: 5px;">
+                    <div class="audio-time-display"
+                        style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0; padding: 10px; background: #e9ecef; border-radius: 5px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span style="font-weight: bold;">Time:</span>
                             <span id="current-time">0:00</span> / <span id="audio-duration">0:00</span>
@@ -281,8 +328,9 @@
                             <i class="fas fa-crosshairs"></i> Jump to Time
                         </button>
                     </div>
-                    
-                    <div class="audio-controls" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
+
+                    <div class="audio-controls"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
                         <div class="control-group">
                             <label>Volume: <span id="volume-display">50%</span></label>
                             <input type="range" id="volume-control" min="0" max="100" value="50" disabled>
@@ -293,13 +341,15 @@
                         </div>
                         <div class="control-group">
                             <label>Selection: <span id="selection-display">None</span></label>
-                            <button class="btn btn-sm btn-secondary" onclick="clearSelection()" disabled id="clear-selection-btn">Clear Selection</button>
+                            <button class="btn btn-sm btn-secondary" onclick="clearSelection()" disabled
+                                id="clear-selection-btn">Clear Selection</button>
                         </div>
                     </div>
-                    
+
                     <div class="transcription-section" style="margin-top: 30px;">
                         <h4>Transcription</h4>
-                        <div class="transcription-controls" style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+                        <div class="transcription-controls"
+                            style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
                             <select id="transcription-language">
                                 <option value="hi">Hindi</option>
                                 <option value="en">English</option>
@@ -307,32 +357,37 @@
                                 <option value="te">Telugu</option>
                                 <option value="ta">Tamil</option>
                             </select>
-                            <button class="btn btn-info btn-sm" onclick="transcribeCurrentAudio()" disabled id="transcribe-current-btn">
+                            <button class="btn btn-info btn-sm" onclick="transcribeCurrentAudio()" disabled
+                                id="transcribe-current-btn">
                                 <i class="fas fa-language"></i> Transcribe Audio
                             </button>
                         </div>
-                        <textarea id="transcription-text" rows="6" 
-                                  placeholder="Transcription will appear here... You can also edit it manually."
-                                  style="width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; resize: vertical;"></textarea>
+                        <textarea id="transcription-text" rows="6"
+                            placeholder="Transcription will appear here... You can also edit it manually."
+                            style="width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; resize: vertical;"></textarea>
                     </div>
-                    
-                    <div class="save-options" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+
+                    <div class="save-options"
+                        style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
                         <h4>Save Options</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
                             <div class="form-group">
                                 <label for="save-filename">File Name</label>
-                                <input type="text" id="save-filename" placeholder="Enter filename" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <input type="text" id="save-filename" placeholder="Enter filename"
+                                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                             </div>
                             <div class="form-group">
                                 <label for="save-case-link">Link to FIR Case (Optional)</label>
-                                <select id="save-case-link" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <select id="save-case-link"
+                                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                                     <option value="">No case selected</option>
                                     <!-- Cases will be populated by JavaScript -->
                                 </select>
                             </div>
                         </div>
                         <div style="margin-top: 15px; display: flex; gap: 10px;">
-                            <button class="btn btn-primary" onclick="saveToFileManager()" disabled id="save-to-files-btn">
+                            <button class="btn btn-primary" onclick="saveToFileManager()" disabled
+                                id="save-to-files-btn">
                                 <i class="fas fa-folder"></i> Save to File Manager
                             </button>
                             <button class="btn btn-success" onclick="saveToCase()" disabled id="save-to-case-btn">
@@ -355,7 +410,8 @@
             <div class="modal-body">
                 <div class="account-profile">
                     <div class="profile-image">
-                        <img id="profile-image" src="https://via.placeholder.com/150/3498db/white?text=RK" alt="Profile">
+                        <img id="profile-image" src="https://via.placeholder.com/150/3498db/white?text=RK"
+                            alt="Profile">
                     </div>
                     <div class="profile-info">
                         <h3 id="profile-name">Rajesh Kumar</h3>
@@ -363,7 +419,7 @@
                         <p id="profile-station">Connaught Place Police Station</p>
                     </div>
                 </div>
-                
+
                 <div class="account-details">
                     <div class="detail-section">
                         <h4><i class="fas fa-id-badge"></i> Personal Information</h4>
@@ -386,12 +442,12 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <h4><i class="fas fa-map-marker-alt"></i> Address</h4>
                         <p id="profile-address">A-45, Police Quarters, Connaught Place, New Delhi - 110001</p>
                     </div>
-                    
+
                     <div class="detail-section">
                         <h4><i class="fas fa-clock"></i> Session Information</h4>
                         <div class="detail-grid">
@@ -406,7 +462,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="account-actions">
                     <button class="btn btn-secondary" onclick="changePassword()">
                         <i class="fas fa-key"></i> Change Password
@@ -422,6 +478,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=1764626800"></script>
 </body>
+
 </html>

@@ -182,7 +182,7 @@
   },
   {
     "id": "59e457c3-f567-4c7b-bedb-ba98af30103c",
-    "name": "unnamed folder",
+    "name": "Unknown folder",
     "type": "folder",
     "size": "-",
     "sizeBytes": 0,
@@ -211,6 +211,42 @@
     "path": "uploads\\2025-10-21T13-24-49-981Z_40062947_download.jpeg",
     "uploadedAt": "2025-10-21T13:24:49.987Z",
     "caseId": "FIR-2025-000003",
+    "folder": null
+  },
+  {
+    "id": "ebbc547e-14ec-43be-adf5-3f70210bdbc9",
+    "name": "recorded-audio-1764524732188.wav",
+    "filename": "2025-11-30T17-45-39-446Z_0ff53a88_recorded-audio-1764524732188.wav",
+    "type": "audio",
+    "size": "88.02 KB",
+    "sizeBytes": 90134,
+    "path": "uploads\\2025-11-30T17-45-39-446Z_0ff53a88_recorded-audio-1764524732188.wav",
+    "uploadedAt": "2025-11-30T17:45:39.457Z",
+    "caseId": null,
+    "folder": "e05c117a-f1c2-4d8c-849f-2a8146b7f027"
+  },
+  {
+    "id": "249744a9-a7b6-4d4f-a7e8-4056d349c38c",
+    "name": "recorded-audio-1764628265698.wav",
+    "filename": "2025-12-01T22-31-09-073Z_a4f3f4e7_recorded-audio-1764628265698.wav",
+    "type": "audio",
+    "size": "77.64 KB",
+    "sizeBytes": 79508,
+    "path": "uploads\\2025-12-01T22-31-09-073Z_a4f3f4e7_recorded-audio-1764628265698.wav",
+    "uploadedAt": "2025-12-01T22:31:09.079Z",
+    "caseId": null,
+    "folder": "e05c117a-f1c2-4d8c-849f-2a8146b7f027"
+  },
+  {
+    "id": "6f9a4ab2-52fe-4826-9c76-044715a822c2",
+    "name": "recorded-audio-1764651043445.wav",
+    "filename": "2025-12-02T04-51-13-036Z_1929a014_recorded-audio-1764651043445.wav",
+    "type": "audio",
+    "size": "164.9 KB",
+    "sizeBytes": 168858,
+    "path": "uploads\\2025-12-02T04-51-13-036Z_1929a014_recorded-audio-1764651043445.wav",
+    "uploadedAt": "2025-12-02T04:51:13.054Z",
+    "caseId": "FIR-2025-000001",
     "folder": null
   }
 ]

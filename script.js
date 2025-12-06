@@ -47,7 +47,7 @@ async function redoEdit() {
     }
 }
 // Keyboard shortcuts for undo/redo
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.ctrlKey && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
         e.preventDefault(); undoEdit();
     } else if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && (e.key === 'Z' || e.key === 'z'))) {
@@ -84,7 +84,7 @@ function saveEditedAudio() {
 }
 
 // ===== ASR init no-op to avoid init error =====
-function initializeASR() {}
+function initializeASR() { }
 
 // ===== Advanced Audio Editing Helpers =====
 async function decodeCurrentAudioBuffer() {
@@ -98,7 +98,7 @@ async function decodeCurrentAudioBuffer() {
 async function applyAndLoadBuffer(buffer, nameSuffix = 'edited', pushHistory = true) {
     // Push current state to undo history before applying
     if (pushHistory) {
-        try { await pushCurrentToUndo(); } catch(e) { console.warn('push undo failed', e); }
+        try { await pushCurrentToUndo(); } catch (e) { console.warn('push undo failed', e); }
         // clear redo history on new edit
         redoStack = [];
     }
@@ -358,8 +358,8 @@ async function appendAudioFile() {
 
 // Enable/disable tool buttons when audio loaded
 function enableAudioControls(enabled) {
-    const ids = ['play-pause-btn','stop-btn','crop-btn','delete-btn','export-selection-btn','transcribe-btn','save-btn','clear-selection-btn','trim-btn','normalize-btn','fadein-btn','fadeout-btn','gain-plus-btn','gain-minus-btn','reverse-btn','apply-speed-btn','denoise-btn','eq-btn','insert-silence-btn','append-btn','transcribe-current-btn','save-to-files-btn','save-to-case-btn','jump-time-btn','volume-control','speed-control'];
-ids.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = !enabled; });
+    const ids = ['play-pause-btn', 'stop-btn', 'crop-btn', 'delete-btn', 'export-selection-btn', 'transcribe-btn', 'save-btn', 'clear-selection-btn', 'trim-btn', 'normalize-btn', 'fadein-btn', 'fadeout-btn', 'gain-plus-btn', 'gain-minus-btn', 'reverse-btn', 'apply-speed-btn', 'denoise-btn', 'eq-btn', 'insert-silence-btn', 'append-btn', 'transcribe-current-btn', 'save-to-files-btn', 'save-to-case-btn', 'jump-time-btn', 'volume-control', 'speed-control'];
+    ids.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = !enabled; });
     updateUndoRedoButtons();
 }
 
@@ -392,7 +392,7 @@ const api = {
         if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
         return response.json();
     },
-    
+
     async post(endpoint, data) {
         const response = await fetch(`${API_BASE}${endpoint}`, {
             method: 'POST',
@@ -402,7 +402,7 @@ const api = {
         if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
         return response.json();
     },
-    
+
     async put(endpoint, data) {
         const response = await fetch(`${API_BASE}${endpoint}`, {
             method: 'PUT',
@@ -412,7 +412,7 @@ const api = {
         if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
         return response.json();
     },
-    
+
     async delete(endpoint, data = null) {
         const options = {
             method: 'DELETE',
@@ -425,7 +425,7 @@ const api = {
         if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
         return response.json();
     },
-    
+
     async uploadFiles(formData) {
         const response = await fetch(`${API_BASE}/api/files/upload`, {
             method: 'POST',
@@ -434,7 +434,7 @@ const api = {
         if (!response.ok) throw new Error(`Upload Error: ${response.statusText}`);
         return response.json();
     },
-    
+
     async transcribeAudio(formData) {
         const response = await fetch(`${API_BASE}/api/transcribe`, {
             method: 'POST',
@@ -450,7 +450,7 @@ async function checkAuthentication() {
     try {
         const response = await fetch(`${API_BASE}/api/auth/session`);
         const data = await response.json();
-        
+
         if (data.authenticated && data.user) {
             // Update UI with user info
             currentUser = data.user;
@@ -488,12 +488,12 @@ function openAccountModal() {
         showNotification('User session not found', 'error');
         return;
     }
-    
+
     // Get user stats
     const userCases = allCases.filter(c => c.officer === currentUser.name || c.station === currentUser.station);
     const userActiveCases = userCases.filter(c => c.status !== 'closed').length;
     const userClosedCases = userCases.filter(c => c.status === 'closed').length;
-    
+
     const modalHTML = `
         <div id="account-modal" class="modal" style="display: block;">
             <div class="modal-content" style="max-width: 700px;">
@@ -578,7 +578,7 @@ function openAccountModal() {
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 6px;">
                                     <div>
                                         <div style="font-weight: 500;">Last Login</div>
-                                        <div style="font-size: 13px; color: #666;">Today at ${new Date().toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})}</div>
+                                        <div style="font-size: 13px; color: #666;">Today at ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</div>
                                     </div>
                                     <div style="color: #3498db;"><i class="fas fa-clock"></i></div>
                                 </div>
@@ -596,7 +596,7 @@ function openAccountModal() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
@@ -607,7 +607,7 @@ function closeAccountModal() {
 
 function openEditProfileModal() {
     closeAccountModal();
-    
+
     const modalHTML = `
         <div id="edit-profile-modal" class="modal" style="display: block;">
             <div class="modal-content" style="max-width: 550px;">
@@ -646,7 +646,7 @@ function openEditProfileModal() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
@@ -657,14 +657,14 @@ function closeEditProfileModal() {
 
 async function saveProfileChanges(event) {
     event.preventDefault();
-    
+
     const updatedData = {
         name: document.getElementById('edit-name').value,
         email: document.getElementById('edit-email').value,
         designation: document.getElementById('edit-designation').value,
         badgeNumber: document.getElementById('edit-badge').value
     };
-    
+
     try {
         showLoadingMessage('Updating profile...');
         const response = await fetch(`${API_BASE}/api/auth/update-profile`, {
@@ -672,16 +672,16 @@ async function saveProfileChanges(event) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedData)
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             currentUser = { ...currentUser, ...updatedData };
             const userDisplay = document.getElementById('user-name-display');
             if (userDisplay) {
                 userDisplay.textContent = `${currentUser.designation} ${currentUser.name}`;
             }
-            
+
             showNotification('Profile updated successfully!', 'success');
             closeEditProfileModal();
         } else {
@@ -697,7 +697,7 @@ async function saveProfileChanges(event) {
 
 function openChangePasswordModal() {
     closeAccountModal();
-    
+
     const modalHTML = `
         <div id="change-password-modal" class="modal" style="display: block;">
             <div class="modal-content" style="max-width: 500px;">
@@ -743,14 +743,14 @@ function openChangePasswordModal() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
+
     // Add password match validation
     const newPass = document.getElementById('new-password');
     const confirmPass = document.getElementById('confirm-password');
     const indicator = document.getElementById('password-match-indicator');
-    
+
     [newPass, confirmPass].forEach(input => {
         input.addEventListener('input', () => {
             if (newPass.value && confirmPass.value) {
@@ -776,7 +776,7 @@ function closeChangePasswordModal() {
 function togglePasswordVisibility(inputId) {
     const input = document.getElementById(inputId);
     const icon = input.nextElementSibling;
-    
+
     if (input.type === 'password') {
         input.type = 'text';
         icon.classList.remove('fa-eye');
@@ -790,21 +790,21 @@ function togglePasswordVisibility(inputId) {
 
 async function changePassword(event) {
     event.preventDefault();
-    
+
     const currentPassword = document.getElementById('current-password').value;
     const newPassword = document.getElementById('new-password').value;
     const confirmPassword = document.getElementById('confirm-password').value;
-    
+
     if (newPassword !== confirmPassword) {
         showNotification('New passwords do not match!', 'error');
         return;
     }
-    
+
     if (newPassword.length < 6) {
         showNotification('Password must be at least 6 characters long', 'error');
         return;
     }
-    
+
     try {
         showLoadingMessage('Changing password...');
         const response = await fetch(`${API_BASE}/api/auth/change-password`, {
@@ -812,9 +812,9 @@ async function changePassword(event) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ currentPassword, newPassword })
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             showNotification('Password changed successfully!', 'success');
             closeChangePasswordModal();
@@ -895,16 +895,16 @@ const policeStations = [
 ];
 
 // Initialize the dashboard
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     // Check authentication
     const authenticated = await checkAuthentication();
     if (!authenticated) {
         window.location.href = 'login.html';
         return;
     }
-    
+
     await loadAllData();
-    
+
     initializeNavigation();
     initializeDashboard();
     initializeCases();
@@ -914,12 +914,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     initializeAudioEditor();
     initializeAnalytics();
     setupModal();
-    
+
     // Initialize ASR capabilities (no-op placeholder to avoid init errors)
     if (typeof initializeASR === 'function') {
         initializeASR();
     }
-    
+
     console.log('✅ Soochna Sahayak fully loaded with advanced features!');
 });
 
@@ -927,23 +927,23 @@ document.addEventListener('DOMContentLoaded', async function() {
 async function loadAllData() {
     try {
         showLoadingMessage('Loading data...');
-        
+
         // Load data from APIs
         allCases = await api.get('/api/cases');
         allTranscriptions = await api.get('/api/transcriptions');
         allFiles = await api.get('/api/files');
-        
+
         // Update station active cases count
         policeStations.forEach(station => {
             station.activeCases = allCases.filter(c => c.station === station.id).length;
         });
-        
+
         // Ensure edited_transcriptions folder exists
         const editedFolder = allFiles.find(f => f.name === 'edited_transcriptions' && f.type === 'folder');
         if (!editedFolder) {
             await createSystemFolder('edited_transcriptions');
         }
-        
+
         hideLoadingMessage();
         console.log('✅ Data loaded successfully');
     } catch (error) {
@@ -1007,18 +1007,18 @@ function initializeNavigation() {
     const pageTitle = document.getElementById('page-title');
 
     navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             e.preventDefault();
             const targetPage = this.dataset.page;
-            
+
             // Update active navigation
             navLinks.forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
-            
+
             // Update page visibility
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(targetPage + '-page').classList.add('active');
-            
+
             // Update page title
             const titles = {
                 'dashboard': 'Dashboard',
@@ -1031,7 +1031,7 @@ function initializeNavigation() {
                 'transcription-editor': 'Transcription Editor'
             };
             pageTitle.textContent = titles[targetPage];
-            
+
             // Initialize page-specific functionality
             switch (targetPage) {
                 case 'dashboard':
@@ -1056,7 +1056,7 @@ function initializeNavigation() {
                     initializeTranscriptionEditor();
                     break;
             }
-            
+
             currentPage = targetPage;
         });
     });
@@ -1099,14 +1099,14 @@ function refreshAnalyticsIfActive() {
             document.getElementById('stationChart'),
             document.getElementById('trendChart')
         ];
-        
+
         chartContainers.forEach(canvas => {
             if (canvas) {
                 const chart = Chart.getChart(canvas);
                 if (chart) chart.destroy();
             }
         });
-        
+
         initializeAnalytics();
     }
 }
@@ -1114,7 +1114,7 @@ function refreshAnalyticsIfActive() {
 function updateRecentActivity() {
     const activityList = document.querySelector('.activity-list');
     if (!activityList) return;
-    
+
     // Get recent cases (last 10, sorted by creation date)
     const recentCases = [...allCases]
         .sort((a, b) => {
@@ -1123,7 +1123,7 @@ function updateRecentActivity() {
             return dateB - dateA;
         })
         .slice(0, 10);
-    
+
     if (recentCases.length === 0) {
         activityList.innerHTML = `
             <div style="text-align: center; padding: 40px; color: #666;">
@@ -1134,28 +1134,28 @@ function updateRecentActivity() {
         `;
         return;
     }
-    
+
     activityList.innerHTML = '';
-    
+
     recentCases.forEach(caseItem => {
         const activityItem = document.createElement('div');
         activityItem.className = 'activity-item';
         activityItem.style.cursor = 'pointer';
         activityItem.onclick = () => openCaseModal(caseItem);
-        
+
         // Calculate time ago
         const caseDate = new Date(caseItem.createdAt || caseItem.date);
         const timeAgo = getTimeAgo(caseDate);
-        
+
         // Get status icon
-        const statusIcon = caseItem.status === 'closed' ? 'check-circle' : 
-                          caseItem.status === 'progress' ? 'spinner' : 
-                          'plus-circle';
-        
-        const statusColor = caseItem.status === 'closed' ? '#27ae60' : 
-                           caseItem.status === 'progress' ? '#3498db' : 
-                           '#f39c12';
-        
+        const statusIcon = caseItem.status === 'closed' ? 'check-circle' :
+            caseItem.status === 'progress' ? 'spinner' :
+                'plus-circle';
+
+        const statusColor = caseItem.status === 'closed' ? '#27ae60' :
+            caseItem.status === 'progress' ? '#3498db' :
+                '#f39c12';
+
         activityItem.innerHTML = `
             <div class="activity-icon" style="color: ${statusColor};">
                 <i class="fas fa-${statusIcon}"></i>
@@ -1173,7 +1173,7 @@ function updateRecentActivity() {
                 </span>
             </div>
         `;
-        
+
         activityList.appendChild(activityItem);
     });
 }
@@ -1181,14 +1181,14 @@ function updateRecentActivity() {
 function getTimeAgo(date) {
     const now = new Date();
     const diff = now - date;
-    
+
     const seconds = Math.floor(diff / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
     const months = Math.floor(days / 30);
     const years = Math.floor(days / 365);
-    
+
     if (years > 0) return years === 1 ? '1 year ago' : `${years} years ago`;
     if (months > 0) return months === 1 ? '1 month ago' : `${months} months ago`;
     if (days > 0) return days === 1 ? '1 day ago' : `${days} days ago`;
@@ -1260,7 +1260,7 @@ function initializeMonthlyChart() {
                     mode: 'index',
                     intersect: false,
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' cases';
                         }
                     }
@@ -1278,7 +1278,7 @@ function initializeMonthlyChart() {
                         }
                     },
                     ticks: {
-                        callback: function(value) {
+                        callback: function (value) {
                             return value.toLocaleString();
                         }
                     }
@@ -1307,12 +1307,12 @@ function initializeStatusChart() {
     const pendingCount = allCases.filter(c => c.status === 'pending').length;
     const progressCount = allCases.filter(c => c.status === 'progress').length;
     const closedCount = allCases.filter(c => c.status === 'closed').length;
-    
+
     // Use actual counts, or NCRB averages if no cases filed yet
     const displayPending = pendingCount || 89;
     const displayProgress = progressCount || 16;
     const displayClosed = closedCount || 142;
-    
+
     new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -1351,7 +1351,7 @@ function initializeStatusChart() {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                             const percentage = ((context.parsed / total) * 100).toFixed(1);
                             return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
@@ -1384,7 +1384,7 @@ function addNewCaseButton() {
 function renderCases(cases) {
     const casesGrid = document.getElementById('cases-grid');
     casesGrid.innerHTML = '';
-    
+
     if (cases.length === 0) {
         casesGrid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
@@ -1400,10 +1400,10 @@ function renderCases(cases) {
         const caseCard = document.createElement('div');
         caseCard.className = 'case-card';
         caseCard.onclick = () => openCaseModal(caseItem);
-        
+
         const date = caseItem.date || new Date(caseItem.createdAt).toISOString().split('T')[0];
-        const time = caseItem.time || new Date(caseItem.createdAt).toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'});
-        
+        const time = caseItem.time || new Date(caseItem.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
         caseCard.innerHTML = `
             <div class="case-header">
                 <div class="case-id">${caseItem.id}</div>
@@ -1420,7 +1420,7 @@ function renderCases(cases) {
                 <span>${formatDate(date)} ${time}</span>
             </div>
         `;
-        
+
         casesGrid.appendChild(caseCard);
     });
 }
@@ -1456,8 +1456,8 @@ function setupCaseFilters() {
 
         const filteredCases = allCases.filter(caseItem => {
             const matchesSearch = (caseItem.id && caseItem.id.toLowerCase().includes(searchTerm)) ||
-                                (caseItem.complainant && caseItem.complainant.toLowerCase().includes(searchTerm)) ||
-                                (caseItem.type && caseItem.type.toLowerCase().includes(searchTerm));
+                (caseItem.complainant && caseItem.complainant.toLowerCase().includes(searchTerm)) ||
+                (caseItem.type && caseItem.type.toLowerCase().includes(searchTerm));
             const matchesStatus = !statusValue || caseItem.status === statusValue;
             const matchesStation = !stationValue || caseItem.station === stationValue;
 
@@ -1511,9 +1511,9 @@ function showCaseFormModal(caseItem = null) {
                                 <label for="station">Police Station*</label>
                                 <select id="station" name="station" required>
                                     <option value="">Select Police Station</option>
-                                    ${policeStations.map(station => 
-                                        `<option value="${station.id}" ${caseItem?.station === station.id ? 'selected' : ''}>${station.name}</option>`
-                                    ).join('')}
+                                    ${policeStations.map(station =>
+        `<option value="${station.id}" ${caseItem?.station === station.id ? 'selected' : ''}>${station.name}</option>`
+    ).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
@@ -1557,9 +1557,9 @@ function showCaseFormModal(caseItem = null) {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
+
     // Initialize file upload for cases
     initializeCaseFileUpload();
 }
@@ -1568,22 +1568,22 @@ function initializeCaseFileUpload() {
     const dropArea = document.getElementById('case-file-drop-area');
     const fileInput = document.getElementById('case-files');
     const uploadedFilesDiv = document.getElementById('case-uploaded-files');
-    
+
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
         document.body.addEventListener(eventName, preventDefaults, false);
     });
-    
+
     // Highlight drop area when item is dragged over it
     ['dragenter', 'dragover'].forEach(eventName => {
         dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'), false);
     });
-    
+
     ['dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
     });
-    
+
     // Handle dropped files
     dropArea.addEventListener('drop', handleCaseFileDrop, false);
     fileInput.addEventListener('change', (e) => handleCaseFileSelect(e.target.files));
@@ -1602,7 +1602,7 @@ function handleCaseFileDrop(e) {
 
 function handleCaseFileSelect(files) {
     const uploadedFilesDiv = document.getElementById('case-uploaded-files');
-    
+
     Array.from(files).forEach(file => {
         const fileDiv = document.createElement('div');
         fileDiv.className = 'uploaded-file-item';
@@ -1648,15 +1648,18 @@ function initializeASR() {
 
 async function startRecording(targetTextarea, language = 'hi') {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
+        console.log('🎤 START RECORDING CALLED', { targetTextarea, language });
+
+        const stream = await navigator.mediaDevices.getUserMedia({
             audio: {
                 sampleRate: 16000,
                 channelCount: 1,
                 echoCancellation: true,
                 noiseSuppression: true
-            } 
+            }
         });
-        
+        console.log('✅ Got media stream:', stream);
+
         // Try different MIME types for better compatibility
         let options = { mimeType: 'audio/webm;codecs=opus' };
         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
@@ -1668,18 +1671,23 @@ async function startRecording(targetTextarea, language = 'hi') {
         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
             options = {}; // Use default
         }
-        
+
         console.log('Using MediaRecorder options:', options);
         audioRecorder = new MediaRecorder(stream, options);
-        
+        console.log('✅ MediaRecorder created:', audioRecorder);
+
         const audioChunks = [];
         audioRecorder.ondataavailable = (event) => {
+            console.log('📦 Data available:', event.data.size, 'bytes');
             if (event.data.size > 0) {
                 audioChunks.push(event.data);
             }
         };
-        
+
         audioRecorder.onstop = async () => {
+            console.log('⏹️ RECORDING STOPPED - onstop triggered');
+            console.log('📦 Total chunks:', audioChunks.length);
+
             // Try to create WAV format for better compatibility
             let audioBlob;
             if (MediaRecorder.isTypeSupported('audio/wav')) {
@@ -1687,33 +1695,45 @@ async function startRecording(targetTextarea, language = 'hi') {
             } else {
                 audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             }
+            console.log('✅ Audio blob created:', audioBlob.size, 'bytes, type:', audioBlob.type);
+
             currentRecording = audioBlob; // Store for potential saving
+            console.log('🔄 Calling transcribeAudioBlob...');
             await transcribeAudioBlob(audioBlob, targetTextarea, language);
             stream.getTracks().forEach(track => track.stop());
+            console.log('✅ Stream tracks stopped');
         };
-        
-        audioRecorder.start();
+
+        // Start recording with timeslice to ensure ondataavailable fires
+        // Request data every 100ms
+        audioRecorder.start(100);
         isRecording = true;
+        console.log('✅ Recording started, isRecording =', isRecording);
         showNotification('Recording started. Speak now!', 'info');
-        
+
     } catch (error) {
-        console.error('Error starting recording:', error);
+        console.error('❌ Error starting recording:', error);
         showNotification('Failed to access microphone', 'error');
     }
 }
 
 function stopRecording() {
+    console.log('🛑 STOP RECORDING CALLED', { audioRecorder, isRecording });
     if (audioRecorder && isRecording) {
+        console.log('🛑 Calling audioRecorder.stop()...');
         audioRecorder.stop();
         isRecording = false;
+        console.log('✅ isRecording set to false');
         showLoadingMessage('Processing audio transcription...');
+    } else {
+        console.warn('⚠️ Cannot stop: audioRecorder or isRecording is false', { audioRecorder, isRecording });
     }
 }
 
-async function transcribeAudioBlob(audioBlob, targetTextarea, language = 'hi') {
+async function transcribeAudioBlob(audioBlob, targetElement, language = 'hi') {
     try {
         console.log('Starting transcription with blob size:', audioBlob.size, 'language:', language);
-        
+
         const formData = new FormData();
         // Determine file extension based on blob type
         let filename = 'recording.wav';
@@ -1724,56 +1744,65 @@ async function transcribeAudioBlob(audioBlob, targetTextarea, language = 'hi') {
         } else if (audioBlob.type.includes('ogg')) {
             filename = 'recording.ogg';
         }
-        
+
         console.log('Uploading audio blob:', {
             type: audioBlob.type,
             size: audioBlob.size,
             filename: filename
         });
-        
+
         formData.append('audio', audioBlob, filename);
         formData.append('language', language);
-        
+
         console.log('Sending transcription request...');
         const result = await api.transcribeAudio(formData);
         console.log('Transcription result:', result);
-        
+
         if (result.success && result.transcription) {
-            // Insert transcription into target textarea
-            if (targetTextarea) {
-                const currentText = targetTextarea.value;
-                const newText = currentText ? currentText + ' ' + result.transcription : result.transcription;
-                targetTextarea.value = newText;
-                
-                // Trigger input event for auto-resize
-                if (targetTextarea.dispatchEvent) {
-                    targetTextarea.dispatchEvent(new Event('input'));
+            // Handle both textarea and div elements
+            if (targetElement) {
+                if (targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'INPUT') {
+                    // For textarea/input, set value
+                    targetElement.value = result.transcription;
+                } else {
+                    // For div, set innerHTML with formatting
+                    targetElement.innerHTML = `<strong style="color: #4CAF50;">✅ Transcription:</strong><br><br><div style="font-size: 20px; margin-top: 10px;">${result.transcription}</div>`;
                 }
-                targetTextarea.focus();
+                console.log('✅ Transcription displayed:', result.transcription);
             }
-            
-            showNotification(`Transcription completed: ${result.transcription}`, 'success');
+
+            showNotification(`✅ Transcription: "${result.transcription}"`, 'success');
         } else {
             console.error('Invalid transcription response:', result);
             throw new Error(result.error || 'No transcription received from server');
         }
-        
+
     } catch (error) {
         console.error('Transcription error details:', {
             message: error.message,
             stack: error.stack,
             response: error.response
         });
-        
-        let errorMessage = 'Transcription failed. ';
-        if (error.message.includes('fetch')) {
-            errorMessage += 'Network error - check server connection.';
-        } else if (error.message.includes('Bhashini')) {
-            errorMessage += 'ASR service error - check API configuration.';
+
+        let errorMessage = '⚠️ Transcription failed. ';
+
+        // More specific error messages
+        if (error.message && error.message.includes('Failed to fetch')) {
+            errorMessage = '🔌 Network error - Cannot reach Bhashini ASR service. Please check:\n' +
+                '• Your internet connection\n' +
+                '• Bhashini API service status (dhruva-api.bhashini.gov.in)\n' +
+                '• Firewall/proxy settings\n\n' +
+                'The recording has been saved. You can manually add transcription text.';
+        } else if (error.message && (error.message.includes('502') || error.message.includes('Bad Gateway'))) {
+            errorMessage = '🔴 Bhashini API is temporarily unavailable (Bad Gateway).\n' +
+                'The recording has been saved. Please try again later or manually add transcription.';
+        } else if (error.message && error.message.includes('Bhashini')) {
+            errorMessage = '⚠️ ASR service error - ' + error.message + '\n' +
+                'Please check API credentials or try again later.';
         } else {
-            errorMessage += error.message || 'Please try again.';
+            errorMessage += error.message || 'Please try recording again.';
         }
-        
+
         showNotification(errorMessage, 'error');
     } finally {
         hideLoadingMessage();
@@ -1781,11 +1810,11 @@ async function transcribeAudioBlob(audioBlob, targetTextarea, language = 'hi') {
 }
 
 // Case Modal Functions
-function openNewCaseModal() { 
-    showCaseFormModal(); 
+function openNewCaseModal() {
+    showCaseFormModal();
 }
 
-function closeCaseFormModal() { 
+function closeCaseFormModal() {
     const modal = document.getElementById('case-form-modal');
     if (modal) modal.remove();
 }
@@ -1816,13 +1845,13 @@ function toggleRecording(textareaId) {
 function renderFiles() {
     const fileGrid = document.getElementById('file-grid');
     fileGrid.innerHTML = '';
-    
+
     // Add folder navigation header
     addFolderNavigationHeader();
-    
+
     // Filter files based on current folder
     const filesToShow = getFilesInCurrentFolder();
-    
+
     if (filesToShow.length === 0) {
         fileGrid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
@@ -1833,18 +1862,18 @@ function renderFiles() {
         `;
         return;
     }
-    
+
     filesToShow.forEach(file => {
         const fileItem = document.createElement('div');
         fileItem.className = 'file-item';
-        
+
         // Different click behavior for folders vs files
         if (file.type === 'folder') {
             fileItem.onclick = () => navigateToFolder(file);
         } else {
             fileItem.onclick = () => toggleFileSelection(fileItem, file);
         }
-        
+
         fileItem.innerHTML = `
             <div class="file-icon">
                 <i class="fas ${getFileTypeIcon(file.type)}" style="color: ${file.type === 'folder' ? '#f39c12' : '#3498db'};"></i>
@@ -1852,25 +1881,31 @@ function renderFiles() {
             <div class="file-name">${file.name}</div>
             <div class="file-size">${file.type === 'folder' ? 'Folder' : (file.size || '0 KB')}</div>
         `;
-        
+
         fileGrid.appendChild(fileItem);
     });
+}
+
+// View transcription for file in File Manager
+async function viewFileTranscription(fileId, fileName) {
+    // Use the same function as FIR evidence
+    await viewAudioTranscription(fileId, fileName);
 }
 
 function addFolderNavigationHeader() {
     const container = document.querySelector('.file-manager-container');
     const existingNav = container.querySelector('.folder-navigation');
-    
+
     if (existingNav) {
         existingNav.remove();
     }
-    
+
     const navDiv = document.createElement('div');
     navDiv.className = 'folder-navigation';
     navDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; display: flex; align-items: center; gap: 10px;';
-    
+
     const pathText = currentFolderName ? currentFolderName : 'Root';
-    
+
     navDiv.innerHTML = `
         <button class="btn btn-sm btn-secondary" onclick="navigateBack()" ${(!currentFolderId && folderHistory.length === 0) ? 'disabled' : ''}>
             <i class="fas fa-arrow-left"></i> Back
@@ -1880,7 +1915,7 @@ function addFolderNavigationHeader() {
             <i class="fas fa-home"></i> Root
         </button>
     `;
-    
+
     const toolbar = container.querySelector('.file-toolbar');
     container.insertBefore(navDiv, toolbar.nextSibling);
 }
@@ -1889,7 +1924,7 @@ function getFilesInCurrentFolder() {
     return allFiles.filter(file => {
         // Skip folders themselves from the file list (they're shown separately)
         if (file.type === 'folder') return true;
-        
+
         if (!currentFolderId) {
             // Root level: show files with no folder or explicitly root
             // Also show files with string folder names that don't match any existing folder ID (legacy/orphaned files)
@@ -1910,7 +1945,7 @@ function getFilesInCurrentFolder() {
 
 function navigateToFolder(folder) {
     if (currentFolderId) {
-        folderHistory.push({id: currentFolderId, name: currentFolderName});
+        folderHistory.push({ id: currentFolderId, name: currentFolderName });
     }
     currentFolderId = folder.id;
     currentFolderName = folder.name;
@@ -1922,7 +1957,7 @@ function navigateBack() {
     console.log('=== NAVIGATE BACK ===');
     console.log('Current folder:', currentFolderId, currentFolderName);
     console.log('Folder history:', folderHistory);
-    
+
     if (folderHistory.length > 0) {
         const previous = folderHistory.pop();
         console.log('Going back to:', previous);
@@ -1960,7 +1995,7 @@ function getFileTypeIcon(type) {
 function toggleFileSelection(element, file) {
     element.classList.toggle('selected');
     const index = selectedFiles.findIndex(f => f.id === file.id);
-    
+
     if (index === -1) {
         selectedFiles.push(file);
     } else {
@@ -1974,31 +2009,31 @@ async function uploadFile() {
     input.type = 'file';
     input.multiple = true;
     input.accept = '*/*';
-    
-    input.onchange = async function(e) {
+
+    input.onchange = async function (e) {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
-        
+
         const formData = new FormData();
         files.forEach(file => {
             formData.append('files', file);
         });
-        
+
         // Add current folder context if we're in a folder
         const currentFolder = getCurrentFolder();
         if (currentFolder) {
             formData.append('folder', currentFolder);
         }
-        
+
         console.log('Uploading via upload button to folder:', currentFolder || 'root');
-        
+
         try {
             showLoadingMessage(`Uploading ${files.length} file(s)...`);
             const result = await api.uploadFiles(formData);
-            
+
             allFiles.push(...result.files);
             renderFiles();
-            
+
             showNotification(`Successfully uploaded ${files.length} file(s)!`, 'success');
             hideLoadingMessage();
         } catch (error) {
@@ -2007,18 +2042,18 @@ async function uploadFile() {
             hideLoadingMessage();
         }
     };
-    
+
     input.click();
 }
 
 async function createFolder() {
     const folderName = prompt('Enter folder name:');
     if (!folderName) return;
-    
+
     try {
         showLoadingMessage('Creating folder...');
         const newFolder = await api.post('/api/files/folder', { name: folderName });
-        
+
         allFiles.unshift(newFolder);
         renderFiles();
         showNotification(`Folder "${folderName}" created successfully!`, 'success');
@@ -2035,23 +2070,23 @@ async function deleteSelected() {
         showNotification('Please select files to delete', 'error');
         return;
     }
-    
+
     if (!confirm(`Delete ${selectedFiles.length} selected item(s)?`)) {
         return;
     }
-    
+
     try {
         showLoadingMessage('Deleting files...');
         const fileIds = selectedFiles.map(f => f.id);
         await api.delete('/api/files', { fileIds });
-        
+
         fileIds.forEach(fileId => {
             const index = allFiles.findIndex(f => f.id === fileId);
             if (index !== -1) {
                 allFiles.splice(index, 1);
             }
         });
-        
+
         selectedFiles = [];
         renderFiles();
         showNotification(`${fileIds.length} files deleted successfully!`, 'success');
@@ -2076,17 +2111,17 @@ function loadFileManager() {
 
 function setupFileManagerEventListeners() {
     const fileGrid = document.getElementById('file-grid');
-    
+
     // Right-click context menu
     fileGrid.addEventListener('contextmenu', handleFileContextMenu);
-    
+
     // Clear selection when clicking empty area
-    fileGrid.addEventListener('click', function(e) {
+    fileGrid.addEventListener('click', function (e) {
         if (e.target === fileGrid) {
             clearFileSelection();
         }
     });
-    
+
     // Close context menu on click elsewhere
     document.addEventListener('click', closeContextMenu);
 }
@@ -2094,40 +2129,40 @@ function setupFileManagerEventListeners() {
 function setupDragAndDrop() {
     const fileGrid = document.getElementById('file-grid');
     const fileUploadArea = document.querySelector('.file-manager-container');
-    
+
     // Drag and drop for file uploads from desktop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         fileUploadArea.addEventListener(eventName, preventDefaults, false);
         document.body.addEventListener(eventName, preventDefaults, false);
     });
-    
+
     ['dragenter', 'dragover'].forEach(eventName => {
         fileUploadArea.addEventListener(eventName, highlight, false);
     });
-    
+
     ['dragleave', 'drop'].forEach(eventName => {
         fileUploadArea.addEventListener(eventName, unhighlight, false);
     });
-    
+
     fileUploadArea.addEventListener('drop', handleFileDrop, false);
-    
+
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
     }
-    
+
     function highlight(e) {
         fileUploadArea.classList.add('dragover');
     }
-    
+
     function unhighlight(e) {
         fileUploadArea.classList.remove('dragover');
     }
-    
+
     async function handleFileDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
-        
+
         if (files.length > 0) {
             await uploadDroppedFiles(files);
         }
@@ -2137,26 +2172,26 @@ function setupDragAndDrop() {
 async function uploadDroppedFiles(files) {
     const filesArray = Array.from(files);
     const formData = new FormData();
-    
+
     filesArray.forEach(file => {
         formData.append('files', file);
     });
-    
+
     // Add current folder context if we have folder navigation
     const currentFolder = getCurrentFolder();
     if (currentFolder) {
         formData.append('folder', currentFolder);
     }
-    
+
     console.log('Uploading files to folder:', currentFolder || 'root');
-    
+
     try {
         showLoadingMessage(`Uploading ${filesArray.length} file(s)...`);
         const result = await api.uploadFiles(formData);
-        
+
         allFiles.push(...result.files);
         renderFiles();
-        
+
         showNotification(`Successfully uploaded ${filesArray.length} file(s)!`, 'success');
         hideLoadingMessage();
     } catch (error) {
@@ -2176,19 +2211,19 @@ function getCurrentFolder() {
 
 function handleFileContextMenu(e) {
     e.preventDefault();
-    
+
     const fileItem = e.target.closest('.file-item');
     if (!fileItem) return;
-    
+
     // Get file data
     const fileName = fileItem.querySelector('.file-name').textContent;
     const file = allFiles.find(f => f.name === fileName);
-    
+
     if (!file) return;
-    
+
     // Close any existing context menu
     closeContextMenu();
-    
+
     // Create context menu
     const contextMenu = document.createElement('div');
     contextMenu.className = 'context-menu';
@@ -2204,16 +2239,23 @@ function handleFileContextMenu(e) {
         z-index: 1000;
         min-width: 150px;
     `;
-    
+
     const menuItems = [
         { label: 'View', icon: 'fa-eye', action: () => viewFile(file) },
         { label: 'Download', icon: 'fa-download', action: () => downloadFile(file) },
         { label: 'Rename', icon: 'fa-edit', action: () => renameFile(file) },
-        { label: 'Move', icon: 'fa-arrows-alt', action: () => moveFile(file) },
-        { divider: true },
-        { label: 'Delete', icon: 'fa-trash', action: () => deleteFile(file), className: 'danger' }
+        { label: 'Move', icon: 'fa-arrows-alt', action: () => moveFile(file) }
     ];
-    
+
+    // Add "View Transcription" option for audio files
+    const isAudio = file.type === 'audio' || /\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(file.name);
+    if (isAudio) {
+        menuItems.push({ label: 'View Transcription', icon: 'fa-file-alt', action: () => viewFileTranscription(file.id, file.name) });
+    }
+
+    menuItems.push({ divider: true });
+    menuItems.push({ label: 'Delete', icon: 'fa-trash', action: () => deleteFile(file), className: 'danger' });
+
     menuItems.forEach(item => {
         if (item.divider) {
             const divider = document.createElement('div');
@@ -2231,33 +2273,33 @@ function handleFileContextMenu(e) {
                 font-size: 14px;
                 transition: background 0.2s;
             `;
-            
+
             if (item.className === 'danger') {
                 menuItem.style.color = '#e74c3c';
             }
-            
+
             menuItem.innerHTML = `
                 <i class="fas ${item.icon}"></i>
                 <span>${item.label}</span>
             `;
-            
-            menuItem.addEventListener('mouseenter', function() {
+
+            menuItem.addEventListener('mouseenter', function () {
                 this.style.background = '#f8f9fa';
             });
-            
-            menuItem.addEventListener('mouseleave', function() {
+
+            menuItem.addEventListener('mouseleave', function () {
                 this.style.background = 'transparent';
             });
-            
-            menuItem.addEventListener('click', function() {
+
+            menuItem.addEventListener('click', function () {
                 item.action();
                 closeContextMenu();
             });
-            
+
             contextMenu.appendChild(menuItem);
         }
     });
-    
+
     document.body.appendChild(contextMenu);
 }
 
@@ -2274,19 +2316,19 @@ function viewFile(file) {
         navigateToFolder(file);
         return;
     }
-    
+
     // Always use the file ID endpoint for reliable file serving
     const fileUrl = `/file/${file.id}`;
-    
+
     console.log('=== VIEWING FILE ===');
     console.log('File object:', file);
     console.log('File URL:', fileUrl);
     console.log('File type:', file.type);
     console.log('File name:', file.name);
-    
+
     // Handle different file types appropriately
     const fileType = file.type || getFileTypeFromName(file.name);
-    
+
     if (fileType === 'image' || file.name.match(/\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i)) {
         // Open image in modal for better viewing
         showImageModal(fileUrl, file.name);
@@ -2310,7 +2352,7 @@ function viewFile(file) {
 
 function getFileTypeFromName(filename) {
     const extension = filename.split('.').pop().toLowerCase();
-    
+
     if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes(extension)) {
         return 'image';
     } else if (['mp3', 'wav', 'ogg', 'm4a', 'webm', 'aac'].includes(extension)) {
@@ -2422,10 +2464,10 @@ function downloadFile(file) {
         showNotification('Cannot download folders', 'error');
         return;
     }
-    
+
     // Use file ID endpoint for reliable access
     const fileUrl = `/file/${file.id}`;
-    
+
     const link = document.createElement('a');
     link.href = fileUrl;
     link.download = file.name;
@@ -2435,16 +2477,16 @@ function downloadFile(file) {
 async function renameFile(file) {
     const newName = prompt('Enter new name:', file.name);
     if (!newName || newName === file.name) return;
-    
+
     try {
         showLoadingMessage('Renaming file...');
         const updatedFile = await api.put(`/api/files/${file.id}/rename`, { newName });
-        
+
         const fileIndex = allFiles.findIndex(f => f.id === file.id);
         if (fileIndex !== -1) {
             allFiles[fileIndex] = updatedFile;
         }
-        
+
         renderFiles();
         showNotification(`File renamed to "${newName}"`, 'success');
         hideLoadingMessage();
@@ -2458,12 +2500,12 @@ async function renameFile(file) {
 function moveFile(file) {
     // Get available folders
     const folders = allFiles.filter(f => f.type === 'folder');
-    
+
     if (folders.length === 0) {
         showNotification('No folders available. Create a folder first.', 'info');
         return;
     }
-    
+
     const modalHTML = `
         <div id="move-file-modal" class="modal" style="display: block;">
             <div class="modal-content" style="max-width: 500px;">
@@ -2491,7 +2533,7 @@ function moveFile(file) {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
@@ -2502,17 +2544,17 @@ function closeMoveFileModal() {
 
 async function performMoveFile(fileId) {
     const targetFolderId = document.getElementById('target-folder').value || null;
-    
+
     try {
         showLoadingMessage('Moving file...');
         console.log('Moving file:', fileId, 'to folder:', targetFolderId);
-        
-        const updatedFile = await api.put(`/api/files/${fileId}/move`, { 
-            targetFolder: targetFolderId 
+
+        const updatedFile = await api.put(`/api/files/${fileId}/move`, {
+            targetFolder: targetFolderId
         });
-        
+
         console.log('Move response:', updatedFile);
-        
+
         // Find and update the file in allFiles array
         const fileIndex = allFiles.findIndex(f => f.id === fileId);
         if (fileIndex !== -1) {
@@ -2523,15 +2565,15 @@ async function performMoveFile(fileId) {
         } else {
             console.error('File not found in allFiles:', fileId);
         }
-        
+
         // Force re-render to update the view
         renderFiles();
         closeMoveFileModal();
-        
-        const targetName = targetFolderId ? 
-            allFiles.find(f => f.id === targetFolderId)?.name || 'Selected folder' : 
+
+        const targetName = targetFolderId ?
+            allFiles.find(f => f.id === targetFolderId)?.name || 'Selected folder' :
             'Root directory';
-        
+
         showNotification(`File moved to ${targetName} successfully!`, 'success');
         hideLoadingMessage();
     } catch (error) {
@@ -2543,16 +2585,16 @@ async function performMoveFile(fileId) {
 
 async function deleteFile(file) {
     if (!confirm(`Are you sure you want to delete "${file.name}"?`)) return;
-    
+
     try {
         showLoadingMessage('Deleting file...');
         await api.delete(`/api/files/${file.id}`);
-        
+
         const fileIndex = allFiles.findIndex(f => f.id === file.id);
         if (fileIndex !== -1) {
             allFiles.splice(fileIndex, 1);
         }
-        
+
         renderFiles();
         showNotification('File deleted successfully', 'success');
         hideLoadingMessage();
@@ -2580,7 +2622,7 @@ function initializeAnalytics() {
 function initializeCrimeTypesChart() {
     const ctx = document.getElementById('crimeTypesChart');
     if (!ctx) return;
-    
+
     // Aggregate crime types from actual cases
     const typeCounts = {};
     const typeColors = {
@@ -2596,12 +2638,12 @@ function initializeCrimeTypesChart() {
         'Missing Person': '#3498db',
         'Other': '#95a5a6'
     };
-    
+
     allCases.forEach(c => {
         const type = c.type || 'Other';
         typeCounts[type] = (typeCounts[type] || 0) + 1;
     });
-    
+
     const crimeData = Object.entries(typeCounts)
         .map(([type, count]) => ({
             type,
@@ -2609,14 +2651,14 @@ function initializeCrimeTypesChart() {
             color: typeColors[type] || '#95a5a6'
         }))
         .sort((a, b) => b.count - a.count);
-    
+
     const total = crimeData.reduce((sum, item) => sum + item.count, 0);
-    
+
     if (total === 0) {
         ctx.parentElement.innerHTML = '<div style="text-align: center; padding: 60px; color: #666;"><i class="fas fa-chart-pie" style="font-size: 48px; margin-bottom: 15px; display: block; opacity: 0.3;"></i><p>No case data available yet</p><p style="font-size: 14px; margin-top: 10px;">Charts will appear once FIR cases are filed</p></div>';
         return;
     }
-    
+
     new Chart(ctx.getContext('2d'), {
         type: 'doughnut',
         data: {
@@ -2654,7 +2696,7 @@ function initializeCrimeTypesChart() {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             const count = context.parsed;
                             const percentage = ((count / total) * 100).toFixed(1);
                             return context.label + ': ' + count.toLocaleString() + ' cases (' + percentage + '%)';
@@ -2669,33 +2711,33 @@ function initializeCrimeTypesChart() {
 function initializeStationChart() {
     const ctx = document.getElementById('stationChart');
     if (!ctx) return;
-    
+
     // Aggregate cases by police station from actual data
     const stationCounts = {};
     policeStations.forEach(station => {
         stationCounts[station.name] = 0;
     });
-    
+
     allCases.forEach(c => {
         const stationName = c.stationName || getStationName(c.station);
         if (stationCounts[stationName] !== undefined) {
             stationCounts[stationName]++;
         }
     });
-    
+
     const stationData = policeStations.map(station => ({
         station: station.name,
         total: stationCounts[station.name] || 0,
         pending: allCases.filter(c => (c.stationName || getStationName(c.station)) === station.name && c.status === 'pending').length,
         closed: allCases.filter(c => (c.stationName || getStationName(c.station)) === station.name && c.status === 'closed').length
     }));
-    
+
     const totalCases = allCases.length;
     if (totalCases === 0) {
         ctx.parentElement.innerHTML = '<div style="text-align: center; padding: 60px; color: #666;"><i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: 15px; display: block; opacity: 0.3;"></i><p>No station data available yet</p><p style="font-size: 14px; margin-top: 10px;">Charts will appear once FIR cases are filed</p></div>';
         return;
     }
-    
+
     new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
@@ -2756,7 +2798,7 @@ function initializeStationChart() {
                         }
                     },
                     ticks: {
-                        callback: function(value) {
+                        callback: function (value) {
                             return value.toLocaleString();
                         },
                         precision: 0
@@ -2780,14 +2822,14 @@ function initializeStationChart() {
 function initializeTrendChart() {
     const ctx = document.getElementById('trendChart');
     if (!ctx) return;
-    
+
     // Generate monthly trend data from actual cases
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const currentYear = new Date().getFullYear();
     const monthlyCounts = new Array(12).fill(0);
     const monthlyPending = new Array(12).fill(0);
     const monthlyClosed = new Array(12).fill(0);
-    
+
     allCases.forEach(c => {
         const caseDate = new Date(c.createdAt || c.date);
         if (caseDate.getFullYear() === currentYear) {
@@ -2797,13 +2839,13 @@ function initializeTrendChart() {
             if (c.status === 'closed') monthlyClosed[month]++;
         }
     });
-    
+
     const totalCases = allCases.length;
     if (totalCases === 0) {
         ctx.parentElement.innerHTML = '<div style="text-align: center; padding: 60px; color: #666;"><i class="fas fa-chart-line" style="font-size: 48px; margin-bottom: 15px; display: block; opacity: 0.3;"></i><p>No trend data available yet</p><p style="font-size: 14px; margin-top: 10px;">Charts will appear once FIR cases are filed</p></div>';
         return;
     }
-    
+
     new Chart(ctx.getContext('2d'), {
         type: 'line',
         data: {
@@ -2943,7 +2985,7 @@ function addTranscriptionControls() {
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'transcription-controls';
         controlsDiv.style.cssText = 'margin: 20px 0; display: flex; gap: 15px; flex-wrap: wrap; align-items: center;';
-        
+
         controlsDiv.innerHTML = `
             <button class="btn btn-primary" onclick="startNewTranscription()">
                 <i class="fas fa-microphone"></i> Record & Transcribe
@@ -2955,7 +2997,7 @@ function addTranscriptionControls() {
                 <i class="fas fa-circle" style="animation: pulse 1s infinite;"></i> Recording...
             </div>
         `;
-        
+
         header.parentNode.insertBefore(controlsDiv, header.nextSibling);
     }
 }
@@ -2966,7 +3008,7 @@ function startNewTranscription() {
         stopRecording();
         return;
     }
-    
+
     showTranscriptionModal();
 }
 
@@ -3009,8 +3051,10 @@ function showTranscriptionModal() {
                     </div>
                     
                     <div class="form-group">
-                        <label for="transcription-text">Transcribed Text</label>
-                        <textarea id="transcription-text" rows="6" placeholder="Transcribed text will appear here... You can also type manually."></textarea>
+                        <label>Transcribed Text</label>
+                        <div id="transcription-display" style="background: #f0f8ff; border: 2px solid #4CAF50; padding: 20px; border-radius: 8px; min-height: 100px; font-size: 18px; line-height: 1.8; color: #000; font-weight: 500;">
+                            <em style="color: #666;">Transcription will appear here after recording...</em>
+                        </div>
                     </div>
                     
                     <div class="form-actions">
@@ -3023,40 +3067,78 @@ function showTranscriptionModal() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
 function closeTranscriptionModal() {
     const modal = document.getElementById('transcription-modal');
     if (modal) modal.remove();
-    
-    // Stop any ongoing recording
-    if (isRecording) {
-        stopRecording();
+
+    // Stop any ongoing modal recording
+    if (modalMediaRecorder && modalMediaRecorder.state === 'recording') {
+        modalMediaRecorder.stop();
     }
 }
 
-function toggleMainRecording() {
+// Modal recording variables (separate from editor)
+let modalMediaRecorder = null;
+let modalRecordedChunks = [];
+let modalIsRecording = false;
+
+async function toggleMainRecording() {
     const recordBtn = document.getElementById('main-record-btn');
     const indicator = document.getElementById('main-recording-indicator');
-    const textarea = document.getElementById('transcription-text');
+    const displayDiv = document.getElementById('transcription-display');
     const language = document.getElementById('transcription-language').value;
-    
-    if (!isRecording) {
-        // Start recording
-        recordBtn.classList.add('recording');
-        recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
-        indicator.classList.add('active');
-        
-        startRecording(textarea, language);
-    } else {
-        // Stop recording
+
+    console.log('🔘 TOGGLE', { modalIsRecording, state: modalMediaRecorder?.state });
+
+    // If recording, stop it
+    if (modalIsRecording && modalMediaRecorder && modalMediaRecorder.state === 'recording') {
+        console.log('⏹️ Stopping...');
+        modalMediaRecorder.stop();
+        modalIsRecording = false;
         recordBtn.classList.remove('recording');
         recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
         indicator.classList.remove('active');
-        
-        stopRecording();
+        return;
+    }
+
+    // Start new recording
+    try {
+        console.log('▶️ Starting...');
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+        });
+
+        modalMediaRecorder = new MediaRecorder(stream);
+        modalRecordedChunks = [];
+
+        modalMediaRecorder.ondataavailable = (event) => {
+            console.log('📦', event.data.size, 'bytes');
+            if (event.data.size > 0) modalRecordedChunks.push(event.data);
+        };
+
+        modalMediaRecorder.onstop = async () => {
+            console.log('⏹️ Stopped, transcribing...');
+            const audioBlob = new Blob(modalRecordedChunks, { type: 'audio/webm' });
+            console.log('✅ Blob:', audioBlob.size, 'bytes');
+            await transcribeAudioBlob(audioBlob, displayDiv, language);
+            stream.getTracks().forEach(track => track.stop());
+            modalMediaRecorder = null;
+        };
+
+        modalMediaRecorder.start(100);
+        modalIsRecording = true;
+        recordBtn.classList.add('recording');
+        recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+        indicator.classList.add('active');
+        showNotification('🔴 Recording started - Speak now!', 'info');
+
+    } catch (error) {
+        console.error('❌ Mic error:', error);
+        showNotification('Failed to access microphone', 'error');
     }
 }
 
@@ -3065,33 +3147,32 @@ function uploadAudioForTranscription() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'audio/*';
-    
-    input.onchange = async function(e) {
+
+    input.onchange = async function (e) {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         const formData = new FormData();
         formData.append('audio', file);
-        formData.append('language', 'hi'); // Default to Hindi, can be made configurable
-        
+        formData.append('language', 'hi');
+
         try {
             showLoadingMessage('Processing audio file for transcription...');
             const result = await api.transcribeAudio(formData);
-            
+
             if (result.success && result.transcription) {
-                // Create new transcription record
                 const transcriptionData = {
-                    caseId: null, // Can be linked later
+                    caseId: null,
                     content: result.transcription,
                     audioFile: result.audioFile,
                     language: result.language,
                     status: 'completed'
                 };
-                
+
                 const newTranscription = await api.post('/api/transcriptions', transcriptionData);
                 allTranscriptions.unshift(newTranscription);
                 renderTranscriptions();
-                
+
                 showNotification('Audio transcription completed successfully!', 'success');
             } else {
                 throw new Error('No transcription received');
@@ -3103,37 +3184,46 @@ function uploadAudioForTranscription() {
             hideLoadingMessage();
         }
     };
-    
+
     input.click();
 }
 
 // Save transcription
 async function saveTranscription() {
-    const caseId = document.getElementById('transcription-case-link').value || null;
-    const content = document.getElementById('transcription-text').value.trim();
+    const caseId = document.getElementById('transcription-case-link').value;
     const language = document.getElementById('transcription-language').value;
-    
-    if (!content) {
-        showNotification('Please enter transcription text', 'error');
+
+    // Get transcription from the display div
+    const displayDiv = document.getElementById('transcription-display');
+    if (!displayDiv || displayDiv.textContent.includes('will appear here')) {
+        showNotification('No transcription available. Please record audio first.', 'error');
         return;
     }
-    
+
+    const text = displayDiv.textContent.replace('✅ Transcription:', '').trim();
+
     try {
         showLoadingMessage('Saving transcription...');
-        
+
         const transcriptionData = {
-            caseId: caseId,
-            content: content,
+            caseId: caseId || null, // Allow null for unlinked transcriptions
+            content: text,
             language: language,
             status: 'completed'
         };
-        
+
         const newTranscription = await api.post('/api/transcriptions', transcriptionData);
         allTranscriptions.unshift(newTranscription);
         renderTranscriptions();
-        
+
         closeTranscriptionModal();
-        showNotification('Transcription saved successfully!', 'success');
+
+        if (!caseId) {
+            showNotification('✅ Transcription saved to "Edited Transcriptions" folder!', 'success');
+        } else {
+            showNotification('✅ Transcription saved and linked to FIR case!', 'success');
+        }
+
         hideLoadingMessage();
     } catch (error) {
         console.error('Error saving transcription:', error);
@@ -3145,7 +3235,7 @@ async function saveTranscription() {
 function renderTranscriptions() {
     const transcriptionList = document.getElementById('transcription-list');
     transcriptionList.innerHTML = '';
-    
+
     if (allTranscriptions.length === 0) {
         transcriptionList.innerHTML = `
             <div style="text-align: center; padding: 40px; color: #666;">
@@ -3156,16 +3246,16 @@ function renderTranscriptions() {
         `;
         return;
     }
-    
+
     allTranscriptions.forEach(transcription => {
         const transcriptionItem = document.createElement('div');
         transcriptionItem.className = 'transcription-item';
         transcriptionItem.style.cssText = 'background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);';
-        
-        const caseLink = transcription.caseId ? 
+
+        const caseLink = transcription.caseId ?
             `<a href="#" onclick="openCaseById('${transcription.caseId}')" style="color: #3498db; text-decoration: none;">${transcription.caseId}</a>` :
             'No case linked';
-        
+
         transcriptionItem.innerHTML = `
             <div class="transcription-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <div>
@@ -3193,7 +3283,7 @@ function renderTranscriptions() {
                 </button>
             </div>
         `;
-        
+
         transcriptionList.appendChild(transcriptionItem);
     });
 }
@@ -3211,7 +3301,7 @@ function playTranscriptionAudio(audioFile) {
         showNotification('No audio file available', 'error');
         return;
     }
-    
+
     // Find the file by filename and use the file ID endpoint
     const fileObj = allFiles.find(f => f.filename === audioFile || f.name === audioFile);
     if (fileObj) {
@@ -3233,19 +3323,19 @@ function playTranscriptionAudio(audioFile) {
 async function editTranscription(id) {
     const transcription = allTranscriptions.find(t => t.id === id);
     if (!transcription) return;
-    
+
     const newContent = prompt('Edit transcription content:', transcription.content);
     if (newContent === null || newContent === transcription.content) return;
-    
+
     try {
         showLoadingMessage('Updating transcription...');
         const updated = await api.put(`/api/transcriptions/${id}`, { content: newContent });
-        
+
         const index = allTranscriptions.findIndex(t => t.id === id);
         if (index !== -1) {
             allTranscriptions[index] = updated;
         }
-        
+
         renderTranscriptions();
         showNotification('Transcription updated successfully!', 'success');
         hideLoadingMessage();
@@ -3258,16 +3348,16 @@ async function editTranscription(id) {
 
 async function deleteTranscription(id) {
     if (!confirm('Are you sure you want to delete this transcription?')) return;
-    
+
     try {
         showLoadingMessage('Deleting transcription...');
         await api.delete(`/api/transcriptions/${id}`);
-        
+
         const index = allTranscriptions.findIndex(t => t.id === id);
         if (index !== -1) {
             allTranscriptions.splice(index, 1);
         }
-        
+
         renderTranscriptions();
         showNotification('Transcription deleted successfully!', 'success');
         hideLoadingMessage();
@@ -3297,7 +3387,7 @@ function initializeAudioEditor() {
 
 function setupModal() {
     // Setup modal closing functionality
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         // Close modal when clicking outside or on close button
         if (e.target.classList.contains('modal') || e.target.classList.contains('close-modal')) {
             const modals = document.querySelectorAll('.modal');
@@ -3312,9 +3402,9 @@ function setupModal() {
             });
         }
     });
-    
+
     // Close modals with Escape key
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             const modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
@@ -3327,7 +3417,7 @@ function setupModal() {
             });
         }
     });
-    
+
     console.log('Modal setup complete with closing functionality');
 }
 
@@ -3336,7 +3426,7 @@ function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
-    
+
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -3350,9 +3440,9 @@ function showNotification(message, type = 'info') {
         max-width: 300px;
         word-wrap: break-word;
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         if (document.body.contains(notification)) {
             document.body.removeChild(notification);
@@ -3364,7 +3454,7 @@ function showNotification(message, type = 'info') {
 // Missing Core Case Functions
 async function createCase(event) {
     event.preventDefault();
-    
+
     const formData = new FormData(event.target);
     const caseData = {
         complainant: formData.get('complainant'),
@@ -3378,13 +3468,13 @@ async function createCase(event) {
         description: formData.get('description'),
         status: 'pending',
         date: new Date().toISOString().split('T')[0],
-        time: new Date().toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})
+        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
     };
-    
+
     try {
         showLoadingMessage('Creating new FIR case...');
         const newCase = await api.post('/api/cases', caseData);
-        
+
         // Handle file uploads if any
         const fileInput = document.getElementById('case-files');
         if (fileInput && fileInput.files.length > 0) {
@@ -3393,16 +3483,16 @@ async function createCase(event) {
                 uploadFormData.append('files', file);
             });
             uploadFormData.append('caseId', newCase.id);
-            
+
             await api.uploadFiles(uploadFormData);
         }
-        
+
         allCases.unshift(newCase);
         renderCases(allCases);
         updateDashboardStats();
         updateRecentActivity();
         refreshAnalyticsIfActive();
-        
+
         showNotification(`New FIR case ${newCase.id} created successfully!`, 'success');
         closeCaseFormModal();
         hideLoadingMessage();
@@ -3420,7 +3510,7 @@ function openCaseModal(caseItem) {
         console.error('Case modal not found');
         return;
     }
-    
+
     const modalTitle = document.getElementById('modal-case-id');
     const caseDetails = document.getElementById('case-details');
 
@@ -3527,22 +3617,32 @@ async function loadCaseEvidenceFiles(caseId) {
     try {
         const evidenceContainer = document.getElementById('case-evidence-files');
         const caseFiles = allFiles.filter(f => f.caseId === caseId);
-        
+
         if (caseFiles.length === 0) {
             evidenceContainer.innerHTML = '<p style="color: #666; font-style: italic;">No evidence files attached</p>';
         } else {
-            evidenceContainer.innerHTML = caseFiles.map(file => `
+            evidenceContainer.innerHTML = caseFiles.map(file => {
+                // Check if file is audio
+                const isAudio = file.type === 'audio' || /\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(file.name);
+
+                return `
                 <div class="evidence-file-item" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: #f8f9fa; border-radius: 5px; margin-bottom: 5px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <i class="fas ${getFileTypeIcon(file.type)}" style="color: #3498db;"></i>
                         <span>${file.name}</span>
                         <small style="color: #666;">(${file.size})</small>
                     </div>
-                    <button class="btn btn-sm btn-secondary" onclick="viewFileById('${file.id}')">
-                        <i class="fas fa-eye"></i> View
-                    </button>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn-sm btn-secondary" onclick="viewFileById('${file.id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${isAudio ? `<button class="btn btn-sm btn-primary" onclick="viewAudioTranscription('${file.id}', '${file.name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-file-alt"></i> Transcription
+                        </button>` : ''}
+                    </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
     } catch (error) {
         console.error('Error loading case evidence files:', error);
@@ -3555,27 +3655,27 @@ function openAddFilesToCase(caseId) {
     input.type = 'file';
     input.multiple = true;
     input.accept = 'image/*,audio/*,video/*,.pdf,.doc,.docx';
-    
-    input.onchange = async function(e) {
+
+    input.onchange = async function (e) {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
-        
+
         const formData = new FormData();
         files.forEach(file => {
             formData.append('files', file);
         });
         formData.append('caseId', caseId);
-        
+
         try {
             showLoadingMessage(`Uploading ${files.length} evidence file(s)...`);
             const result = await api.uploadFiles(formData);
-            
+
             // Update allFiles array
             allFiles.push(...result.files);
-            
+
             // Reload evidence files display
             loadCaseEvidenceFiles(caseId);
-            
+
             showNotification(`Successfully uploaded ${files.length} evidence file(s)!`, 'success');
             hideLoadingMessage();
         } catch (error) {
@@ -3584,7 +3684,7 @@ function openAddFilesToCase(caseId) {
             hideLoadingMessage();
         }
     };
-    
+
     input.click();
 }
 
@@ -3597,18 +3697,141 @@ function viewFileById(fileId) {
     }
 }
 
+// View or create transcription for audio evidence
+async function viewAudioTranscription(fileId, fileName) {
+    try {
+        showLoadingMessage('Loading transcription...');
+
+        // Find the audio file
+        const audioFile = allFiles.find(f => f.id === fileId);
+        if (!audioFile) {
+            showNotification('Audio file not found', 'error');
+            hideLoadingMessage();
+            return;
+        }
+
+        // Check if transcription already exists for this audio file
+        let transcription = allTranscriptions.find(t =>
+            t.audioFile === fileName ||
+            t.audioFileId === fileId ||
+            t.audioFile === audioFile.name
+        );
+
+        if (transcription) {
+            // Transcription exists - show it
+            hideLoadingMessage();
+            showTranscriptionViewModal(transcription, audioFile);
+        } else {
+            // No transcription - create one using Bhashini ASR
+            showLoadingMessage('Creating transcription using Bhashini ASR...');
+
+            try {
+                // Fetch the audio file
+                const audioBlob = await fetch(`/file/${fileId}`).then(r => r.blob());
+
+                // Send to Bhashini for transcription
+                const formData = new FormData();
+                formData.append('audio', audioBlob, fileName);
+                formData.append('language', 'hi'); // Default to Hindi
+
+                const result = await api.transcribeAudio(formData);
+
+                if (result.success && result.transcription) {
+                    // Create transcription record
+                    const transcriptionData = {
+                        caseId: audioFile.caseId || null,
+                        content: result.transcription,
+                        audioFile: fileName,
+                        audioFileId: fileId,
+                        language: result.language || 'hi',
+                        status: 'completed'
+                    };
+
+                    const newTranscription = await api.post('/api/transcriptions', transcriptionData);
+                    allTranscriptions.unshift(newTranscription);
+
+                    hideLoadingMessage();
+                    showTranscriptionViewModal(newTranscription, audioFile);
+                    showNotification('Transcription created successfully!', 'success');
+                } else {
+                    throw new Error('Transcription failed');
+                }
+            } catch (error) {
+                console.error('Error creating transcription:', error);
+                showNotification('Failed to create transcription', 'error');
+                hideLoadingMessage();
+            }
+        }
+    } catch (error) {
+        console.error('Error viewing transcription:', error);
+        showNotification('Failed to load transcription', 'error');
+        hideLoadingMessage();
+    }
+}
+
+// Show transcription view modal
+function showTranscriptionViewModal(transcription, audioFile) {
+    const modalHTML = `
+        <div id="transcription-view-modal" class="modal" style="display: block;">
+            <div class="modal-content" style="max-width: 700px;">
+                <div class="modal-header">
+                    <h2><i class="fas fa-file-alt"></i> Audio Transcription</h2>
+                    <span class="close-modal" onclick="closeTranscriptionViewModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 15px;">
+                        <strong>Audio File:</strong> ${audioFile.name}<br>
+                        <strong>Language:</strong> ${transcription.language || 'Hindi'}<br>
+                        <strong>Status:</strong> <span style="color: #27ae60;">${transcription.status || 'Completed'}</span>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <audio controls style="width: 100%;">
+                            <source src="/file/${audioFile.id}" type="audio/mpeg">
+                            <source src="/file/${audioFile.id}" type="audio/wav">
+                            <source src="/file/${audioFile.id}" type="audio/webm">
+                        </audio>
+                    </div>
+                    
+                    <div style="background: #f0f8ff; border: 2px solid #3498db; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <h3 style="margin-top: 0; color: #2c3e50;">📝 Transcription:</h3>
+                        <div style="font-size: 16px; line-height: 1.8; color: #000;">
+                            ${transcription.content || 'No transcription available'}
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeTranscriptionViewModal()">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="editTranscription('${transcription.id}'); closeTranscriptionViewModal();">
+                            <i class="fas fa-edit"></i> Edit Transcription
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// Close transcription view modal
+function closeTranscriptionViewModal() {
+    const modal = document.getElementById('transcription-view-modal');
+    if (modal) modal.remove();
+}
+
 // Update case status
 async function updateCaseStatus(caseId, newStatus) {
     try {
         showLoadingMessage('Updating case status...');
         const updatedCase = await api.put(`/api/cases/${caseId}`, { status: newStatus });
-        
+
         // Update local data
         const caseIndex = allCases.findIndex(c => c.id === caseId);
         if (caseIndex !== -1) {
             allCases[caseIndex] = updatedCase;
         }
-        
+
         showNotification(`Case ${caseId} status updated to ${getStatusText(newStatus)}`, 'success');
         document.getElementById('case-modal').style.display = 'none';
         renderCases(allCases);
@@ -3635,16 +3858,16 @@ async function deleteCase(caseId) {
     if (!confirm(`Are you sure you want to delete case ${caseId}? This action cannot be undone.`)) {
         return;
     }
-    
+
     try {
         showLoadingMessage('Deleting case...');
         await api.delete(`/api/cases/${caseId}`);
-        
+
         const caseIndex = allCases.findIndex(c => c.id === caseId);
         if (caseIndex !== -1) {
             allCases.splice(caseIndex, 1);
         }
-        
+
         document.getElementById('case-modal').style.display = 'none';
         renderCases(allCases);
         updateDashboardStats();
@@ -3687,20 +3910,20 @@ function initializeTranscriptionEditor() {
 
 function initializeAudioEditor() {
     console.log('Initializing WaveSurfer audio editor...');
-    
+
     if (typeof WaveSurfer === 'undefined') {
         console.error('WaveSurfer is not loaded!');
         updateStatus('Error: WaveSurfer library not loaded');
         initializeBasicAudioEditor();
         return;
     }
-    
+
     try {
         // Clear any existing waveform
         if (editorWaveSurfer) {
             editorWaveSurfer.destroy();
         }
-        
+
         // Initialize WaveSurfer with regions plugin
         editorWaveSurfer = WaveSurfer.create({
             container: '#editor-waveform',
@@ -3724,12 +3947,12 @@ function initializeAudioEditor() {
                 })
             ]
         });
-        
+
         // Event handlers
         editorWaveSurfer.on('ready', () => {
             console.log('WaveSurfer ready');
             enableAudioControls(true);
-            
+
             // Always enable clear selection button when audio is loaded
             const clearBtn = document.getElementById('clear-selection-btn');
             if (clearBtn) {
@@ -3737,58 +3960,58 @@ function initializeAudioEditor() {
                 clearBtn.classList.remove('disabled');
                 console.log('Clear selection button enabled');
             }
-            
+
             updateStatus('Audio loaded successfully - Ready for editing - Click and drag on waveform to select regions');
             hideWaveformPlaceholder();
-            
+
             // Update duration display
             const duration = editorWaveSurfer.getDuration();
             document.getElementById('audio-duration').textContent = formatTime(duration);
-            
+
             isAudioLoaded = true;
             console.log('WaveSurfer fully loaded with duration:', duration);
         });
-        
+
         editorWaveSurfer.on('play', () => {
             isPlaying = true;
             updatePlayButton(true);
             console.log('Playback started');
         });
-        
+
         editorWaveSurfer.on('pause', () => {
             isPlaying = false;
             updatePlayButton(false);
             console.log('Playback paused');
         });
-        
+
         editorWaveSurfer.on('audioprocess', (currentTime) => {
             document.getElementById('current-time').textContent = formatTime(currentTime);
         });
-        
+
         editorWaveSurfer.on('seek', (progress) => {
             const currentTime = progress * editorWaveSurfer.getDuration();
             document.getElementById('current-time').textContent = formatTime(currentTime);
         });
-        
-// Region events
+
+        // Region events
         editorWaveSurfer.on('region-created', (region) => {
             console.log('Region created:', region);
             selectionRegion = region;
             updateSelectionDisplay(region.start, region.end);
             enableSelectionControls(true);
-            
+
             // Style the region
             region.color = 'rgba(52, 152, 219, 0.3)';
             region.resize = true;
             region.drag = true;
         });
-        
+
         editorWaveSurfer.on('region-update-end', (region) => {
             console.log('Region updated:', region);
             selectionRegion = region;
             updateSelectionDisplay(region.start, region.end);
         });
-        
+
         editorWaveSurfer.on('region-click', (region, event) => {
             console.log('Region clicked:', region);
             event.stopPropagation();
@@ -3796,7 +4019,7 @@ function initializeAudioEditor() {
             updateSelectionDisplay(region.start, region.end);
             enableSelectionControls(true);
         });
-        
+
         editorWaveSurfer.on('region-removed', (region) => {
             console.log('Region removed');
             if (selectionRegion === region) {
@@ -3805,10 +4028,10 @@ function initializeAudioEditor() {
                 enableSelectionControls(false);
             }
         });
-        
+
         console.log('WaveSurfer initialized successfully with regions plugin');
         updateStatus('Audio editor ready - Load an audio file to begin');
-        
+
     } catch (error) {
         console.error('Failed to initialize WaveSurfer:', error);
         updateStatus('Failed to initialize audio editor: ' + error.message);
@@ -3820,9 +4043,9 @@ function initializeBasicAudioEditor() {
     // Fallback audio implementation using HTML5 audio
     const waveformContainer = document.getElementById('editor-waveform');
     waveformContainer.innerHTML = '<audio id="audio-player" controls style="width: 100%; margin: 20px 0;"></audio>';
-    
+
     const audioPlayer = document.getElementById('audio-player');
-    audioPlayer.addEventListener('loadeddata', function() {
+    audioPlayer.addEventListener('loadeddata', function () {
         enableAudioControls(true);
         updateStatus('Audio loaded - Basic playback available');
         document.getElementById('waveform-placeholder').style.display = 'none';
@@ -3846,12 +4069,12 @@ function setupAudioControls() {
     // Volume control
     const volumeControl = document.getElementById('volume-control');
     const volumeDisplay = document.getElementById('volume-display');
-    
+
     if (volumeControl) {
-        volumeControl.addEventListener('input', function() {
+        volumeControl.addEventListener('input', function () {
             const volume = this.value / 100;
             volumeDisplay.textContent = this.value + '%';
-            
+
             if (editorWaveSurfer) {
                 editorWaveSurfer.setVolume(volume);
             } else {
@@ -3860,16 +4083,16 @@ function setupAudioControls() {
             }
         });
     }
-    
+
     // Speed control
     const speedControl = document.getElementById('speed-control');
     const speedDisplay = document.getElementById('speed-display');
-    
+
     if (speedControl) {
-        speedControl.addEventListener('input', function() {
+        speedControl.addEventListener('input', function () {
             const speed = parseFloat(this.value);
             speedDisplay.textContent = speed + 'x';
-            
+
             if (editorWaveSurfer && editorWaveSurfer.setPlaybackRate) {
                 editorWaveSurfer.setPlaybackRate(speed);
             } else {
@@ -3882,7 +4105,7 @@ function setupAudioControls() {
 
 // Audio Editor Control Functions
 function loadAudioFile(file) {
-if (editorWaveSurfer) {
+    if (editorWaveSurfer) {
         const fileURL = URL.createObjectURL(file);
         // reset history for a new load
         undoStack = [];
@@ -3905,13 +4128,13 @@ async function getCurrentAudioBlob() {
     console.log('getCurrentAudioBlob called');
     console.log('currentAudioFile:', currentAudioFile);
     console.log('editorWaveSurfer:', editorWaveSurfer);
-    
+
     // For now, always use the current audio file since buffer access is complex in v6
     if (currentAudioFile) {
         console.log('Returning currentAudioFile:', currentAudioFile.name, currentAudioFile.size);
         return currentAudioFile;
     }
-    
+
     // If no currentAudioFile but we have WaveSurfer, try to get the URL and fetch it
     if (editorWaveSurfer && editorWaveSurfer.backend && editorWaveSurfer.backend.source) {
         try {
@@ -3927,7 +4150,7 @@ async function getCurrentAudioBlob() {
             console.error('Error fetching from WaveSurfer URL:', error);
         }
     }
-    
+
     console.log('No audio data available');
     return null;
 }
@@ -4008,7 +4231,7 @@ function stopAudio() {
 
 function enableSelectionControls(enabled) {
     console.log('enableSelectionControls called with:', enabled);
-const buttons = ['crop-btn', 'clear-selection-btn','delete-btn','export-selection-btn'];
+    const buttons = ['crop-btn', 'clear-selection-btn', 'delete-btn', 'export-selection-btn'];
     buttons.forEach(id => {
         const button = document.getElementById(id);
         if (button) {
@@ -4086,73 +4309,271 @@ function loadAudioFileForEditing() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'audio/*';
-    
-    input.onchange = function(e) {
+
+    input.onchange = async function (e) {
         const file = e.target.files[0];
         if (file) {
             console.log('Loading audio file:', file.name);
             loadAudioFile(file);
-            
+
             // Clear any previous regions
             clearSelection();
             currentRegion = null;
             updateSelectionDisplay(0, 0);
             enableSelectionControls(false);
-            
-            // Clear transcription
-            document.getElementById('transcription-text').value = '';
+
+            // Set filename
             document.getElementById('save-filename').value = file.name.replace(/\.[^/.]+$/, '');
+
+            // AUTO-TRANSCRIBE THE LOADED AUDIO FILE
+            const languageSelect = document.getElementById('editor-language');
+            const language = languageSelect ? languageSelect.value : 'hi';
+
+            try {
+                showLoadingMessage('Transcribing audio file...');
+                const formData = new FormData();
+                formData.append('audio', file);
+                formData.append('language', language);
+
+                const result = await api.transcribeAudio(formData);
+
+                if (result.success && result.transcription) {
+                    const textarea = document.getElementById('transcription-text');
+                    if (textarea) {
+                        textarea.value = result.transcription;
+                        textarea.dispatchEvent(new Event('input'));
+                    }
+                    showNotification(`✅ Audio transcribed: "${result.transcription}"`, 'success');
+                } else {
+                    document.getElementById('transcription-text').value = '';
+                    showNotification('Audio loaded - Transcription unavailable', 'warning');
+                }
+            } catch (error) {
+                console.error('Transcription error:', error);
+                document.getElementById('transcription-text').value = '';
+                showNotification('Audio loaded - Transcription failed', 'warning');
+            } finally {
+                hideLoadingMessage();
+            }
         }
     };
-    
+
     input.click();
 }
 
+// Recording state variables
+let recordingStream = null;
+let recordingTimer = null;
+let recordingStartTime = 0;
+
 async function recordNewAudio() {
     const recordBtn = document.getElementById('record-btn');
-    
+
+    // If actively recording, show control panel
     if (mediaRecorder && mediaRecorder.state === 'recording') {
-        // Stop recording
-        mediaRecorder.stop();
-        recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Record New';
-        recordBtn.classList.remove('recording');
-        updateStatus('Recording stopped - Processing audio...');
+        showRecordingControls();
         return;
     }
-    
+
+    // If paused, resume recording
+    if (mediaRecorder && mediaRecorder.state === 'paused') {
+        mediaRecorder.resume();
+        if (recordBtn) {
+            recordBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+        }
+        return;
+    }
+
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                sampleRate: 16000,
+                channelCount: 1,
+                echoCancellation: true,
+                noiseSuppression: true
+            }
+        });
+
+        recordingStream = stream;
         mediaRecorder = new MediaRecorder(stream);
         recordedChunks = [];
-        
-        mediaRecorder.ondataavailable = function(event) {
+        recordingStartTime = Date.now();
+
+        mediaRecorder.ondataavailable = function (event) {
             if (event.data.size > 0) {
                 recordedChunks.push(event.data);
             }
         };
-        
-        mediaRecorder.onstop = function() {
-            const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
-            const audioFile = new File([audioBlob], 'recorded-audio.wav', { type: 'audio/wav' });
-            
+
+        mediaRecorder.onstop = async function () {
+            // Hide controls
+            hideRecordingControls();
+
+            const audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+            const audioFile = new File([audioBlob], 'recorded-audio.webm', { type: 'audio/webm' });
+
             loadAudioFile(audioFile);
             currentAudioFile = audioFile;
-            
-            // Clear filename and set default
-            document.getElementById('save-filename').value = 'recorded-audio-' + Date.now();
-            
+
+            // Set filename if element exists
+            const saveFilename = document.getElementById('save-filename');
+            if (saveFilename) {
+                saveFilename.value = 'recorded-audio-' + Date.now();
+            }
+
+            // Reset button
+            if (recordBtn) {
+                recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Record New';
+                recordBtn.classList.remove('recording');
+            }
+
+            // AUTO-TRANSCRIBE THE RECORDED AUDIO
+            const languageSelect = document.getElementById('editor-language');
+            const language = languageSelect ? languageSelect.value : 'hi';
+
+            try {
+                showLoadingMessage('🎤 Transcribing recorded audio using Bhashini ASR...');
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recorded.webm');
+                formData.append('language', language);
+
+                const result = await api.transcribeAudio(formData);
+
+                if (result.success && result.transcription) {
+                    const textarea = document.getElementById('transcription-text');
+                    if (textarea) {
+                        textarea.value = result.transcription;
+                        textarea.dispatchEvent(new Event('input'));
+                    }
+                    showNotification(`✅ Recording transcribed: "${result.transcription}"`, 'success');
+                } else {
+                    showNotification('⚠️ Recording saved but transcription unavailable. You can manually transcribe.', 'warning');
+                }
+            } catch (error) {
+                console.error('Transcription error:', error);
+                if (error.message && error.message.includes('502')) {
+                    showNotification('⚠️ Bhashini API temporarily unavailable. Recording saved - you can manually add transcription.', 'warning');
+                } else {
+                    showNotification('⚠️ Transcription failed. Recording saved - you can manually add transcription.', 'warning');
+                }
+            } finally {
+                hideLoadingMessage();
+            }
+
             // Stop all tracks
-            stream.getTracks().forEach(track => track.stop());
+            recordingStream.getTracks().forEach(track => track.stop());
+            recordingStream = null;
         };
-        
+
         mediaRecorder.start();
-        recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
-        recordBtn.classList.add('recording');
-        updateStatus('Recording audio... Click "Stop Recording" when finished');
-        
+        if (recordBtn) {
+            recordBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            recordBtn.classList.add('recording');
+        }
+
+        // Show recording controls
+        showRecordingControls();
+        showNotification('🔴 Recording started - Speak now!', 'info');
+
     } catch (error) {
         console.error('Error accessing microphone:', error);
-        showNotification('Unable to access microphone', 'error');
+        showNotification('❌ Unable to access microphone. Please allow microphone permissions in your browser.', 'error');
+    }
+}
+
+// Show recording control panel
+function showRecordingControls() {
+    // Remove existing controls if any
+    hideRecordingControls();
+
+    const controlsHTML = `
+        <div id="recording-controls" style="position: fixed; top: 20px; right: 20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 10000; min-width: 280px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #e74c3c;">
+                    <i class="fas fa-circle" style="color: #e74c3c; animation: blink 1.5s infinite;"></i>
+                    Recording
+                </h3>
+                <span id="recording-time" style="font-family: monospace; font-size: 18px; font-weight: bold;">00:00</span>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="pauseRecording()" class="btn btn-warning" style="flex: 1;">
+                    <i class="fas fa-pause"></i> Pause
+                </button>
+                <button onclick="stopRecording()" class="btn btn-danger" style="flex: 1;">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
+            
+            <p style="margin: 15px 0 0 0; font-size: 12px; color: #666; text-align: center;">
+                Click Stop to finish and transcribe
+            </p>
+        </div>
+        <style>
+            @keyframes blink {
+                0%, 50% { opacity: 1; }
+                51%, 100% { opacity: 0.3; }
+            }
+        </style>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', controlsHTML);
+
+    // Start timer
+    updateRecordingTime();
+}
+
+function hideRecordingControls() {
+    const controls = document.getElementById('recording-controls');
+    if (controls) controls.remove();
+    if (recordingTimer) {
+        clearInterval(recordingTimer);
+        recordingTimer = null;
+    }
+}
+
+function updateRecordingTime() {
+    if (recordingTimer) clearInterval(recordingTimer);
+
+    recordingTimer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        const timeDisplay = document.getElementById('recording-time');
+        if (timeDisplay) {
+            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
+}
+
+function pauseRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.pause();
+        const pauseBtn = document.querySelector('#recording-controls .btn-warning');
+        if (pauseBtn) {
+            pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+            pauseBtn.onclick = resumeRecording;
+        }
+        showNotification('⏸️ Recording paused', 'info');
+    }
+}
+
+function resumeRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'paused') {
+        mediaRecorder.resume();
+        const pauseBtn = document.querySelector('#recording-controls .btn-warning');
+        if (pauseBtn) {
+            pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            pauseBtn.onclick = pauseRecording;
+        }
+        showNotification('▶️ Recording resumed', 'info');
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
+        mediaRecorder.stop();
+        showNotification('⏹️ Recording stopped - Processing...', 'info');
     }
 }
 
@@ -4161,28 +4582,28 @@ async function recordNewAudio() {
 
 function setupAudioDropZone() {
     const waveformContainer = document.querySelector('.waveform-container');
-    
+
     if (waveformContainer) {
         waveformContainer.addEventListener('dragover', (e) => {
             e.preventDefault();
             waveformContainer.style.borderColor = '#3498db';
             waveformContainer.style.backgroundColor = '#f0f8ff';
         });
-        
+
         waveformContainer.addEventListener('dragleave', (e) => {
             e.preventDefault();
             waveformContainer.style.borderColor = '#ddd';
             waveformContainer.style.backgroundColor = '#f8f9fa';
         });
-        
+
         waveformContainer.addEventListener('drop', (e) => {
             e.preventDefault();
             waveformContainer.style.borderColor = '#ddd';
             waveformContainer.style.backgroundColor = '#f8f9fa';
-            
+
             const files = Array.from(e.dataTransfer.files);
             const audioFile = files.find(file => file.type.startsWith('audio/'));
-            
+
             if (audioFile) {
                 console.log('Audio file dropped:', audioFile.name);
                 loadAudioFile(audioFile);
@@ -4201,43 +4622,78 @@ async function saveToCase() {
     const filename = document.getElementById('save-filename').value.trim();
     const caseId = document.getElementById('save-case-link').value;
     console.log('Filename:', filename, 'Case ID:', caseId);
-    
+
     if (!filename) {
         showNotification('Please enter a filename', 'warning');
         return;
     }
-    
-    if (!caseId) {
-        showNotification('Please select a FIR case', 'warning');
-        return;
-    }
-    
+
     try {
         console.log('Getting audio blob...');
         const audioBlob = await getCurrentAudioBlob();
         console.log('Audio blob:', audioBlob);
-        
+
         if (!audioBlob) {
             showNotification('No audio data to save', 'error');
             return;
         }
-        
+
         const formData = new FormData();
         formData.append('files', audioBlob, filename + '.wav');
-        formData.append('caseId', caseId);
-        
-        console.log('FormData created, uploading to case...');
-        showLoadingMessage('Saving audio to FIR case...');
-        
+
+        // If no case selected, save to edited_transcriptions folder
+        if (!caseId) {
+            // Find edited_transcriptions folder
+            const editedFolder = allFiles.find(f => f.name === 'edited_transcriptions' && f.type === 'folder');
+            if (editedFolder) {
+                formData.append('folder', editedFolder.id);
+            }
+
+            console.log('No case selected - saving to edited_transcriptions folder');
+            showLoadingMessage('Saving audio to File Manager...');
+        } else {
+            formData.append('caseId', caseId);
+            console.log('FormData created, uploading to case...');
+            showLoadingMessage('Saving audio to FIR case...');
+        }
+
         const result = await api.uploadFiles(formData);
-        console.log('Upload to case result:', result);
-        
-        showNotification(`Audio saved to FIR case ${caseId} successfully!`, 'success');
+        console.log('Upload result:', result);
+
+        // Add uploaded files to local cache
+        if (result.files && result.files.length > 0) {
+            allFiles.push(...result.files);
+
+            // Also save transcription if text exists
+            const transcriptionText = document.getElementById('transcription-text');
+            if (transcriptionText && transcriptionText.value.trim()) {
+                const languageSelect = document.getElementById('editor-language');
+                const language = languageSelect ? languageSelect.value : 'hi';
+
+                const transcriptionData = {
+                    caseId: caseId || null,
+                    content: transcriptionText.value.trim(),
+                    audioFile: result.files[0].name,
+                    audioFileId: result.files[0].id,
+                    language: language,
+                    status: 'completed'
+                };
+
+                const newTranscription = await api.post('/api/transcriptions', transcriptionData);
+                allTranscriptions.unshift(newTranscription);
+            }
+        }
+
+        if (!caseId) {
+            showNotification(`✅ Audio saved to File Manager (edited_transcriptions folder)!`, 'success');
+        } else {
+            showNotification(`✅ Audio saved to FIR case ${caseId} successfully!`, 'success');
+        }
         hideLoadingMessage();
-        
+
     } catch (error) {
-        console.error('Error saving to case:', error);
-        showNotification('Failed to save audio to case: ' + error.message, 'error');
+        console.error('Error saving audio:', error);
+        showNotification('Failed to save audio: ' + error.message, 'error');
         hideLoadingMessage();
     }
 }
@@ -4279,7 +4735,7 @@ function exportEditedAudio() {
         showNotification('No audio file loaded to export', 'error');
         return;
     }
-    
+
     // For now, we'll just save the original file
     const link = document.createElement('a');
     link.href = URL.createObjectURL(currentAudioFile);
@@ -4287,7 +4743,7 @@ function exportEditedAudio() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     showNotification('Audio file exported successfully', 'success');
 }
 
@@ -4295,23 +4751,23 @@ function exportEditedAudio() {
 function setupAudioDropZone() {
     const waveformContainer = document.getElementById('editor-waveform');
     if (waveformContainer) {
-        waveformContainer.addEventListener('dragover', function(e) {
+        waveformContainer.addEventListener('dragover', function (e) {
             e.preventDefault();
             e.stopPropagation();
             this.classList.add('dragover');
         });
-        
-        waveformContainer.addEventListener('dragleave', function(e) {
+
+        waveformContainer.addEventListener('dragleave', function (e) {
             e.preventDefault();
             e.stopPropagation();
             this.classList.remove('dragover');
         });
-        
-        waveformContainer.addEventListener('drop', function(e) {
+
+        waveformContainer.addEventListener('drop', function (e) {
             e.preventDefault();
             e.stopPropagation();
             this.classList.remove('dragover');
-            
+
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 const file = files[0];
@@ -4330,21 +4786,19 @@ function loadAudioFileForEditing() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'audio/*';
-    
-    input.onchange = function(e) {
+
+    input.onchange = function (e) {
         const file = e.target.files[0];
         if (file) {
             loadAudioFile(file);
             updateStatus(`Loaded: ${file.name}`);
         }
     };
-    
+
     input.click();
 }
 
-function recordNewAudio() {
-    toggleEditorRecording();
-}
+// recordNewAudio function is defined earlier at line 4278
 
 
 function transcribeAudio() {
@@ -4356,7 +4810,7 @@ function transcribeAudio() {
 function clearSelection() {
     // Remove selected region if present
     if (selectionRegion) {
-        try { selectionRegion.remove(); } catch (e) {}
+        try { selectionRegion.remove(); } catch (e) { }
         selectionRegion = null;
     }
     // Also remove any other regions that might exist
@@ -4440,16 +4894,16 @@ async function saveToFileManager() {
         showNotification('Please enter a file name', 'error');
         return;
     }
-    
+
     try {
         showLoadingMessage('Preparing audio for save...');
-        
+
         const audioBlob = await getCurrentAudioBlob();
         if (!audioBlob) {
             showNotification('No audio to save', 'error');
             return;
         }
-        
+
         // Ensure edited_transcriptions folder exists and get its ID
         let editedFolder = allFiles.find(f => f.type === 'folder' && f.name === 'edited_transcriptions');
         if (!editedFolder) {
@@ -4459,14 +4913,14 @@ async function saveToFileManager() {
             } catch (e) { /* ignore */ }
         }
         const targetFolderId = editedFolder ? editedFolder.id : null;
-        
+
         const formData = new FormData();
         formData.append('files', audioBlob, `${fileName}.wav`);
         if (targetFolderId) formData.append('folder', targetFolderId);
-        
+
         showLoadingMessage('Saving to file manager...');
         const result = await api.uploadFiles(formData);
-        
+
         if (result.files && result.files.length > 0) {
             allFiles.push(...result.files);
             // Refresh view if we're currently in the target folder
@@ -4492,34 +4946,34 @@ async function saveToCase() {
         showNotification('Please select a FIR case', 'error');
         return;
     }
-    
+
     const fileName = document.getElementById('save-filename').value.trim();
     if (!fileName) {
         showNotification('Please enter a file name', 'error');
         return;
     }
-    
+
     try {
         showLoadingMessage('Preparing audio for save...');
-        
+
         const audioBlob = await getCurrentAudioBlob();
         if (!audioBlob) {
             showNotification('No audio to save', 'error');
             return;
         }
-        
+
         const formData = new FormData();
         formData.append('files', audioBlob, `${fileName}.wav`);
         formData.append('caseId', caseId);
-        
+
         showLoadingMessage('Saving to case...');
-        
+
         const result = await api.uploadFiles(formData);
-        
+
         if (result.files && result.files.length > 0) {
             // Update allFiles array
             allFiles.push(...result.files);
-            
+
             // Also save transcription if available
             const transcriptionText = document.getElementById('transcription-text').value.trim();
             if (transcriptionText) {
@@ -4530,10 +4984,10 @@ async function saveToCase() {
                     language: document.getElementById('transcription-language').value,
                     status: 'completed'
                 };
-                
+
                 await api.post('/api/transcriptions', transcriptionData);
             }
-            
+
             showNotification('Audio and transcription saved to case!', 'success');
             // Clear fields
             document.getElementById('save-filename').value = '';
@@ -4556,7 +5010,7 @@ function addTranscriptionEditorControls() {
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'editor-controls';
         controlsDiv.style.cssText = 'margin: 20px 0; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px;';
-        
+
         controlsDiv.innerHTML = `
             <button class="btn btn-primary" id="editor-record-btn" onclick="toggleEditorRecording()">
                 <i class="fas fa-microphone"></i> Record Audio
@@ -4584,7 +5038,7 @@ function addTranscriptionEditorControls() {
                 </select>
             </div>
         `;
-        
+
         header.parentNode.insertBefore(controlsDiv, header.nextSibling);
     }
 }
@@ -4593,21 +5047,22 @@ function toggleEditorRecording() {
     const recordBtn = document.getElementById('editor-record-btn');
     const status = document.getElementById('editor-recording-status');
     const textarea = document.getElementById('transcription-text');
-    const language = document.getElementById('editor-language').value;
-    
+    const languageSelect = document.getElementById('editor-language');
+    const language = languageSelect ? languageSelect.value : 'hi';
+
     if (!isRecording) {
         // Start recording
         recordBtn.classList.add('recording');
         recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
         status.style.display = 'inline';
-        
+
         startRecording(textarea, language);
     } else {
         // Stop recording
         recordBtn.classList.remove('recording');
         recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Record Audio';
         status.style.display = 'none';
-        
+
         stopRecording();
     }
 }
@@ -4616,32 +5071,32 @@ function uploadAudioToEditor() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'audio/*';
-    
-    input.onchange = async function(e) {
+
+    input.onchange = async function (e) {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         // First load the audio file into the waveform editor
         loadAudioFile(file);
-        
+
         // Then transcribe it if needed
         const formData = new FormData();
         formData.append('audio', file);
         formData.append('language', document.getElementById('editor-language').value);
-        
+
         try {
             showLoadingMessage('Loading audio and transcribing...');
             const result = await api.transcribeAudio(formData);
-            
+
             if (result.success && result.transcription) {
                 const textarea = document.getElementById('transcription-text');
                 const currentContent = textarea.value;
                 const newContent = currentContent ? currentContent + '\n\n' + result.transcription : result.transcription;
                 textarea.value = newContent;
-                
+
                 // Trigger input event to auto-expand
                 textarea.dispatchEvent(new Event('input'));
-                
+
                 showNotification('Audio loaded and transcription added to editor!', 'success');
             } else {
                 showNotification('Audio loaded - transcription failed but you can still edit the audio', 'warning');
@@ -4653,18 +5108,18 @@ function uploadAudioToEditor() {
             hideLoadingMessage();
         }
     };
-    
+
     input.click();
 }
 
 function saveEditedTranscription() {
     const content = document.getElementById('transcription-text').value.trim();
-    
+
     if (!content) {
         showNotification('Please enter some content to save', 'error');
         return;
     }
-    
+
     const modalHTML = `
         <div id="save-transcription-modal" class="modal" style="display: block;">
             <div class="modal-content" style="max-width: 500px;">
@@ -4696,7 +5151,7 @@ function saveEditedTranscription() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
@@ -4710,15 +5165,15 @@ async function performSaveTranscription() {
     const caseId = document.getElementById('save-transcription-case').value || null;
     const content = document.getElementById('transcription-text').value.trim();
     const language = document.getElementById('editor-language').value;
-    
+
     if (!name) {
         showNotification('Please enter a name for the transcription', 'error');
         return;
     }
-    
+
     try {
         showLoadingMessage('Saving transcription...');
-        
+
         const transcriptionData = {
             id: name,
             caseId: caseId,
@@ -4726,17 +5181,17 @@ async function performSaveTranscription() {
             language: language,
             status: 'completed'
         };
-        
+
         const newTranscription = await api.post('/api/transcriptions', transcriptionData);
         allTranscriptions.unshift(newTranscription);
-        
+
         closeSaveTranscriptionModal();
         showNotification('Transcription saved successfully!', 'success');
         hideLoadingMessage();
-        
+
         // Clear the editor
         document.getElementById('transcription-text').value = '';
-        
+
     } catch (error) {
         console.error('Error saving transcription:', error);
         showNotification('Failed to save transcription', 'error');
@@ -4749,7 +5204,7 @@ function saveEditedAudio() {
         showNotification('No audio recording available to save', 'error');
         return;
     }
-    
+
     const modalHTML = `
         <div id="save-audio-modal" class="modal" style="display: block;">
             <div class="modal-content" style="max-width: 500px;">
@@ -4781,7 +5236,7 @@ function saveEditedAudio() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
@@ -4793,20 +5248,20 @@ function closeSaveAudioModal() {
 async function performSaveAudio() {
     const fileName = document.getElementById('save-audio-name').value.trim();
     const caseId = document.getElementById('save-audio-case').value || null;
-    
+
     if (!fileName) {
         showNotification('Please enter a file name', 'error');
         return;
     }
-    
+
     if (!currentRecording) {
         showNotification('No audio recording available', 'error');
         return;
     }
-    
+
     try {
         showLoadingMessage('Saving audio file...');
-        
+
         // Ensure edited_transcriptions folder exists and get its ID
         let editedFolder = allFiles.find(f => f.type === 'folder' && f.name === 'edited_transcriptions');
         if (!editedFolder) {
@@ -4816,14 +5271,14 @@ async function performSaveAudio() {
             } catch (e) { /* ignore */ }
         }
         const targetFolderId = editedFolder ? editedFolder.id : null;
-        
+
         const formData = new FormData();
         formData.append('files', currentRecording, `${fileName}.webm`);
         if (targetFolderId) formData.append('folder', targetFolderId);
         if (caseId) formData.append('caseId', caseId);
-        
+
         const result = await api.uploadFiles(formData);
-        
+
         if (result.files && result.files.length > 0) {
             allFiles.push(...result.files);
             if (document.getElementById('file-manager-page') && document.getElementById('file-manager-page').classList.contains('active')) {
@@ -4834,7 +5289,7 @@ async function performSaveAudio() {
         } else {
             throw new Error('Failed to save audio file');
         }
-        
+
         hideLoadingMessage();
     } catch (error) {
         console.error('Error saving audio:', error);
