@@ -6,6 +6,104 @@
     <title>Soochna Sahayak - Login</title>
     <link rel="stylesheet" href="login-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin: 0 auto 20px;
+            display: block;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .auth-tab.active {
+            color: #1e40af;
+            border-bottom-color: #1e40af;
+        }
+        
+        .auth-tab:hover {
+            color: #1e40af;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .notification.success {
+            background: #27ae60;
+        }
+        
+        .notification.error {
+            background: #e74c3c;
+        }
+        
+        .notification.info {
+            background: #3498db;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="login-container">
@@ -16,42 +114,41 @@
         <div class="login-form-container">
             <div class="login-form">
                 <div class="logo-section">
-                    <img src="C:\Users\Rajani Kant Jha\Downloads\bhasini soochna sahayk 2.0.png" alt="Soochna Sahayak Logo" class="logo">
+                    <img src="logo.png" alt="Soochna Sahayak Logo" class="logo">
                     <h1>Soochna Sahayak</h1>
-                    <p>Police Management System</p>
+                    <p>Smart FIR & Transcription Management</p>
                 </div>
                 
-                <form id="loginForm" onsubmit="handleLogin(event)">
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchTab('login')">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="auth-tab" onclick="switchTab('signup')">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label for="username">Username / Employee ID</label>
+                        <label for="login-email">Email Address</label>
                         <div class="input-group">
-                            <i class="fas fa-user"></i>
-                            <input type="text" id="username" name="username" required placeholder="Enter your username">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="login-email" name="email" required 
+                                   placeholder="Enter your email">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="login-password">Password</label>
                         <div class="input-group">
                             <i class="fas fa-lock"></i>
-                            <input type="password" id="password" name="password" required placeholder="Enter your password">
-                            <span class="password-toggle" onclick="togglePassword()">
-                                <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                            <input type="password" id="login-password" name="password" required 
+                                   placeholder="Enter your password">
+                            <span class="password-toggle" onclick="togglePassword('login-password')">
+                                <i class="fas fa-eye"></i>
                             </span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="station">Police Station</label>
-                        <div class="input-group">
-                            <i class="fas fa-building"></i>
-                            <select id="station" name="station" required>
-                                <option value="">Select your station</option>
-                                <option value="cp">Connaught Place Police Station</option>
-                                <option value="kb">Karol Bagh Police Station</option>
-                                <option value="rh">Rohini Police Station</option>
-                                <option value="dl">Delhi Gate Police Station</option>
-                            </select>
                         </div>
                     </div>
                     
@@ -61,7 +158,6 @@
                             <span class="checkmark"></span>
                             Remember me
                         </label>
-                        <a href="#" class="forgot-password">Forgot Password?</a>
                     </div>
                     
                     <button type="submit" class="login-btn">
@@ -70,29 +166,223 @@
                     </button>
                 </form>
                 
-                <div class="demo-credentials">
-                    <h4>Demo Credentials:</h4>
-                    <div class="demo-user">
-                        <strong>Username:</strong> rajesh.kumar <br>
-                        <strong>Password:</strong> demo123
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form" onsubmit="handleSignup(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="signup-name">Full Name</label>
+                            <div class="input-group">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="signup-name" name="name" required 
+                                       placeholder="Enter full name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signup-email">Email Address</label>
+                            <div class="input-group">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="signup-email" name="email" required 
+                                       placeholder="Enter email">
+                            </div>
+                        </div>
                     </div>
-                    <div class="demo-user">
-                        <strong>Username:</strong> sunita.devi <br>
-                        <strong>Password:</strong> demo123
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="signup-designation">Designation</label>
+                            <div class="input-group">
+                                <i class="fas fa-id-badge"></i>
+                                <select id="signup-designation" name="designation" required>
+                                    <option value="">Select designation</option>
+                                    <option value="Inspector">Inspector</option>
+                                    <option value="Sub-Inspector">Sub-Inspector</option>
+                                    <option value="Head Constable">Head Constable</option>
+                                    <option value="Constable">Constable</option>
+                                    <option value="ASI">Assistant Sub-Inspector</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signup-badge">Badge Number (Optional)</label>
+                            <div class="input-group">
+                                <i class="fas fa-shield-alt"></i>
+                                <input type="text" id="signup-badge" name="badgeNumber" 
+                                       placeholder="Badge number">
+                            </div>
+                        </div>
                     </div>
-                    <div class="demo-user">
-                        <strong>Username:</strong> vikram.yadav <br>
-                        <strong>Password:</strong> demo123
+                    
+                    <div class="form-group">
+                        <label for="signup-station">Police Station</label>
+                        <div class="input-group">
+                            <i class="fas fa-building"></i>
+                            <select id="signup-station" name="station" required>
+                                <option value="">Select your station</option>
+                                <option value="cp">Connaught Place Police Station</option>
+                                <option value="kb">Karol Bagh Police Station</option>
+                                <option value="rh">Rohini Police Station</option>
+                                <option value="dl">Delhi Gate Police Station</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
+                    
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="signup-password" name="password" required 
+                                   placeholder="Create password" minlength="6">
+                            <span class="password-toggle" onclick="togglePassword('signup-password')">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                        <small style="color: #666; font-size: 12px;">Minimum 6 characters</small>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+                </form>
                 
                 <div class="login-footer">
-                    <p>&copy; 2024 Soochna Sahayak. Government of India.</p>
+                    <p>&copy; 2025 Soochna Sahayak. Government of India.</p>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                        Powered by Bhashini ASR Technology
+                    </p>
                 </div>
             </div>
         </div>
     </div>
     
-    <script src="login-script.js"></script>
+    <script>
+        const API_BASE = window.location.origin;
+        
+        function switchTab(tab) {
+            // Update tabs
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelector('.auth-tab:first-child').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelector('.auth-tab:last-child').classList.add('active');
+                document.getElementById('signupForm').classList.add('active');
+            }
+        }
+        
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = field.parentElement.querySelector('.password-toggle i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+        
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Store session
+                    localStorage.setItem('soochna_sahayak_session', JSON.stringify(data.user));
+                    showNotification('Login successful! Redirecting...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showNotification(data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Connection error. Please try again.', 'error');
+            }
+        }
+        
+        async function handleSignup(event) {
+            event.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('signup-name').value,
+                email: document.getElementById('signup-email').value,
+                password: document.getElementById('signup-password').value,
+                designation: document.getElementById('signup-designation').value,
+                station: document.getElementById('signup-station').value,
+                badgeNumber: document.getElementById('signup-badge').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Store session
+                    localStorage.setItem('soochna_sahayak_session', JSON.stringify(data.user));
+                    showNotification('Registration successful! Redirecting...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showNotification(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showNotification('Connection error. Please try again.', 'error');
+            }
+        }
+        
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/session`);
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.log('Session check failed:', error);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -72,12 +72,7 @@ Developed by BTech students, GGSIPU (VIPS-TC):
 - Aryaman Sharma
 - Rajani Kant Jha
 
-## Getting Started (Demo Info)
 
-- **Demo Web Dashboard Credentials:**
-  - Username: `rajesh.kumar`
-  - Password: `demo123`
-- **Demo Police Station:** Connaught Place Police Station
 
 ## How to Use
 

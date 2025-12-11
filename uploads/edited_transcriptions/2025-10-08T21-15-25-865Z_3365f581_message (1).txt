@@ -1,0 +1,207 @@
+import axios from 'axios';
+
+const BHASHINI_CONFIG = {
+  baseURL: "https://meity-auth.ulcacontrib.org",
+  computeURL: "https://dhruva-api.bhashini.gov.in/services/inference/pipeline",
+  userID: process.env.BHASHINI_USER_ID!,
+  apiKey: process.env.BHASHINI_API_KEY!,
+};
+
+interface PipelineTask {
+  taskType: string;
+  config: {
+    language: {
+      sourceLanguage: string;
+    };
+    serviceId?: string;
+    audioFormat?: string;
+    samplingRate?: number;
+  };
+}
+
+interface PipelineConfigResponse {
+  pipelineResponseConfig?: Array<{
+    config: Array<{
+      serviceId: string;
+      modelId: string;
+      language: {
+        sourceLanguage: string;
+      };
+    }>;
+  }>;
+  pipelineInferenceAPIEndPoint?: {
+    callbackUrl: string;
+    inferenceApiKey: {
+      name: string;
+      value: string;
+    };
+  };
+}
+
+interface ASRComputeResponse {
+  pipelineResponse: Array<{
+    output: Array<{
+      source: string;
+    }>;
+  }>;
+}
+
+export class BhashiniService {
+  private pipelineConfigs: Map<string, any> = new Map();
+
+  async getPipelineConfig(language: string): Promise<any> {
+    console.log(`Getting pipeline config for language: ${language}`);
+    
+    // Check cache first
+    if (this.pipelineConfigs.has(language)) {
+      console.log(`Using cached config for ${language}`);
+      return this.pipelineConfigs.get(language);
+    }
+    
+    try {
+      const payload = {
+        pipelineTasks: [
+          {
+            taskType: "asr",
+            config: {
+              language: {
+                sourceLanguage: language
+              }
+            }
+          }
+        ],
+        pipelineRequestConfig: {
+          pipelineId: "64392f96daac500b55c543cd"
+        }
+      };
+
+      const response = await axios.post<any>(
+        `${BHASHINI_CONFIG.baseURL}/ulca/apis/v0/model/getModelsPipeline`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'userID': BHASHINI_CONFIG.userID,
+            'ulcaApiKey': BHASHINI_CONFIG.apiKey,
+          },
+          timeout: 10000, // 10 second timeout
+        }
+      );
+
+      console.log('Pipeline config response:', JSON.stringify(response.data, null, 2));
+
+      // Parse the successful response
+      if (response.data.pipelineResponseConfig && 
+          response.data.pipelineResponseConfig[0] && 
+          response.data.pipelineResponseConfig[0].config &&
+          response.data.pipelineResponseConfig[0].config[0] &&
+          response.data.pipelineInferenceAPIEndPoint) {
+        
+        const config = {
+          serviceId: response.data.pipelineResponseConfig[0].config[0].serviceId,
+          authToken: response.data.pipelineInferenceAPIEndPoint.inferenceApiKey.value,
+          callbackUrl: response.data.pipelineInferenceAPIEndPoint.callbackUrl,
+          modelId: response.data.pipelineResponseConfig[0].config[0].modelId,
+          domain: response.data.pipelineResponseConfig[0].config[0].domain
+        };
+        
+        this.pipelineConfigs.set(language, config);
+        console.log(`Config cached for ${language}:`, config);
+        return config;
+      } else {
+        throw new Error(`Invalid pipeline configuration response format. Response: ${JSON.stringify(response.data)}`);
+      }
+    } catch (error) {
+      console.error('Pipeline config error:', error);
+      if (axios.isAxiosError(error)) {
+        const errorData = error.response?.data;
+        console.error('Error response data:', errorData);
+        const errorMessage = errorData?.message || errorData?.code || error.message;
+        throw new Error(`Pipeline configuration failed: ${errorMessage}`);
+      }
+      throw error;
+    }
+  }
+
+  async transcribeAudio(language: string, audioBase64: string): Promise<string> {
+    console.log(`Transcribing audio for language: ${language}`);
+    
+    // Get pipeline config
+    const config = await this.getPipelineConfig(language);
+
+    try {
+      const payload = {
+        pipelineTasks: [
+          {
+            taskType: "asr",
+            config: {
+              language: {
+                sourceLanguage: language,
+                targetLanguage: ""
+              },
+              serviceId: config.serviceId,
+              audioFormat: "wav",
+              samplingRate: 16000
+            }
+          }
+        ],
+        inputData: {
+          input: [
+            {
+              source: ""
+            }
+          ],
+          audio: [
+            {
+              audioContent: audioBase64
+            }
+          ]
+        }
+      };
+
+      console.log('ASR compute payload:', JSON.stringify({
+        ...payload,
+        inputData: {
+          ...payload.inputData,
+          audio: [{ audioContent: `[BASE64_DATA_${audioBase64.length}_CHARS]` }]
+        }
+      }, null, 2));
+
+      const response = await axios.post<ASRComputeResponse>(
+        BHASHINI_CONFIG.computeURL,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': config.authToken,
+          },
+        }
+      );
+
+      console.log('ASR compute response:', JSON.stringify(response.data, null, 2));
+
+      if (response.data.pipelineResponse && 
+          response.data.pipelineResponse[0] && 
+          response.data.pipelineResponse[0].output &&
+          response.data.pipelineResponse[0].output[0]) {
+        
+        const transcription = response.data.pipelineResponse[0].output[0].source;
+        console.log(`Transcription result: ${transcription}`);
+        return transcription || 'No transcription available';
+      } else {
+        throw new Error('Invalid ASR response format');
+      }
+    } catch (error) {
+      console.error('ASR transcription error:', error);
+      if (axios.isAxiosError(error)) {
+        const errorData = error.response?.data;
+        console.error('Error response data:', errorData);
+        const errorMessage = errorData?.message || errorData?.code || error.message;
+        throw new Error(`ASR transcription failed: ${errorMessage}`);
+      }
+      throw error;
+    }
+  }
+}
+
+export const bhashiniService = new BhashiniService();
