@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Builder - Speak 4 CV</title>
+    <meta name="description" content="Build your CV with AI-powered voice technology">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Main CV Builder Page -->
+    <div class="page active">
+        <div class="background-gradient"></div>
+
+        <div class="builder-container">
+            <header class="builder-header">
+                <h2 class="builder-title">CV Builder</h2>
+                <button class="logout-button">Logout</button>
+            </header>
+
+            <div class="builder-content">
+                <!-- Left Side: Transcription -->
+                <div class="builder-section transcription-section">
+                    <div class="section-header">
+                        <h3>Transcription</h3>
+                        <span class="badge">Live</span>
+                    </div>
+
+                    <!-- Language Selector -->
+                    <div class="builder-language-selector">
+                        <label for="builder-language-select" class="builder-language-label">Language:</label>
+                        <select id="builder-language-select" class="builder-language-select">
+                            <option value="auto" selected>🔍 Auto-Detect Language</option>
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी (Hindi)</option>
+                            <option value="bn">বাংলা (Bengali)</option>
+                            <option value="ta">தமிழ் (Tamil)</option>
+                            <option value="te">తెలుగు (Telugu)</option>
+                            <option value="mr">मराठी (Marathi)</option>
+                            <option value="gu">ગુજરાતી (Gujarati)</option>
+                            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                            <option value="ml">മലയാളം (Malayalam)</option>
+                            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                            <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                            <option value="as">অসমীয়া (Assamese)</option>
+                            <option value="ur">اردو (Urdu)</option>
+                            <option value="sa">संस्कृत (Sanskrit)</option>
+                            <option value="ne">नेपाली (Nepali)</option>
+                            <option value="sd">سنڌي (Sindhi)</option>
+                            <option value="ks">कॉशुर (Kashmiri)</option>
+                            <option value="mai">मैथिली (Maithili)</option>
+                            <option value="doi">डोगरी (Dogri)</option>
+                            <option value="sat">ᱥᱟᱱᱛᱟᱲᱤ (Santali)</option>
+                            <option value="mni">মৈতৈলোন্ (Manipuri)</option>
+                            <option value="kok">कोंकणी (Konkani)</option>
+                        </select>
+                    </div>
+
+                    <!-- Transcription Controls -->
+                    <div class="transcription-controls">
+                        <button id="record-more-btn" class="control-btn record-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 15C13.66 15 15 13.66 15 12V6C15 4.34 13.66 3 12 3C10.34 3 9 4.34 9 6V12C9 13.66 10.34 15 12 15Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M17 12C17 14.76 14.76 17 12 17C9.24 17 7 14.76 7 12H5C5 15.53 7.61 18.43 11 18.92V21H13V18.92C16.39 18.43 19 15.53 19 12H17Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="btn-text">Add More Details</span>
+                        </button>
+                        <button id="clear-all-btn" class="control-btn clear-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <span class="btn-text">Clear All</span>
+                        </button>
+                    </div>
+
+                    <!-- Recording Status -->
+                    <div id="builder-recording-status" class="builder-recording-status hidden">
+                        <span class="recording-dot"></span>
+                        <span id="builder-status-text">Recording...</span>
+                    </div>
+
+                    <!-- Editable Transcription Box -->
+                    <div class="transcription-box">
+                        <textarea id="transcription-text" class="transcription-textarea"
+                            placeholder="Your voice transcription will appear here... You can also edit this text manually to fix any mistakes."></textarea>
+                    </div>
+
+                    <!-- Edit Instructions -->
+                    <div class="edit-instructions">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                            <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        <span>Click in the text above to manually edit and correct any mistakes</span>
+                    </div>
+                </div>
+
+                <!-- Right Side: NER Extraction -->
+                <div class="builder-section ner-section">
+                    <div class="section-header">
+                        <h3>Named Entity Recognition</h3>
+                        <span class="badge badge-secondary">Extracted</span>
+                    </div>
+                    <div class="ner-box">
+                        <div class="ner-placeholder">
+                            <p class="placeholder-text">NER extracted entities will appear here...</p>
+                            <div class="ner-preview">
+                                <div class="ner-category">
+                                    <span class="category-label">Name:</span>
+                                    <span class="category-value">-</span>
+                                </div>
+                                <div class="ner-category">
+                                    <span class="category-label">Skills:</span>
+                                    <span class="category-value">-</span>
+                                </div>
+                                <div class="ner-category">
+                                    <span class="category-label">Experience:</span>
+                                    <span class="category-value">-</span>
+                                </div>
+                                <div class="ner-category">
+                                    <span class="category-label">Education:</span>
+                                    <span class="category-value">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn enhance-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Enhance with AI
+                        </button>
+                        <button class="action-btn generate-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            Generate CV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Override Button -->
+        <button id="admin-override" class="admin-override">Admin Override →</button>
+    </div>
+
+    <script src="bhashini-config.js"></script>
+    <script src="bhashini-asr.js"></script>
+    <script src="builder.js"></script>
+</body>
+
+</html>

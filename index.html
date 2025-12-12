@@ -351,16 +351,26 @@
                         <div class="transcription-controls"
                             style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
                             <select id="transcription-language">
+                                <option value="auto" selected>🔍 Auto-Detect Language</option>
                                 <option value="hi">Hindi</option>
                                 <option value="en">English</option>
                                 <option value="bn">Bengali</option>
                                 <option value="te">Telugu</option>
                                 <option value="ta">Tamil</option>
+                                <option value="mr">Marathi</option>
+                                <option value="gu">Gujarati</option>
                             </select>
                             <button class="btn btn-info btn-sm" onclick="transcribeCurrentAudio()" disabled
                                 id="transcribe-current-btn">
                                 <i class="fas fa-language"></i> Transcribe Audio
                             </button>
+                        </div>
+                        <div id="language-detection-display"
+                            style="margin-bottom: 15px; padding: 10px; background: #e8f4f8; border-left: 4px solid #17a2b8; border-radius: 4px; display: none;">
+                            <strong><i class="fas fa-globe"></i> Language Detected:</strong>
+                            <span id="detected-language-text" style="color: #17a2b8; font-weight: bold;">-</span>
+                            <span id="detected-language-confidence"
+                                style="color: #666; font-size: 0.9em; margin-left: 10px;"></span>
                         </div>
                         <textarea id="transcription-text" rows="6"
                             placeholder="Transcription will appear here... You can also edit it manually."
@@ -409,10 +419,7 @@
             </div>
             <div class="modal-body">
                 <div class="account-profile">
-                    <div class="profile-image">
-                        <img id="profile-image" src="https://via.placeholder.com/150/3498db/white?text=RK"
-                            alt="Profile">
-                    </div>
+                    <!-- Profile image removed - not needed -->
                     <div class="profile-info">
                         <h3 id="profile-name">Rajesh Kumar</h3>
                         <p id="profile-designation">Inspector</p>
@@ -478,7 +485,24 @@
         </div>
     </div>
 
-    <script src="script.js?v=1764626800"></script>
+    <!-- Bhashini ALD Integration -->
+    <!-- Use 'defer' to ensure scripts execute in order after DOM is ready -->
+    <script defer src="bhashini-config.js"></script>
+    <script defer src="bhashini-asr.js"></script>
+
+    <script defer src="script.js"></script>
+
+    <!-- Script Load Diagnostics -->
+    <script>
+        window.addEventListener('load', function () {
+            console.log('✅ Page fully loaded');
+            console.log('✅ bhashiniASR available:', typeof bhashiniASR !== 'undefined');
+            console.log('✅ BHASHINI_CONFIG available:', typeof BHASHINI_CONFIG !== 'undefined');
+            if (typeof bhashiniASR === 'undefined') {
+                console.error('❌ bhashini-asr.js failed to load! Please hard refresh (Ctrl+Shift+R)');
+            }
+        });
+    </script>
 </body>
 
 </html>

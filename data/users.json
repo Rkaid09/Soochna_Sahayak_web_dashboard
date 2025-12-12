@@ -49,5 +49,15 @@
     "station": "cp",
     "badgeNumber": "N/A",
     "createdAt": "2025-11-29T10:06:29.583Z"
+  },
+  {
+    "id": "fe9cb48f-a5b1-4159-9da8-3ab2337064e8",
+    "name": "Aryaman",
+    "email": "a@gmail.com",
+    "password": "$2a$10$h4M.z2OOOcF4MAij9.GRKOMLXrh7aaQxZq9/epbyl2tZUjsBx5QFS",
+    "designation": "Inspector",
+    "station": "cp",
+    "badgeNumber": "132",
+    "createdAt": "2025-12-12T19:31:31.288Z"
   }
 ]

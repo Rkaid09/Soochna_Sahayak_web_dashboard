@@ -26,6 +26,18 @@ app.use(session({
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 }));
+
+// Cache control - prevent caching of JavaScript files
+app.use((req, res, next) => {
+    // Disable caching for JS files to prevent old code from loading
+    if (req.url.endsWith('.js')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
+    next();
+});
+
 app.use(express.static(__dirname, {
     index: 'index.html',
     extensions: ['html', 'htm']

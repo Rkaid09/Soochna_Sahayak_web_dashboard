@@ -385,6 +385,13 @@ let audioRecorder = null;
 let isRecording = false;
 let currentRecording = null;
 
+// Bhashini ALD - Store detected language
+let detectedLanguageInfo = {
+    language: null,
+    languageName: null,
+    confidence: null
+};
+
 // API Helper Functions
 const api = {
     async get(endpoint) {
@@ -3032,6 +3039,7 @@ function showTranscriptionModal() {
                     <div class="form-group">
                         <label for="transcription-language">Language</label>
                         <select id="transcription-language">
+                            <option value="auto" selected>🔍 Auto-Detect Language</option>
                             <option value="hi">Hindi</option>
                             <option value="en">English</option>
                             <option value="bn">Bengali</option>
@@ -3081,6 +3089,152 @@ function closeTranscriptionModal() {
     }
 }
 
+// Transcribe audio blob - with AUTO-DETECT support
+async function transcribeAudioBlob(audioBlob, displayDiv, language) {
+    try {
+        let languageToUse = language;
+
+        // If "Auto-Detect Language" is selected, call ALD
+        if (language === 'auto') {
+            console.log('🔍 AUTO-DETECT selected: Starting Bhashini ALD...');
+            displayDiv.innerHTML = '<em style="color: #17a2b8;">🔍 Detecting language...</em>';
+
+            if (typeof bhashiniASR === 'undefined') {
+                console.warn('⚠️ Bhashini ASR not loaded. Falling back to Hindi.');
+                languageToUse = 'hi';
+            } else {
+                try {
+                    const aldResult = await bhashiniASR.detectLanguage(audioBlob, (progressMsg) => {
+                        console.log('ALD Progress:', progressMsg);
+                        displayDiv.innerHTML = `<em style="color: #17a2b8;">${progressMsg}</em>`;
+                    });
+
+                    if (aldResult.success) {
+                        languageToUse = aldResult.language;
+
+                        // Store detected language globally
+                        detectedLanguageInfo.language = aldResult.language;
+                        detectedLanguageInfo.languageName = aldResult.languageName;
+                        detectedLanguageInfo.confidence = aldResult.confidence;
+
+                        console.log('✅ Language detected:', detectedLanguageInfo);
+
+                        // Display detected language in UI
+                        const languageDetectionDisplay = document.getElementById('language-detection-display');
+                        const languageText = document.getElementById('detected-language-text');
+                        const confidenceText = document.getElementById('detected-language-confidence');
+
+                        if (languageDetectionDisplay && languageText) {
+                            languageDetectionDisplay.style.display = 'block';
+                            languageText.textContent = aldResult.languageName;
+                            if (confidenceText && aldResult.confidence) {
+                                confidenceText.textContent = `(Confidence: ${(aldResult.confidence * 100).toFixed(1)}%)`;
+                            }
+                        }
+
+                        displayDiv.innerHTML = `<em style="color: #27ae60;">✅ Language Detected: ${aldResult.languageName}</em>`;
+                        showNotification(`✅ Detected: ${aldResult.languageName}`, 'success');
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    } else {
+                        console.warn('⚠️ ALD failed. Using Hindi fallback.');
+                        languageToUse = 'hi';
+                        displayDiv.innerHTML = '<em style="color: #f39c12;">⚠️ Detection failed. Using Hindi...</em>';
+                    }
+                } catch (aldError) {
+                    console.error('❌ ALD Error:', aldError);
+                    languageToUse = 'hi';
+                    displayDiv.innerHTML = '<em style="color: #f39c12;">⚠️ Detection error. Using Hindi...</em>';
+                }
+            }
+        } else {
+            // Specific language selected - use it directly
+            console.log(`📌 Using selected language: ${language}`);
+        }
+
+        // Transcribe with detected or selected language
+        console.log(`🎤 Transcribing in: ${languageToUse}`);
+        displayDiv.innerHTML = '<em style="color: #17a2b8;">🎤 Transcribing...</em>';
+
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recorded.webm');
+        formData.append('language', languageToUse);
+
+        const result = await api.transcribeAudio(formData);
+
+        if (result.success && result.transcription) {
+            displayDiv.innerHTML = `✅ Transcription: ${result.transcription}`;
+            showNotification('Transcription completed!', 'success');
+        } else {
+            throw new Error('No transcription received');
+        }
+    } catch (error) {
+        console.error('Transcription error:', error);
+        displayDiv.innerHTML = '<em style="color: #e74c3c;">❌ Transcription failed.</em>';
+        showNotification('Transcription failed', 'error');
+    }
+}
+
+// Detect language for modal - called ONLY when "Auto-Detect" button is clicked
+async function detectModalLanguage() {
+    if (!currentModalAudioBlob) {
+        showNotification('No audio recorded yet. Please record audio first.', 'warning');
+        return;
+    }
+
+    const displayDiv = document.getElementById('transcription-display');
+
+    try {
+        console.log('🔍 USER REQUESTED ALD: Starting Bhashini language detection...');
+        displayDiv.innerHTML = '<em style="color: #17a2b8;">🔍 Detecting language...</em>';
+
+        if (typeof bhashiniASR === 'undefined') {
+            throw new Error('Bhashini ASR module not loaded');
+        }
+
+        const aldResult = await bhashiniASR.detectLanguage(currentModalAudioBlob, (progressMsg) => {
+            console.log('ALD Progress:', progressMsg);
+            displayDiv.innerHTML = `<em style="color: #17a2b8;">${progressMsg}</em>`;
+        });
+
+        if (aldResult.success) {
+            // Store detected language globally
+            detectedLanguageInfo.language = aldResult.language;
+            detectedLanguageInfo.languageName = aldResult.languageName;
+            detectedLanguageInfo.confidence = aldResult.confidence;
+
+            console.log('✅ Language detected:', detectedLanguageInfo);
+
+            // Update dropdown to detected language
+            document.getElementById('transcription-language').value = aldResult.language;
+
+            // Display detected language
+            const languageDetectionDisplay = document.getElementById('language-detection-display');
+            const languageText = document.getElementById('detected-language-text');
+            const confidenceText = document.getElementById('detected-language-confidence');
+
+            if (languageDetectionDisplay && languageText) {
+                languageDetectionDisplay.style.display = 'block';
+                languageText.textContent = aldResult.languageName;
+                if (confidenceText && aldResult.confidence) {
+                    confidenceText.textContent = `(Confidence: ${(aldResult.confidence * 100).toFixed(1)}%)`;
+                }
+            }
+
+            displayDiv.innerHTML = `<em style="color: #27ae60;">✅ Language Detected: ${aldResult.languageName} - Dropdown updated!</em>`;
+            showNotification(`✅ Detected: ${aldResult.languageName} - Dropdown set automatically`, 'success');
+        } else {
+            throw new Error(aldResult.error || 'Detection failed');
+        }
+    } catch (error) {
+        console.error('❌ ALD Error:', error);
+        displayDiv.innerHTML = '<em style="color: #e74c3c;">❌ Language detection failed.</em>';
+        showNotification('Language detection failed', 'error');
+    }
+}
+
+// Track audio blob for modal detection
+let currentModalAudioBlob = null;
+
 // Modal recording variables (separate from editor)
 let modalMediaRecorder = null;
 let modalRecordedChunks = [];
@@ -3090,7 +3244,6 @@ async function toggleMainRecording() {
     const recordBtn = document.getElementById('main-record-btn');
     const indicator = document.getElementById('main-recording-indicator');
     const displayDiv = document.getElementById('transcription-display');
-    const language = document.getElementById('transcription-language').value;
 
     console.log('🔘 TOGGLE', { modalIsRecording, state: modalMediaRecorder?.state });
 
@@ -3122,8 +3275,17 @@ async function toggleMainRecording() {
 
         modalMediaRecorder.onstop = async () => {
             console.log('⏹️ Stopped, transcribing...');
+
+            // READ LANGUAGE VALUE HERE - when recording stops, not when it starts!
+            const language = document.getElementById('transcription-language').value;
+            console.log(`📋 Selected language from dropdown: ${language}`);
+
             const audioBlob = new Blob(modalRecordedChunks, { type: 'audio/webm' });
             console.log('✅ Blob:', audioBlob.size, 'bytes');
+
+            // Store blob for potential language detection
+            currentModalAudioBlob = audioBlob;
+
             await transcribeAudioBlob(audioBlob, displayDiv, language);
             stream.getTracks().forEach(track => track.stop());
             modalMediaRecorder = null;
@@ -4427,7 +4589,67 @@ async function recordNewAudio() {
                 recordBtn.classList.remove('recording');
             }
 
-            // AUTO-TRANSCRIBE THE RECORDED AUDIO
+            // ====== BHASHINI ALD INTEGRATION ======
+            // Step 1: Detect language using Bhashini ALD
+            try {
+                showLoadingMessage('🔍 Detecting language from audio...');
+
+                // Check if bhashiniASR is available
+                if (typeof bhashiniASR === 'undefined') {
+                    console.warn('⚠️ Bhashini ASR module not loaded. Skipping ALD.');
+                    throw new Error('Bhashini ASR not available');
+                }
+
+                console.log('🎤 Starting Bhashini ALD detection...');
+
+                // Call ALD detection
+                const aldResult = await bhashiniASR.detectLanguage(audioBlob, (progressMsg) => {
+                    console.log('ALD Progress:', progressMsg);
+                    showLoadingMessage(progressMsg);
+                });
+
+                if (aldResult.success) {
+                    // Store detected language globally
+                    detectedLanguageInfo.language = aldResult.language;
+                    detectedLanguageInfo.languageName = aldResult.languageName;
+                    detectedLanguageInfo.confidence = aldResult.confidence;
+
+                    console.log('✅ Language detected:', detectedLanguageInfo);
+
+                    // Display detected language in UI
+                    const displayDiv = document.getElementById('language-detection-display');
+                    const languageText = document.getElementById('detected-language-text');
+                    const confidenceText = document.getElementById('detected-language-confidence');
+
+                    if (displayDiv && languageText) {
+                        displayDiv.style.display = 'block';
+                        languageText.textContent = aldResult.languageName;
+                        if (confidenceText && aldResult.confidence) {
+                            confidenceText.textContent = `(Confidence: ${(aldResult.confidence * 100).toFixed(1)}%)`;
+                        }
+                    }
+
+                    showNotification(`✅ Language Detected: ${aldResult.languageName}`, 'success');
+                } else {
+                    console.warn('⚠️ Language detection failed:', aldResult.error);
+                    // Reset detected language
+                    detectedLanguageInfo = { language: null, languageName: null, confidence: null };
+
+                    // Hide display
+                    const displayDiv = document.getElementById('language-detection-display');
+                    if (displayDiv) displayDiv.style.display = 'none';
+                }
+            } catch (aldError) {
+                console.error('❌ ALD Error:', aldError);
+                // Reset detected language on error
+                detectedLanguageInfo = { language: null, languageName: null, confidence: null };
+
+                // Hide display
+                const displayDiv = document.getElementById('language-detection-display');
+                if (displayDiv) displayDiv.style.display = 'none';
+            }
+
+            // Step 2: AUTO-TRANSCRIBE THE RECORDED AUDIO
             const languageSelect = document.getElementById('editor-language');
             const language = languageSelect ? languageSelect.value : 'hi';
 
@@ -4700,16 +4922,78 @@ async function saveToCase() {
 
 async function transcribeCurrentAudio() {
     try {
-        const language = document.getElementById('transcription-language').value;
+        let language = document.getElementById('transcription-language').value;
         const audioBlob = await getCurrentAudioBlob();
         if (!audioBlob) {
             showNotification('Please load or record audio first', 'warning');
             return;
         }
+
+        let languageToUse = language;
+
+        // If "Auto-Detect Language" is selected, call ALD
+        if (language === 'auto') {
+            console.log('🔍 AUTO-DETECT selected: Starting Bhashini ALD...');
+            showLoadingMessage('🔍 Detecting language...');
+
+            if (typeof bhashiniASR === 'undefined') {
+                console.warn('⚠️ Bhashini ASR not loaded. Falling back to Hindi.');
+                languageToUse = 'hi';
+            } else {
+                try {
+                    const aldResult = await bhashiniASR.detectLanguage(audioBlob, (progressMsg) => {
+                        console.log('ALD Progress:', progressMsg);
+                        showLoadingMessage(progressMsg);
+                    });
+
+                    if (aldResult.success) {
+                        languageToUse = aldResult.language;
+
+                        // Store detected language
+                        detectedLanguageInfo.language = aldResult.language;
+                        detectedLanguageInfo.languageName = aldResult.languageName;
+                        detectedLanguageInfo.confidence = aldResult.confidence;
+
+                        console.log('✅ Language detected:', detectedLanguageInfo);
+
+                        // Display in UI
+                        const languageDetectionDisplay = document.getElementById('language-detection-display');
+                        const languageText = document.getElementById('detected-language-text');
+                        const confidenceText = document.getElementById('detected-language-confidence');
+
+                        if (languageDetectionDisplay && languageText) {
+                            languageDetectionDisplay.style.display = 'block';
+                            languageText.textContent = aldResult.languageName;
+                            if (confidenceText && aldResult.confidence) {
+                                confidenceText.textContent = `(Confidence: ${(aldResult.confidence * 100).toFixed(1)}%)`;
+                            }
+                        }
+
+                        showNotification(`✅ Detected: ${aldResult.languageName}`, 'success');
+                    } else {
+                        console.warn('⚠️ ALD failed. Using Hindi fallback.');
+                        languageToUse = 'hi';
+                        showNotification('Detection failed. Using Hindi.', 'warning');
+                    }
+                } catch (aldError) {
+                    console.error('❌ ALD Error:', aldError);
+                    languageToUse = 'hi';
+                    showNotification('Detection error. Using Hindi.', 'warning');
+                }
+            }
+        } else {
+            // Specific language selected
+            console.log(`📌 Using selected language: ${language}`);
+        }
+
+        // Transcribe
+        console.log(`🎤 Transcribing in: ${languageToUse}`);
+        showLoadingMessage(`🎤 Transcribing in ${languageToUse}...`);
+
         const formData = new FormData();
         formData.append('audio', audioBlob, 'audio.wav');
-        formData.append('language', language);
-        showLoadingMessage('Transcribing audio with Bhashini ASR...');
+        formData.append('language', languageToUse);
+
         const result = await api.transcribeAudio(formData);
         if (result && result.success && result.transcription) {
             document.getElementById('transcription-text').value = result.transcription;
@@ -4720,6 +5004,63 @@ async function transcribeCurrentAudio() {
     } catch (error) {
         console.error('Transcription error:', error);
         showNotification('Transcription failed', 'error');
+    } finally {
+        hideLoadingMessage();
+    }
+}
+
+// Detect language from loaded audio - called ONLY when "Detect Language" button is clicked
+async function detectLanguageFromAudio() {
+    try {
+        const audioBlob = await getCurrentAudioBlob();
+        if (!audioBlob) {
+            showNotification('Please load or record audio first', 'warning');
+            return;
+        }
+
+        console.log('🔍 USER REQUESTED ALD: Starting Bhashini language detection...');
+        showLoadingMessage('🔍 Detecting language from audio...');
+
+        if (typeof bhashiniASR === 'undefined') {
+            throw new Error('Bhashini ASR module not loaded');
+        }
+
+        const aldResult = await bhashiniASR.detectLanguage(audioBlob, (progressMsg) => {
+            console.log('ALD Progress:', progressMsg);
+            showLoadingMessage(progressMsg);
+        });
+
+        if (aldResult.success) {
+            // Store detected language globally
+            detectedLanguageInfo.language = aldResult.language;
+            detectedLanguageInfo.languageName = aldResult.languageName;
+            detectedLanguageInfo.confidence = aldResult.confidence;
+
+            console.log('✅ Language detected:', detectedLanguageInfo);
+
+            // Update dropdown to detected language
+            document.getElementById('transcription-language').value = aldResult.language;
+
+            // Display detected language in UI
+            const languageDetectionDisplay = document.getElementById('language-detection-display');
+            const languageText = document.getElementById('detected-language-text');
+            const confidenceText = document.getElementById('detected-language-confidence');
+
+            if (languageDetectionDisplay && languageText) {
+                languageDetectionDisplay.style.display = 'block';
+                languageText.textContent = aldResult.languageName;
+                if (confidenceText && aldResult.confidence) {
+                    confidenceText.textContent = `(Confidence: ${(aldResult.confidence * 100).toFixed(1)}%)`;
+                }
+            }
+
+            showNotification(`✅ Detected: ${aldResult.languageName} - Dropdown updated automatically!`, 'success');
+        } else {
+            throw new Error(aldResult.error || 'Detection failed');
+        }
+    } catch (error) {
+        console.error('❌ ALD Error:', error);
+        showNotification('Language detection failed', 'error');
     } finally {
         hideLoadingMessage();
     }
