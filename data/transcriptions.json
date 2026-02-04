@@ -56,5 +56,23 @@
     "status": "completed",
     "createdAt": "2025-12-02T04:51:13.067Z",
     "updatedAt": "2025-12-02T04:51:13.067Z"
+  },
+  {
+    "id": "TRANS-007",
+    "caseId": "FIR-2025-000001",
+    "content": "मेरा नाम रजनीकंत झा है और मैं यहां चोरी की शिकायत दर्ज कराने आया हूं",
+    "language": "auto",
+    "status": "completed",
+    "createdAt": "2026-01-17T09:53:45.018Z",
+    "updatedAt": "2026-01-17T09:53:45.018Z"
+  },
+  {
+    "id": "TRANS-008",
+    "caseId": "FIR-2025-000001",
+    "content": "मेरा नाम अवनी सैगल है और मैं चोरी की शिकायत में डिटेल्स एड करवाने आई हूँ",
+    "language": "auto",
+    "status": "completed",
+    "createdAt": "2026-01-17T09:54:18.576Z",
+    "updatedAt": "2026-01-17T09:54:18.576Z"
   }
 ]

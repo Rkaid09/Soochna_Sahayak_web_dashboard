@@ -65,7 +65,7 @@ function saveEditedAudio() {
             const file = new File([blob], `${baseName}.wav`, { type: 'audio/wav' });
             const formData = new FormData();
             formData.append('files', file);
-            formData.append('folder', 'edited_transcriptions');
+            formData.append('folder', 'root');
             showLoadingMessage('Saving edited audio...');
             const result = await api.uploadFiles(formData);
             if (result && result.files && result.files.length) {
@@ -511,73 +511,73 @@ function openAccountModal() {
                 <div class="modal-body" style="padding: 30px;">
                     <!-- Profile Section -->
                     <div class="account-section">
-                        <div style="display: flex; align-items: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
-                            <div style="font-size: 64px; margin-right: 20px;">
+                        <div class="profile-header">
+                            <div class="profile-avatar-large">
                                 <i class="fas fa-user-circle"></i>
                             </div>
-                            <div>
-                                <h2 style="margin: 0; color: white;">${currentUser.name}</h2>
-                                <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 16px;">${currentUser.designation}</p>
-                                <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 14px;"><i class="fas fa-badge" style="margin-right: 5px;"></i>Badge: ${currentUser.badgeNumber}</p>
+                            <div class="profile-details">
+                                <h2>${currentUser.name}</h2>
+                                <p class="designation">${currentUser.designation}</p>
+                                <p class="badge-info"><i class="fas fa-badge"></i> Badge: ${currentUser.badgeNumber}</p>
                             </div>
                         </div>
                         
                         <!-- Account Information -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                <div style="color: #666; font-size: 13px; margin-bottom: 5px;"><i class="fas fa-envelope" style="margin-right: 8px;"></i>Email</div>
-                                <div style="font-weight: 500;">${currentUser.email}</div>
+                        <div class="account-info-grid">
+                            <div class="account-info-item">
+                                <div class="info-label"><i class="fas fa-envelope"></i> Email</div>
+                                <div class="info-value">${currentUser.email}</div>
                             </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                <div style="color: #666; font-size: 13px; margin-bottom: 5px;"><i class="fas fa-building" style="margin-right: 8px;"></i>Police Station</div>
-                                <div style="font-weight: 500;">${getStationName(currentUser.station) || currentUser.station}</div>
+                            <div class="account-info-item">
+                                <div class="info-label"><i class="fas fa-building"></i> Police Station</div>
+                                <div class="info-value">${getStationName(currentUser.station) || currentUser.station}</div>
                             </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                <div style="color: #666; font-size: 13px; margin-bottom: 5px;"><i class="fas fa-id-badge" style="margin-right: 8px;"></i>User ID</div>
-                                <div style="font-weight: 500;">${currentUser.id}</div>
+                            <div class="account-info-item">
+                                <div class="info-label"><i class="fas fa-id-badge"></i> User ID</div>
+                                <div class="info-value">${currentUser.id}</div>
                             </div>
-                            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                <div style="color: #666; font-size: 13px; margin-bottom: 5px;"><i class="fas fa-calendar" style="margin-right: 8px;"></i>Account Status</div>
-                                <div style="font-weight: 500; color: #27ae60;"><i class="fas fa-check-circle"></i> Active</div>
+                            <div class="account-info-item">
+                                <div class="info-label"><i class="fas fa-calendar"></i> Account Status</div>
+                                <div class="info-value status-active"><i class="fas fa-check-circle"></i> Active</div>
                             </div>
                         </div>
                         
                         <!-- Statistics -->
                         <div style="margin-bottom: 30px;">
-                            <h4 style="margin-bottom: 15px; color: #2c3e50;"><i class="fas fa-chart-line" style="margin-right: 8px;"></i>Your Statistics</h4>
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                                <div style="text-align: center; padding: 15px; background: #e3f2fd; border-radius: 8px;">
-                                    <div style="font-size: 28px; font-weight: bold; color: #2196f3;">${userCases.length}</div>
-                                    <div style="font-size: 13px; color: #666; margin-top: 5px;">Total Cases</div>
+                            <h4 class="section-title"><i class="fas fa-chart-line"></i> Your Statistics</h4>
+                            <div class="stats-grid">
+                                <div class="stat-box stat-blue">
+                                    <div class="stat-number">${userCases.length}</div>
+                                    <div class="stat-label">Total Cases</div>
                                 </div>
-                                <div style="text-align: center; padding: 15px; background: #fff3e0; border-radius: 8px;">
-                                    <div style="font-size: 28px; font-weight: bold; color: #ff9800;">${userActiveCases}</div>
-                                    <div style="font-size: 13px; color: #666; margin-top: 5px;">Active Cases</div>
+                                <div class="stat-box stat-orange">
+                                    <div class="stat-number">${userActiveCases}</div>
+                                    <div class="stat-label">Active Cases</div>
                                 </div>
-                                <div style="text-align: center; padding: 15px; background: #e8f5e9; border-radius: 8px;">
-                                    <div style="font-size: 28px; font-weight: bold; color: #4caf50;">${userClosedCases}</div>
-                                    <div style="font-size: 13px; color: #666; margin-top: 5px;">Closed Cases</div>
+                                <div class="stat-box stat-green">
+                                    <div class="stat-number">${userClosedCases}</div>
+                                    <div class="stat-label">Closed Cases</div>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Action Buttons -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <button class="btn btn-primary" onclick="openEditProfileModal()" style="padding: 12px;">
+                        <div class="account-actions-grid">
+                            <button class="btn btn-primary" onclick="openEditProfileModal()">
                                 <i class="fas fa-user-edit"></i> Edit Profile
                             </button>
-                            <button class="btn btn-warning" onclick="openChangePasswordModal()" style="padding: 12px;">
+                            <button class="btn btn-warning" onclick="openChangePasswordModal()">
                                 <i class="fas fa-key"></i> Change Password
                             </button>
                         </div>
                         
                         <!-- Security & Preferences -->
-                        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
-                            <h4 style="margin-bottom: 15px; color: #2c3e50;"><i class="fas fa-shield-alt" style="margin-right: 8px;"></i>Security & Preferences</h4>
-                            <div style="display: flex; flex-direction: column; gap: 12px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                        <div class="security-section">
+                            <h4 class="section-title"><i class="fas fa-shield-alt"></i> Security & Preferences</h4>
+                            <div class="security-list">
+                                <div class="security-item">
                                     <div>
-                                        <div style="font-weight: 500;">Session Timeout</div>
+                                        <div class="pref-label">Session Timeout</div>
                                         <div style="font-size: 13px; color: #666;">Auto logout after 30 minutes of inactivity</div>
                                     </div>
                                     <div style="color: #27ae60;"><i class="fas fa-check-circle"></i></div>
@@ -945,11 +945,7 @@ async function loadAllData() {
             station.activeCases = allCases.filter(c => c.station === station.id).length;
         });
 
-        // Ensure edited_transcriptions folder exists
-        const editedFolder = allFiles.find(f => f.name === 'edited_transcriptions' && f.type === 'folder');
-        if (!editedFolder) {
-            await createSystemFolder('edited_transcriptions');
-        }
+        // Edited transcriptions folder logic removed per user request
 
         hideLoadingMessage();
         console.log('✅ Data loaded successfully');
@@ -1058,6 +1054,8 @@ function initializeNavigation() {
                     break;
                 case 'file-manager':
                     initializeFileManager();
+                    updateFileStats();
+                    updateRecentCases();
                     break;
                 case 'transcription-editor':
                     initializeTranscriptionEditor();
@@ -1084,17 +1082,165 @@ function updateDashboardStats() {
         const closedCases = allCases.filter(c => c.status === 'closed').length;
         const inProgressCases = allCases.filter(c => c.status === 'progress').length;
 
-        // Update dashboard cards
-        const statCards = document.querySelectorAll('.stat-card h3');
-        if (statCards.length >= 4) {
-            statCards[0].textContent = totalFirs;
-            statCards[1].textContent = pendingCases;
-            statCards[2].textContent = closedCases;
-            statCards[3].textContent = inProgressCases;
-        }
+        // Update dashboard stats with specific IDs
+        const totalEl = document.getElementById('dashboard-total-cases');
+        const pendingEl = document.getElementById('dashboard-pending-cases');
+        const closedEl = document.getElementById('dashboard-closed-cases');
+        const progressEl = document.getElementById('dashboard-progress-cases');
+
+        if (totalEl) totalEl.textContent = totalFirs;
+        if (pendingEl) pendingEl.textContent = pendingCases;
+        if (closedEl) closedEl.textContent = closedCases;
+        if (progressEl) progressEl.textContent = inProgressCases;
+
     } catch (error) {
         console.error('Error updating dashboard stats:', error);
     }
+}
+
+// function updateRecentActivity removed (duplicate)
+
+/* Redefining updateRecentActivity properly to avoid breaking logic if I replace the block */
+// function updateRecentActivity removed (duplicate)
+
+function timeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return days === 1 ? '1 day ago' : `${days} days ago`;
+    if (hours > 0) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+    if (minutes > 0) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+    return 'Just now';
+}
+
+function initializeMonthlyChart() {
+    const ctx = document.getElementById('monthlyChart');
+    if (!ctx) return;
+
+    // Destroy previous instance if exists
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) existingChart.destroy();
+
+    // Calculate monthly stats from allCases
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentYear = new Date().getFullYear();
+    const monthlyData = new Array(12).fill(0);
+
+    allCases.forEach(c => {
+        const d = new Date(c.date || c.createdAt);
+        if (d.getFullYear() === currentYear) {
+            monthlyData[d.getMonth()]++;
+        }
+    });
+
+    // Check if we have any data to show
+    const totalCases = monthlyData.reduce((a, b) => a + b, 0);
+
+    new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [{
+                label: `FIRs Registered in ${currentYear}`,
+                data: monthlyData,
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.15)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Monthly FIR Registration Trend (${currentYear})`,
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Number of Cases' },
+                    ticks: { stepSize: 1 }
+                },
+                x: {
+                    title: { display: true, text: 'Month' }
+                }
+            }
+        }
+    });
+}
+
+function initializeStatusChart() {
+    const ctx = document.getElementById('statusChart');
+    if (!ctx) return;
+
+    // Destroy previous instance
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) existingChart.destroy();
+
+    const pendingCount = allCases.filter(c => c.status === 'pending').length;
+    const progressCount = allCases.filter(c => c.status === 'progress').length;
+    const closedCount = allCases.filter(c => c.status === 'closed').length;
+
+    // If no data, show 0s or placeholder
+    const total = pendingCount + progressCount + closedCount;
+
+    new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending Cases', 'In Progress', 'Closed/Solved'],
+            datasets: [{
+                data: [pendingCount, progressCount, closedCount],
+                backgroundColor: [
+                    '#f39c12',
+                    '#3498db',
+                    '#27ae60'
+                ],
+                borderWidth: 3,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Current Case Status Distribution',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 20, usePointStyle: true }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const count = context.parsed;
+                            const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                            return context.label + ': ' + count + ' cases (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
 
 function refreshAnalyticsIfActive() {
@@ -1154,29 +1300,22 @@ function updateRecentActivity() {
         const caseDate = new Date(caseItem.createdAt || caseItem.date);
         const timeAgo = getTimeAgo(caseDate);
 
-        // Get status icon
-        const statusIcon = caseItem.status === 'closed' ? 'check-circle' :
-            caseItem.status === 'progress' ? 'spinner' :
-                'plus-circle';
-
-        const statusColor = caseItem.status === 'closed' ? '#27ae60' :
-            caseItem.status === 'progress' ? '#3498db' :
-                '#f39c12';
+        // Status badge class mapping
+        const statusClass = caseItem.status === 'closed' ? 'bg-success' :
+            caseItem.status === 'progress' ? 'bg-info' :
+                'bg-warning';
 
         activityItem.innerHTML = `
-            <div class="activity-icon" style="color: ${statusColor};">
-                <i class="fas fa-${statusIcon}"></i>
+            <div class="activity-icon">
+                <i class="fas fa-file-alt"></i>
             </div>
             <div class="activity-content">
                 <p>
-                    <strong>${caseItem.id}</strong> - 
-                    ${caseItem.type || 'FIR'} by ${caseItem.complainant || 'Unknown'}
-                    <span class="case-status ${caseItem.status}" style="margin-left: 8px; padding: 2px 8px; font-size: 11px; border-radius: 3px;">
-                        ${getStatusText(caseItem.status)}
-                    </span>
+                    <strong>${caseItem.id}</strong>
+                    <span class="status-badge ${caseItem.status}">${getStatusText(caseItem.status)}</span>
                 </p>
-                <span style="font-size: 13px; color: #666;">
-                    ${caseItem.stationName || getStationName(caseItem.station)} • ${timeAgo}
+                <span class="activity-meta">
+                    ${caseItem.type || 'FIR'} • ${timeAgo}
                 </span>
             </div>
         `;
@@ -1411,16 +1550,30 @@ function renderCases(cases) {
         const date = caseItem.date || new Date(caseItem.createdAt).toISOString().split('T')[0];
         const time = caseItem.time || new Date(caseItem.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
+        // BNS Section color coding - Uniform professional colors
+        const bnsSectionColor = '#2b6cb0'; // All BNS sections use blue
+        const categoryBadge = caseItem.caseCategory === 'Cognizable'
+            ? '<span style="background: #6b46c1; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 5px;">Cognizable</span>'
+            : '<span style="background: #718096; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 5px;">Non-Cognizable</span>';
+        const bailBadge = caseItem.bailableStatus === 'Non-Bailable'
+            ? '<span style="background: #c53030; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">Non-Bailable</span>'
+            : '<span style="background: #2f855a; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px;">Bailable</span>';
+
         caseCard.innerHTML = `
-            <div class="case-header">
+            <div class="case-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 5px;">
                 <div class="case-id">${caseItem.id}</div>
                 <div class="case-status ${caseItem.status}">${getStatusText(caseItem.status)}</div>
             </div>
+            <div class="bns-badges" style="margin: 8px 0; display: flex; flex-wrap: wrap; gap: 5px; align-items: center;">
+                ${caseItem.bnsSection ? `<span style="background: ${bnsSectionColor}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500;">${caseItem.bnsSection}</span>` : ''}
+                ${caseItem.caseCategory ? categoryBadge : ''}
+                ${caseItem.bailableStatus ? bailBadge : ''}
+            </div>
             <div class="case-info">
                 <p><strong>Complainant:</strong> ${caseItem.complainant || 'N/A'}</p>
-                <p><strong>Type:</strong> ${caseItem.type || 'N/A'}</p>
+                <p><strong>Crime:</strong> ${caseItem.bnsSectionName || caseItem.type || 'N/A'}</p>
                 <p><strong>Location:</strong> ${caseItem.location || 'N/A'}</p>
-                <p><strong>Officer:</strong> ${caseItem.officer || 'N/A'}</p>
+                <p><strong>Officer:</strong> ${caseItem.officer || 'N/A'}${caseItem.officerBadge ? ` (${caseItem.officerBadge})` : ''}</p>
             </div>
             <div class="case-meta">
                 <span>${caseItem.stationName || getStationName(caseItem.station)}</span>
@@ -1431,6 +1584,8 @@ function renderCases(cases) {
         casesGrid.appendChild(caseCard);
     });
 }
+
+// Removed getBnsSectionColor since all BNS sections now use uniform blue
 
 function getStationName(stationId) {
     const station = policeStations.find(s => s.id === stationId);
@@ -1455,28 +1610,105 @@ function setupCaseFilters() {
     const searchInput = document.getElementById('case-search');
     const statusFilter = document.getElementById('status-filter');
     const stationFilter = document.getElementById('station-filter');
+    const bnsCategoryFilter = document.getElementById('bns-category-filter');
+    const cognizableFilter = document.getElementById('cognizable-filter');
+    const bailFilter = document.getElementById('bail-filter');
+    const dateFromFilter = document.getElementById('date-from');
+    const dateToFilter = document.getElementById('date-to');
+    const sortSelect = document.getElementById('sort-cases');
 
-    function filterCases() {
+    function filterAndSortCases() {
         const searchTerm = searchInput.value.toLowerCase();
         const statusValue = statusFilter.value;
         const stationValue = stationFilter.value;
+        const bnsCategoryValue = bnsCategoryFilter ? bnsCategoryFilter.value : '';
+        const cognizableValue = cognizableFilter ? cognizableFilter.value : '';
+        const bailValue = bailFilter ? bailFilter.value : '';
+        const dateFrom = dateFromFilter ? dateFromFilter.value : '';
+        const dateTo = dateToFilter ? dateToFilter.value : '';
+        const sortValue = sortSelect ? sortSelect.value : 'date-desc';
 
-        const filteredCases = allCases.filter(caseItem => {
+        let filteredCases = allCases.filter(caseItem => {
+            // Search filter - includes BNS section
             const matchesSearch = (caseItem.id && caseItem.id.toLowerCase().includes(searchTerm)) ||
                 (caseItem.complainant && caseItem.complainant.toLowerCase().includes(searchTerm)) ||
-                (caseItem.type && caseItem.type.toLowerCase().includes(searchTerm));
+                (caseItem.type && caseItem.type.toLowerCase().includes(searchTerm)) ||
+                (caseItem.bnsSection && caseItem.bnsSection.toLowerCase().includes(searchTerm)) ||
+                (caseItem.bnsSectionName && caseItem.bnsSectionName.toLowerCase().includes(searchTerm)) ||
+                (caseItem.officer && caseItem.officer.toLowerCase().includes(searchTerm));
+
+            // Status filter
             const matchesStatus = !statusValue || caseItem.status === statusValue;
+
+            // Station filter
             const matchesStation = !stationValue || caseItem.station === stationValue;
 
-            return matchesSearch && matchesStatus && matchesStation;
+            // BNS Category filter
+            const matchesBnsCategory = !bnsCategoryValue || getBnsCategory(caseItem.bnsSection) === bnsCategoryValue;
+
+            // Cognizable/Non-Cognizable filter
+            const matchesCognizable = !cognizableValue || caseItem.caseCategory === cognizableValue;
+
+            // Bailable status filter
+            const matchesBail = !bailValue || caseItem.bailableStatus === bailValue;
+
+            // Date range filter
+            const caseDate = caseItem.date || (caseItem.createdAt ? caseItem.createdAt.split('T')[0] : '');
+            const matchesDateFrom = !dateFrom || caseDate >= dateFrom;
+            const matchesDateTo = !dateTo || caseDate <= dateTo;
+
+            return matchesSearch && matchesStatus && matchesStation && matchesBnsCategory && matchesCognizable && matchesBail && matchesDateFrom && matchesDateTo;
         });
+
+        // Sort cases
+        filteredCases = sortCases(filteredCases, sortValue);
 
         renderCases(filteredCases);
     }
 
-    searchInput.addEventListener('input', filterCases);
-    statusFilter.addEventListener('change', filterCases);
-    stationFilter.addEventListener('change', filterCases);
+    // Add event listeners
+    searchInput.addEventListener('input', filterAndSortCases);
+    statusFilter.addEventListener('change', filterAndSortCases);
+    stationFilter.addEventListener('change', filterAndSortCases);
+    if (bnsCategoryFilter) bnsCategoryFilter.addEventListener('change', filterAndSortCases);
+    if (cognizableFilter) cognizableFilter.addEventListener('change', filterAndSortCases);
+    if (bailFilter) bailFilter.addEventListener('change', filterAndSortCases);
+    if (dateFromFilter) dateFromFilter.addEventListener('change', filterAndSortCases);
+    if (dateToFilter) dateToFilter.addEventListener('change', filterAndSortCases);
+    if (sortSelect) sortSelect.addEventListener('change', filterAndSortCases);
+}
+
+// Sort cases by various criteria
+function sortCases(cases, sortBy) {
+    return [...cases].sort((a, b) => {
+        switch (sortBy) {
+            case 'date-desc':
+                return new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt);
+            case 'date-asc':
+                return new Date(a.date || a.createdAt) - new Date(b.date || b.createdAt);
+            case 'id-asc':
+                return (a.id || '').localeCompare(b.id || '');
+            case 'id-desc':
+                return (b.id || '').localeCompare(a.id || '');
+            case 'status':
+                const statusOrder = { 'pending': 1, 'progress': 2, 'closed': 3 };
+                return (statusOrder[a.status] || 4) - (statusOrder[b.status] || 4);
+            default:
+                return 0;
+        }
+    });
+}
+
+// Helper function to determine BNS category from section number
+function getBnsCategory(bnsSection) {
+    if (!bnsSection) return 'other';
+    const sectionNum = parseInt(bnsSection.replace('BNS ', ''));
+    if (sectionNum >= 101 && sectionNum <= 136) return 'human-body';
+    if (sectionNum >= 63 && sectionNum <= 78) return 'sexual';
+    if (sectionNum >= 303 && sectionNum <= 334) return 'property';
+    if (sectionNum >= 137 && sectionNum <= 145) return 'kidnapping';
+    if (sectionNum >= 111 && sectionNum <= 112) return 'organized';
+    return 'other';
 }
 
 // Enhanced Case Modal with file attachment support
@@ -1985,6 +2217,326 @@ function navigateToRoot() {
     currentFolderName = null;
     renderFiles();
     showNotification('Navigated to root folder', 'info');
+}
+
+// ========== Police Database Browsing Functions ==========
+
+// Browse files by category (cases, year, station, crime type)
+function browseByCategory(category) {
+    const fileGrid = document.getElementById('file-grid');
+    if (!fileGrid) return;
+
+    switch (category) {
+        case 'cases':
+            showCaseBasedFiles();
+            break;
+        case 'year':
+            showYearBasedFiles();
+            break;
+        case 'station':
+            showStationBasedFiles();
+            break;
+        case 'crime':
+            showCrimeTypeBasedFiles();
+            break;
+        default:
+            navigateToRoot();
+    }
+}
+
+// Show files organized by FIR cases
+function showCaseBasedFiles() {
+    const fileGrid = document.getElementById('file-grid');
+    fileGrid.innerHTML = '';
+
+    // Get unique cases that have evidence files
+    const casesWithEvidence = allCases.filter(c => c.evidenceFiles && c.evidenceFiles.length > 0);
+
+    if (casesWithEvidence.length === 0) {
+        fileGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 20px; display: block;"></i>
+                <h3>No Cases with Evidence</h3>
+                <p>Link evidence files to FIR cases to see them here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    casesWithEvidence.forEach(caseItem => {
+        const caseFolder = document.createElement('div');
+        caseFolder.className = 'file-item';
+        caseFolder.onclick = () => showCaseEvidenceFiles(caseItem);
+        caseFolder.innerHTML = `
+            <div class="file-icon">
+                <i class="fas fa-folder" style="color: #2b6cb0;"></i>
+            </div>
+            <div class="file-name">${caseItem.id}</div>
+            <div class="file-size">${caseItem.evidenceFiles.length} files</div>
+        `;
+        fileGrid.appendChild(caseFolder);
+    });
+
+    // Update navigation header
+    addCustomNavigationHeader('FIR Cases', 'cases');
+}
+
+// Show evidence files for a specific case
+function showCaseEvidenceFiles(caseItem) {
+    const fileGrid = document.getElementById('file-grid');
+    fileGrid.innerHTML = '';
+
+    if (!caseItem.evidenceFiles || caseItem.evidenceFiles.length === 0) {
+        fileGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                <h3>No Evidence Files</h3>
+                <p>No evidence files linked to this case.</p>
+            </div>
+        `;
+        return;
+    }
+
+    caseItem.evidenceFiles.forEach(fileName => {
+        const file = allFiles.find(f => f.name === fileName || f.originalName === fileName);
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.style.cursor = 'pointer';
+        fileItem.onclick = () => openEvidenceFile(fileName);
+        fileItem.innerHTML = `
+            <div class="file-icon">
+                <i class="fas ${getFileTypeIcon(file?.type || 'audio')}" style="color: #3498db;"></i>
+            </div>
+            <div class="file-name">${fileName}</div>
+            <div class="file-size">${file?.size || 'Evidence'}</div>
+        `;
+        fileGrid.appendChild(fileItem);
+    });
+
+    addCustomNavigationHeader(`${caseItem.id} Evidence`, 'cases');
+}
+
+// Show files organized by year
+function showYearBasedFiles() {
+    const fileGrid = document.getElementById('file-grid');
+    fileGrid.innerHTML = '';
+
+    // Get unique years from cases
+    const years = [...new Set(allCases.map(c => {
+        const date = c.date || c.createdAt;
+        return date ? new Date(date).getFullYear() : null;
+    }).filter(y => y))].sort((a, b) => b - a);
+
+    if (years.length === 0) {
+        fileGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px;"><p>No dated cases found.</p></div>`;
+        return;
+    }
+
+    years.forEach(year => {
+        const yearCases = allCases.filter(c => {
+            const date = c.date || c.createdAt;
+            return date && new Date(date).getFullYear() === year;
+        });
+        const yearFolder = document.createElement('div');
+        yearFolder.className = 'file-item';
+        yearFolder.onclick = () => showYearCases(year, yearCases);
+        yearFolder.innerHTML = `
+            <div class="file-icon">
+                <i class="fas fa-folder" style="color: #6b46c1;"></i>
+            </div>
+            <div class="file-name">${year}</div>
+            <div class="file-size">${yearCases.length} cases</div>
+        `;
+        fileGrid.appendChild(yearFolder);
+    });
+
+    addCustomNavigationHeader('By Year', 'year');
+}
+
+// Show cases for a specific year
+function showYearCases(year, cases) {
+    const fileGrid = document.getElementById('file-grid');
+    fileGrid.innerHTML = '';
+
+    cases.forEach(caseItem => {
+        const caseFolder = document.createElement('div');
+        caseFolder.className = 'file-item';
+        caseFolder.onclick = () => showCaseEvidenceFiles(caseItem);
+        caseFolder.innerHTML = `
+            <div class="file-icon">
+                <i class="fas fa-folder" style="color: #2b6cb0;"></i>
+            </div>
+            <div class="file-name">${caseItem.id}</div>
+            <div class="file-size">${caseItem.bnsSectionName || caseItem.type || 'Case'}</div>
+        `;
+        fileGrid.appendChild(caseFolder);
+    });
+
+    addCustomNavigationHeader(`Year ${year}`, 'year');
+}
+
+// Show files organized by police station
+function showStationBasedFiles() {
+    const fileGrid = document.getElementById('file-grid');
+    fileGrid.innerHTML = '';
+
+    const stationMap = {};
+    allCases.forEach(c => {
+        const station = c.stationName || c.station || 'Unknown';
+        if (!stationMap[station]) stationMap[station] = [];
+        stationMap[station].push(c);
+    });
+
+    Object.entries(stationMap).forEach(([station, cases]) => {
+        const stationFolder = document.createElement('div');
+        stationFolder.className = 'file-item';
+        stationFolder.onclick = () => showStationCases(station, cases);
+        stationFolder.innerHTML = `
+            <div class="file-icon">
+                <i class="fas fa-folder" style="color: #2f855a;"></i>
+            </div>
+            <div class="file-name">${station}</div>
+            <div class="file-size">${cases.length} cases</div>
+        `;
+        fileGrid.appendChild(stationFolder);
+    });
+
+    addCustomNavigationHeader('By Station', 'station');
+}
+
+// Show cases for a specific station
+function showStationCases(station, cases) {
+    const fileGrid = document.getElementById('file-grid');
+    fileGrid.innerHTML = '';
+
+    cases.forEach(caseItem => {
+        const caseFolder = document.createElement('div');
+        caseFolder.className = 'file-item';
+        caseFolder.onclick = () => showCaseEvidenceFiles(caseItem);
+        caseFolder.innerHTML = `
+            <div class="file-icon">
+                <i class="fas fa-folder" style="color: #2b6cb0;"></i>
+            </div>
+            <div class="file-name">${caseItem.id}</div>
+            <div class="file-size">${caseItem.bnsSectionName || caseItem.type || 'Case'}</div>
+        `;
+        fileGrid.appendChild(caseFolder);
+    });
+
+    addCustomNavigationHeader(station, 'station');
+}
+
+// Show files organized by crime type
+function showCrimeTypeBasedFiles() {
+    const fileGrid = document.getElementById('file-grid');
+    fileGrid.innerHTML = '';
+
+    const crimeMap = {};
+    allCases.forEach(c => {
+        const crime = c.bnsSectionName || c.type || 'Other';
+        if (!crimeMap[crime]) crimeMap[crime] = [];
+        crimeMap[crime].push(c);
+    });
+
+    Object.entries(crimeMap).sort((a, b) => b[1].length - a[1].length).forEach(([crime, cases]) => {
+        const crimeFolder = document.createElement('div');
+        crimeFolder.className = 'file-item';
+        crimeFolder.onclick = () => showCrimeCases(crime, cases);
+        crimeFolder.innerHTML = `
+            <div class="file-icon">
+                <i class="fas fa-folder" style="color: #c53030;"></i>
+            </div>
+            <div class="file-name">${crime}</div>
+            <div class="file-size">${cases.length} cases</div>
+        `;
+        fileGrid.appendChild(crimeFolder);
+    });
+
+    addCustomNavigationHeader('By Crime Type', 'crime');
+}
+
+// Show cases for a specific crime type
+function showCrimeCases(crime, cases) {
+    const fileGrid = document.getElementById('file-grid');
+    fileGrid.innerHTML = '';
+
+    cases.forEach(caseItem => {
+        const caseFolder = document.createElement('div');
+        caseFolder.className = 'file-item';
+        caseFolder.onclick = () => showCaseEvidenceFiles(caseItem);
+        caseFolder.innerHTML = `
+            <div class="file-icon">
+                <i class="fas fa-folder" style="color: #2b6cb0;"></i>
+            </div>
+            <div class="file-name">${caseItem.id}</div>
+            <div class="file-size">${caseItem.bnsSection || 'Case'}</div>
+        `;
+        fileGrid.appendChild(caseFolder);
+    });
+
+    addCustomNavigationHeader(crime, 'crime');
+}
+
+// Add custom navigation header for police database browsing
+function addCustomNavigationHeader(title, category) {
+    const container = document.querySelector('.file-manager-container');
+    const existingNav = container.querySelector('.folder-navigation');
+    if (existingNav) existingNav.remove();
+
+    const navDiv = document.createElement('div');
+    navDiv.className = 'folder-navigation';
+    navDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; display: flex; align-items: center; gap: 10px;';
+    navDiv.innerHTML = `
+        <button class="btn btn-sm btn-secondary" onclick="browseByCategory('${category}')">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <span style="font-weight: bold;">Current Location: ${title}</span>
+        <button class="btn btn-sm btn-secondary" onclick="navigateToRoot()">
+            <i class="fas fa-home"></i> Root
+        </button>
+    `;
+
+    const toolbar = container.querySelector('.file-toolbar');
+    container.insertBefore(navDiv, toolbar.nextSibling);
+}
+
+// Update file manager sidebar stats
+function updateFileStats() {
+    const totalFilesEl = document.getElementById('stat-total-files');
+    const audioFilesEl = document.getElementById('stat-audio-files');
+    const evidenceFilesEl = document.getElementById('stat-evidence-files');
+
+    if (totalFilesEl) {
+        totalFilesEl.textContent = allFiles.filter(f => f.type !== 'folder').length;
+    }
+    if (audioFilesEl) {
+        audioFilesEl.textContent = allFiles.filter(f => f.type === 'audio').length;
+    }
+    if (evidenceFilesEl) {
+        const linkedFiles = allCases.reduce((count, c) => count + (c.evidenceFiles?.length || 0), 0);
+        evidenceFilesEl.textContent = linkedFiles;
+    }
+}
+
+// Update recent cases list in sidebar
+function updateRecentCases() {
+    const recentList = document.getElementById('recent-cases-list');
+    if (!recentList) return;
+
+    const recentCases = [...allCases]
+        .sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt))
+        .slice(0, 5);
+
+    if (recentCases.length === 0) {
+        recentList.innerHTML = '<p style="color: #666; font-size: 12px;">No cases available</p>';
+        return;
+    }
+
+    recentList.innerHTML = recentCases.map(c => `
+        <div class="recent-case-item" onclick="showCaseEvidenceFiles(allCases.find(x => x.id === '${c.id}'))">
+            <div class="case-id" style="font-weight: 500;">${c.id}</div>
+            <div class="case-meta" style="font-size: 11px;">${c.bnsSectionName || c.type || 'Case'}</div>
+        </div>
+    `).join('');
 }
 
 function getFileTypeIcon(type) {
@@ -3048,20 +3600,20 @@ function showTranscriptionModal() {
                         </select>
                     </div>
                     
-                    <div class="recording-section" style="text-align: center; margin: 30px 0;">
+                    <div class="recording-section-modal">
                         <button class="record-btn" id="main-record-btn" onclick="toggleMainRecording()">
                             <i class="fas fa-microphone"></i>
                         </button>
                         <div class="recording-indicator" id="main-recording-indicator">
                             <i class="fas fa-circle"></i> Recording... Click to stop
                         </div>
-                        <p style="margin-top: 10px; color: #666; font-size: 14px;">Click the microphone to start recording</p>
+                        <p class="recording-hint">Click the microphone to start recording</p>
                     </div>
                     
                     <div class="form-group">
                         <label>Transcribed Text</label>
-                        <div id="transcription-display" style="background: #f0f8ff; border: 2px solid #4CAF50; padding: 20px; border-radius: 8px; min-height: 100px; font-size: 18px; line-height: 1.8; color: #000; font-weight: 500;">
-                            <em style="color: #666;">Transcription will appear here after recording...</em>
+                        <div id="transcription-display" class="transcription-preview-box">
+                            <em class="empty-state-text">Transcription will appear here after recording...</em>
                         </div>
                     </div>
                     
@@ -3667,11 +4219,28 @@ async function createCase(event) {
 
 // Case Modal Functions
 function openCaseModal(caseItem) {
-    const modal = document.getElementById('case-modal');
+    let modal = document.getElementById('case-modal');
+
+    // If modal doesn't exist, create it dynamically
     if (!modal) {
-        console.error('Case modal not found');
-        return;
+        console.log('Creating case modal dynamically...');
+        const modalHTML = `
+            <div id="case-modal" class="modal">
+                <div class="modal-content" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <h2 id="modal-case-id">FIR Details</h2>
+                        <span class="close-modal" onclick="closeCaseModal()">&times;</span>
+                    </div>
+                    <div class="modal-body" id="case-details">
+                        <!-- Case details will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        modal = document.getElementById('case-modal');
     }
+
 
     const modalTitle = document.getElementById('modal-case-id');
     const caseDetails = document.getElementById('case-details');
@@ -3679,69 +4248,133 @@ function openCaseModal(caseItem) {
     if (modalTitle) modalTitle.textContent = caseItem.id + ' - Details';
 
     if (caseDetails) {
+        // Generate BNS badges HTML - Uniform professional colors
+
+        const accusedHTML = caseItem.accusedDetails && caseItem.accusedDetails.length > 0
+            ? caseItem.accusedDetails.map((acc, idx) => `
+                <div class="accused-card">
+                    <strong>Accused ${idx + 1}:</strong> ${acc.name || 'Unknown'}<br>
+                    <small class="text-muted">${acc.description || 'No description'}</small>
+                </div>
+            `).join('')
+            : '<p class="empty-text">No accused details available</p>';
+
+        // Generate witness details HTML
+        const witnessHTML = caseItem.witnessDetails && caseItem.witnessDetails.length > 0
+            ? caseItem.witnessDetails.map((wit, idx) => `
+                <div class="witness-card">
+                    <strong>Witness ${idx + 1}:</strong> ${wit.name || 'Unknown'}<br>
+                    <small class="text-muted">Contact: ${wit.contact || 'N/A'}</small>
+                </div>
+            `).join('')
+            : '<p class="empty-text">No witness details available</p>';
+
         caseDetails.innerHTML = `
+            <div class="case-badges">
+                ${caseItem.bnsSection ? `<span class="badge badge-bns">${caseItem.bnsSection} - ${caseItem.bnsSectionName || ''}</span>` : ''}
+                ${caseItem.ipcEquivalent ? `<span class="badge badge-ipc">Former: ${caseItem.ipcEquivalent}</span>` : ''}
+                ${caseItem.caseCategory === 'Cognizable'
+                ? '<span class="badge badge-cognizable">Cognizable</span>'
+                : '<span class="badge badge-non-cognizable">Non-Cognizable</span>'}
+                ${caseItem.bailableStatus === 'Non-Bailable'
+                ? '<span class="badge badge-non-bailable">Non-Bailable</span>'
+                : '<span class="badge badge-bailable">Bailable</span>'}
+            </div>
+            
             <div class="case-detail-section">
-                <h4>Case Information</h4>
-                <div class="detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <h4><i class="fas fa-file-alt"></i> Case Information</h4>
+                <div class="detail-grid">
                     <div class="detail-item">
-                        <label style="font-weight: bold;">FIR Number</label>
-                        <span>${caseItem.id}</span>
+                        <label class="detail-label">FIR Number</label>
+                        <span class="detail-value text-large">${caseItem.id}</span>
                     </div>
                     <div class="detail-item">
-                        <label style="font-weight: bold;">Status</label>
-                        <span class="case-status ${caseItem.status}">${getStatusText(caseItem.status)}</span>
+                        <label class="detail-label">Status</label>
+                        <span class="status-badge ${caseItem.status}">${getStatusText(caseItem.status)}</span>
                     </div>
                     <div class="detail-item">
-                        <label style="font-weight: bold;">Case Type</label>
-                        <span>${caseItem.type || 'N/A'}</span>
+                        <label class="detail-label">Crime Type</label>
+                        <span class="detail-value">${caseItem.bnsSectionName || caseItem.type || 'N/A'}</span>
                     </div>
                     <div class="detail-item">
-                        <label style="font-weight: bold;">Date & Time</label>
-                        <span>${formatDate(caseItem.date || caseItem.createdAt)} at ${caseItem.time || 'N/A'}</span>
+                        <label class="detail-label">Date & Time</label>
+                        <span class="detail-value">${new Date(caseItem.date || caseItem.createdAt).toLocaleString()}</span>
                     </div>
                     <div class="detail-item">
-                        <label style="font-weight: bold;">Police Station</label>
-                        <span>${caseItem.stationName || getStationName(caseItem.station)}</span>
+                        <label class="detail-label">Police Station</label>
+                        <span class="detail-value">${caseItem.stationName || getStationName(caseItem.station) || caseItem.station}</span>
                     </div>
                     <div class="detail-item">
-                        <label style="font-weight: bold;">Investigating Officer</label>
-                        <span>${caseItem.officer || 'N/A'}</span>
+                        <label class="detail-label">Investigating Officer</label>
+                        <span class="detail-value">${caseItem.officer || 'Unassigned'}</span>
+                    </div>
+                    <div class="detail-item full-width">
+                        <label class="detail-label">Court Jurisdiction</label>
+                        <span class="detail-value">Metropolitan Magistrate, Saket</span>
                     </div>
                 </div>
             </div>
-            
-            <div class="case-detail-section" style="margin-top: 20px;">
-                <h4>Complainant Details</h4>
-                <div class="detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="detail-item">
-                        <label style="font-weight: bold;">Name</label>
-                        <span>${caseItem.complainant || 'N/A'}</span>
+
+            <div class="case-detail-section">
+                <h4><i class="fas fa-history"></i> Investigation Timeline</h4>
+                <div class="timeline-container">
+                    <div class="step completed">
+                        <div class="step-icon"><i class="fas fa-file-signature"></i></div>
+                        <p>Registered</p>
                     </div>
-                    <div class="detail-item">
-                        <label style="font-weight: bold;">Contact</label>
-                        <span>${caseItem.contact || 'N/A'}</span>
+                    <div class="step ${caseItem.status === 'progress' || caseItem.status === 'closed' ? 'completed' : 'active'}">
+                        <div class="step-icon"><i class="fas fa-user-shield"></i></div>
+                        <p>Investigation</p>
                     </div>
-                    <div class="detail-item" style="grid-column: 1 / -1;">
-                        <label style="font-weight: bold;">Address</label>
-                        <span>${caseItem.address || 'N/A'}</span>
+                    <div class="step ${caseItem.status === 'closed' ? 'completed' : ''}">
+                        <div class="step-icon"><i class="fas fa-search"></i></div>
+                        <p>Evidence</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon"><i class="fas fa-fingerprint"></i></div>
+                        <p>Forensics</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon"><i class="fas fa-gavel"></i></div>
+                        <p>Court</p>
                     </div>
                 </div>
             </div>
+
+            <div class="case-detail-section">
+                <h4><i class="fas fa-user"></i> Complainant Details</h4>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label class="detail-label">Name</label>
+                        <span class="detail-value">${caseItem.complainant || 'N/A'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Contact</label>
+                        <span class="detail-value">${caseItem.contact || 'N/A'}</span>
+                    </div>
+                    <div class="detail-item full-width">
+                        <label class="detail-label">Address</label>
+                        <span class="detail-value">${caseItem.complainantAddress || caseItem.address || 'N/A'}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-detail-section">
+                <h4><i class="fas fa-users"></i> Accused Details</h4>
+                ${accusedHTML}
+            </div>
+
+            <div class="case-detail-section">
+                <h4><i class="fas fa-eye"></i> Witness Details</h4>
+                ${witnessHTML}
+            </div>
             
-            <div class="case-detail-section" style="margin-top: 20px;">
-                <h4>Incident Details</h4>
-                <div class="detail-item" style="margin-bottom: 10px;">
-                    <label style="font-weight: bold;">Location</label>
-                    <span style="display: block; margin-top: 5px;">${caseItem.location || 'N/A'}</span>
-                </div>
-                <div class="detail-item">
-                    <label style="font-weight: bold;">Description</label>
-                    <span style="display: block; margin-top: 5px;">${caseItem.description || 'N/A'}</span>
-                </div>
+            <div class="case-detail-section">
+                <h4><i class="fas fa-map-marker-alt"></i> Incident Details</h4>
             </div>
             
             <div class="case-detail-section" style="margin-top: 20px;">
-                <h4>Evidence Files</h4>
+                <h4><i class="fas fa-paperclip"></i> Evidence Files</h4>
                 <div class="evidence-files" id="case-evidence-files">
                     <p>Loading evidence files...</p>
                 </div>
@@ -3753,6 +4386,9 @@ function openCaseModal(caseItem) {
             <div class="case-detail-section" style="margin-top: 20px;">
                 <h4>Actions</h4>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="generateOfficialFIRPDF('${caseItem.id}')">
+                        <i class="fas fa-file-pdf"></i> Download Official FIR
+                    </button>
                     <button class="btn btn-primary" onclick="updateCaseStatus('${caseItem.id}', 'progress')">
                         <i class="fas fa-play"></i> Mark In Progress
                     </button>
@@ -3774,40 +4410,156 @@ function openCaseModal(caseItem) {
     loadCaseEvidenceFiles(caseItem.id);
 }
 
-// Load evidence files for a case
+// Render Investigation Timeline
+function renderCaseTimeline(caseItem) {
+    const steps = [
+        { id: 'fir', icon: 'fa-file-signature', title: 'FIR Filed', date: formatDate(caseItem.date || caseItem.createdAt) },
+        { id: 'assigned', icon: 'fa-user-shield', title: 'Officer Assigned', date: caseItem.officer ? 'Assigned' : 'Pending' },
+        { id: 'investigation', icon: 'fa-search', title: 'Investigation', date: caseItem.status === 'progress' ? 'In Progress' : 'Pending' },
+        { id: 'evidence', icon: 'fa-fingerprint', title: 'Evidence Collected', date: (caseItem.evidenceFiles && caseItem.evidenceFiles.length > 0) ? `${caseItem.evidenceFiles.length} Files` : 'Pending' },
+        { id: 'closed', icon: 'fa-gavel', title: 'Case Closed', date: caseItem.status === 'closed' ? 'Closed' : 'Pending' }
+    ];
+
+    // Determine completion status
+    let completedIndex = 0; // FIR always filed
+    if (caseItem.officer) completedIndex = 1;
+    if (caseItem.status === 'progress' || caseItem.status === 'closed') completedIndex = 2;
+    if ((caseItem.evidenceFiles && caseItem.evidenceFiles.length > 0) && (caseItem.status === 'progress' || caseItem.status === 'closed')) completedIndex = 3;
+    if (caseItem.status === 'closed') completedIndex = 4;
+
+    // Calculate progress bar width (25% per step for 5 steps = 4 gaps)
+    const progressWidth = (completedIndex / (steps.length - 1)) * 100;
+
+    return `
+        <div class="timeline-container">
+            <div class="timeline">
+                <div class="timeline-connector-progress" style="width: ${progressWidth}%"></div>
+                ${steps.map((step, index) => {
+        let statusClass = '';
+        if (index < completedIndex) statusClass = 'completed';
+        else if (index === completedIndex) statusClass = 'active';
+
+        // Special case: if closed, all are completed
+        if (caseItem.status === 'closed') statusClass = 'completed';
+
+        return `
+                        <div class="timeline-item ${statusClass}">
+                            <div class="timeline-icon">
+                                <i class="fas ${step.icon}"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>${step.title}</h4>
+                                <p>${step.date}</p>
+                            </div>
+                        </div>
+                    `;
+    }).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Load evidence files for a case - uses evidenceFiles array from case data
 async function loadCaseEvidenceFiles(caseId) {
     try {
         const evidenceContainer = document.getElementById('case-evidence-files');
-        const caseFiles = allFiles.filter(f => f.caseId === caseId);
 
-        if (caseFiles.length === 0) {
+        // Find the case and get its evidenceFiles array
+        const caseItem = allCases.find(c => c.id === caseId);
+        const evidenceFileNames = caseItem?.evidenceFiles || [];
+
+        // Also check for files linked via caseId (for newly uploaded files)
+        const uploadedCaseFiles = allFiles.filter(f => f.caseId === caseId);
+
+        if (evidenceFileNames.length === 0 && uploadedCaseFiles.length === 0) {
             evidenceContainer.innerHTML = '<p style="color: #666; font-style: italic;">No evidence files attached</p>';
-        } else {
-            evidenceContainer.innerHTML = caseFiles.map(file => {
-                // Check if file is audio
-                const isAudio = file.type === 'audio' || /\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(file.name);
+            return;
+        }
 
-                return `
-                <div class="evidence-file-item" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: #f8f9fa; border-radius: 5px; margin-bottom: 5px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fas ${getFileTypeIcon(file.type)}" style="color: #3498db;"></i>
-                        <span>${file.name}</span>
-                        <small style="color: #666;">(${file.size})</small>
+        let html = '<div class="evidence-gallery">';
+
+        const processFile = (fileName, fileObj = null) => {
+            // Try to find the file in allFiles for additional info if not provided
+            const file = fileObj || allFiles.find(f => f.name === fileName || f.originalName === fileName);
+            const name = file ? file.name : fileName;
+
+            const isAudio = /\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(name);
+            const isVideo = /\.(mp4|webm|mov|avi)$/i.test(name);
+            const isImage = /\.(jpg|jpeg|png|gif|bmp)$/i.test(name);
+            const isPdf = /\.pdf$/i.test(name);
+
+            let fileType = 'file';
+            let iconClass = 'fa-file';
+            let iconColor = '#95a5a6';
+
+            if (isAudio) {
+                fileType = 'audio';
+                iconClass = 'fa-file-audio';
+                iconColor = '#e74c3c';
+            } else if (isVideo) {
+                fileType = 'video';
+                iconClass = 'fa-file-video';
+                iconColor = '#e67e22';
+            } else if (isImage) {
+                fileType = 'image';
+                iconClass = 'fa-file-image';
+                iconColor = '#2ecc71';
+            } else if (isPdf) {
+                fileType = 'document';
+                iconClass = 'fa-file-pdf';
+                iconColor = '#e74c3c';
+            }
+
+            return `
+                <div class="evidence-card" onclick="openEvidenceFile('${name.replace(/'/g, "\\'")}')">
+                    <div class="evidence-thumbnail">
+                        <i class="fas ${iconClass}" style="color: ${iconColor};"></i>
                     </div>
-                    <div style="display: flex; gap: 5px;">
-                        <button class="btn btn-sm btn-secondary" onclick="viewFileById('${file.id}')">
-                            <i class="fas fa-eye"></i> View
+                    <div class="evidence-name" title="${name}">${name}</div>
+                    <div class="evidence-meta">${file?.size || 'Evidence'}</div>
+                    <div class="evidence-actions">
+                        <button class="evidence-action-btn" title="View" onclick="event.stopPropagation(); openEvidenceFile('${name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-eye"></i>
                         </button>
-                        ${isAudio ? `<button class="btn btn-sm btn-primary" onclick="viewAudioTranscription('${file.id}', '${file.name.replace(/'/g, "\\'")}')">
-                            <i class="fas fa-file-alt"></i> Transcription
+                        ${isAudio ? `<button class="evidence-action-btn" title="Transcribe" onclick="event.stopPropagation(); viewAudioTranscription('${file?.id || ''}', '${name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-file-alt"></i>
                         </button>` : ''}
                     </div>
                 </div>
-                `;
-            }).join('');
-        }
+            `;
+        };
+
+        // Display evidence files from case's evidenceFiles array
+        evidenceFileNames.forEach(fileName => {
+            html += processFile(fileName);
+        });
+
+        // Also show any files linked via caseId
+        uploadedCaseFiles.forEach(file => {
+            // Avoid duplicates if file is already in evidenceFiles array
+            if (!evidenceFileNames.includes(file.name)) {
+                html += processFile(file.name, file);
+            }
+        });
+
+        html += '</div>';
+        evidenceContainer.innerHTML = html;
     } catch (error) {
         console.error('Error loading case evidence files:', error);
+    }
+}
+
+// Open evidence file by filename
+function openEvidenceFile(fileName) {
+    // Try to find in allFiles first
+    const file = allFiles.find(f => f.name === fileName || f.originalName === fileName);
+
+    if (file && file.id) {
+        viewFileById(file.id);
+    } else {
+        // Open directly from uploads folder
+        const fileUrl = `/uploads/${fileName}`;
+        window.open(fileUrl, '_blank');
     }
 }
 
@@ -4709,16 +5461,16 @@ function showRecordingControls() {
     hideRecordingControls();
 
     const controlsHTML = `
-        <div id="recording-controls" style="position: fixed; top: 20px; right: 20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 10000; min-width: 280px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #e74c3c;">
-                    <i class="fas fa-circle" style="color: #e74c3c; animation: blink 1.5s infinite;"></i>
+        <div id="recording-controls" class="recording-overlay-box">
+            <div class="recording-header">
+                <h3 class="recording-title">
+                    <i class="fas fa-circle recording-dot"></i>
                     Recording
                 </h3>
-                <span id="recording-time" style="font-family: monospace; font-size: 18px; font-weight: bold;">00:00</span>
+                <span id="recording-time" class="recording-timer">00:00</span>
             </div>
             
-            <div style="display: flex; gap: 10px; justify-content: center;">
+            <div class="recording-actions">
                 <button onclick="pauseRecording()" class="btn btn-warning" style="flex: 1;">
                     <i class="fas fa-pause"></i> Pause
                 </button>
@@ -4727,7 +5479,7 @@ function showRecordingControls() {
                 </button>
             </div>
             
-            <p style="margin: 15px 0 0 0; font-size: 12px; color: #666; text-align: center;">
+            <p class="recording-hint-text">
                 Click Stop to finish and transcribe
             </p>
         </div>
@@ -4863,15 +5615,9 @@ async function saveToCase() {
         const formData = new FormData();
         formData.append('files', audioBlob, filename + '.wav');
 
-        // If no case selected, save to edited_transcriptions folder
+        // If no case selected, save to root
         if (!caseId) {
-            // Find edited_transcriptions folder
-            const editedFolder = allFiles.find(f => f.name === 'edited_transcriptions' && f.type === 'folder');
-            if (editedFolder) {
-                formData.append('folder', editedFolder.id);
-            }
-
-            console.log('No case selected - saving to edited_transcriptions folder');
+            console.log('No case selected - saving to root folder');
             showLoadingMessage('Saving audio to File Manager...');
         } else {
             formData.append('caseId', caseId);
@@ -4907,7 +5653,7 @@ async function saveToCase() {
         }
 
         if (!caseId) {
-            showNotification(`✅ Audio saved to File Manager (edited_transcriptions folder)!`, 'success');
+            showNotification(`✅ Audio saved to File Manager!`, 'success');
         } else {
             showNotification(`✅ Audio saved to FIR case ${caseId} successfully!`, 'success');
         }
@@ -5245,15 +5991,7 @@ async function saveToFileManager() {
             return;
         }
 
-        // Ensure edited_transcriptions folder exists and get its ID
-        let editedFolder = allFiles.find(f => f.type === 'folder' && f.name === 'edited_transcriptions');
-        if (!editedFolder) {
-            try {
-                editedFolder = await api.post('/api/files/folder', { name: 'edited_transcriptions' });
-                allFiles.unshift(editedFolder);
-            } catch (e) { /* ignore */ }
-        }
-        const targetFolderId = editedFolder ? editedFolder.id : null;
+        const targetFolderId = null;
 
         const formData = new FormData();
         formData.append('files', audioBlob, `${fileName}.wav`);
@@ -5603,15 +6341,7 @@ async function performSaveAudio() {
     try {
         showLoadingMessage('Saving audio file...');
 
-        // Ensure edited_transcriptions folder exists and get its ID
-        let editedFolder = allFiles.find(f => f.type === 'folder' && f.name === 'edited_transcriptions');
-        if (!editedFolder) {
-            try {
-                editedFolder = await api.post('/api/files/folder', { name: 'edited_transcriptions' });
-                allFiles.unshift(editedFolder);
-            } catch (e) { /* ignore */ }
-        }
-        const targetFolderId = editedFolder ? editedFolder.id : null;
+        const targetFolderId = null;
 
         const formData = new FormData();
         formData.append('files', currentRecording, `${fileName}.webm`);
@@ -5637,4 +6367,185 @@ async function performSaveAudio() {
         showNotification('Failed to save audio file', 'error');
         hideLoadingMessage();
     }
+}
+
+// ==========================================
+// OFFICIAL FIR PDF GENERATION
+// ==========================================
+async function generateOfficialFIRPDF(caseId) {
+    try {
+        const caseItem = allCases.find(c => c.id === caseId);
+        if (!caseItem) {
+            showNotification('Case data not found', 'error');
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // --- Header Section ---
+        doc.setFont("times", "bold");
+        doc.setFontSize(16);
+        doc.text("FIRST INFORMATION REPORT", 105, 15, { align: "center" });
+
+        doc.setFontSize(10);
+        doc.setFont("times", "normal");
+        doc.text("(Under Section 154 Cr.P.C / Section 173 BNSS)", 105, 22, { align: "center" });
+
+        // Basic Info Box
+        doc.rect(10, 25, 190, 20);
+        doc.setFont("times", "bold");
+        doc.setFontSize(11);
+
+        doc.text(`1. District: ${caseItem.stationName ? "New Delhi" : "Unknown"}`, 15, 32);
+        doc.text(`P.S: ${caseItem.stationName || getStationName(caseItem.station)}`, 80, 32);
+        doc.text(`Year: ${new Date(caseItem.date || caseItem.createdAt).getFullYear()}`, 150, 32);
+
+        doc.text(`FIR No: ${caseItem.id}`, 15, 40);
+        doc.text(`Date: ${formatDate(caseItem.date || caseItem.createdAt)}`, 80, 40);
+        doc.text(`Time: ${caseItem.time || "00:00"}`, 150, 40);
+
+        // --- 2. Acts & Sections ---
+        let startY = 55;
+        doc.setFont("times", "bold");
+        doc.text("2. Acts & Sections:", 15, startY);
+        doc.setFont("times", "normal");
+        doc.text(`   ${caseItem.bnsSection || "BNS 303"} - ${caseItem.bnsSectionName || caseItem.type}`, 15, startY + 6);
+        doc.text(`   Category: ${caseItem.caseCategory || "Cognizable"} | Bail: ${caseItem.bailableStatus || "Bailable"}`, 15, startY + 12);
+
+        // --- 3. Occurrence of Offence ---
+        startY += 20;
+        doc.setFont("times", "bold");
+        doc.text("3. Occurrence of Offence:", 15, startY);
+        doc.setFont("times", "normal");
+        doc.text(`   (a) Day: ________________`, 15, startY + 6);
+        doc.text(`   (b) Time Period: ________________`, 80, startY + 6);
+        doc.text(`   (c) Info Received Date: ${formatDate(caseItem.createdAt)}`, 15, startY + 12);
+        doc.text(`   (d) P.S. Entry No: ${Math.floor(Math.random() * 1000)}`, 110, startY + 12);
+
+        // --- 4. Complainant Information ---
+        startY += 20;
+        doc.setFont("times", "bold");
+        doc.text("4. Complainant Information:", 15, startY);
+        doc.setFont("times", "normal");
+        doc.text(`   Name: ${caseItem.complainant || "N/A"}`, 15, startY + 6);
+        doc.text(`   Phone: ${caseItem.contact || "N/A"}`, 110, startY + 6);
+        doc.text(`   Address: ${caseItem.complainantAddress || caseItem.address || "N/A"}`, 15, startY + 12);
+
+        // --- 5. Details of Known/Suspected/Unknown Accused ---
+        startY += 20;
+        doc.setFont("times", "bold");
+        doc.text("5. Details of Known/Suspected/Unknown Accused:", 15, startY);
+        doc.setFont("times", "normal");
+
+        let accusedText = "Unknown Person(s)";
+        if (caseItem.accusedDetails && caseItem.accusedDetails.length > 0) {
+            accusedText = caseItem.accusedDetails.map(a => `${a.name} (${a.description || ''})`).join(", ");
+        }
+
+        const splitAccused = doc.splitTextToSize(accusedText, 180);
+        doc.text(splitAccused, 20, startY + 6);
+        startY += (splitAccused.length * 5) + 5;
+
+        // --- 6. Stolen Properties ---
+        startY += 10;
+        doc.setFont("times", "bold");
+        doc.text("6. Properties Stolen/Involved:", 15, startY);
+        doc.setFont("times", "normal");
+        doc.text("   (As per description)", 20, startY + 6);
+
+        // --- 7. Description (FIR Content) ---
+        startY += 15;
+        doc.setFont("times", "bold");
+        doc.text("7. First Information contents (Description):", 15, startY);
+        doc.setFont("times", "normal");
+
+        const description = caseItem.description || "No detailed description provided.";
+        const splitDesc = doc.splitTextToSize(description, 180);
+        doc.text(splitDesc, 15, startY + 7);
+
+        startY += (splitDesc.length * 5) + 15;
+
+        // --- 8. Action Taken ---
+        doc.setFont("times", "bold");
+        doc.text("8. Action Taken:", 15, startY);
+        doc.setFont("times", "normal");
+        doc.text(`   Investigation entrusted to: ${caseItem.officer || "SI In-Charge"}`, 20, startY + 6);
+        doc.text(`   Badge No: ${caseItem.officerBadge || "N/A"}`, 20, startY + 12);
+        doc.text("   F.I.R. read over to the complainant/informant, admitted to be correctly recorded.", 20, startY + 18);
+
+        // --- Signatures ---
+        startY += 40;
+
+        // Check for page break
+        if (startY > 250) {
+            doc.addPage();
+            startY = 40;
+        }
+
+        doc.setFont("times", "bold");
+        doc.text("Signature/Thumb impression", 15, startY);
+        doc.text("Signature of Officer-in-Charge", 130, startY);
+
+        doc.setFont("times", "normal");
+        doc.text("of Complainant", 15, startY + 5);
+        doc.text(`Name: ${caseItem.officer || "Station House Officer"}`, 130, startY + 10);
+        doc.text(`Rank: Inspector`, 130, startY + 15);
+
+        // Footer
+        doc.setFontSize(8);
+        doc.text("System Generated Report - Soochna Sahayak Police Dashboard", 105, 290, { align: "center" });
+
+        // Save PDF
+        doc.save(`FIR_${caseItem.id}.pdf`);
+        showNotification("Official FIR PDF Downloaded", "success");
+
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+        showNotification("Failed to generate PDF", "error");
+    }
+}
+
+// ==========================================
+// DARK MODE LOGIC
+// ==========================================
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+
+    // Update icon
+    const btn = document.querySelector('.theme-toggle-btn i');
+    if (body.classList.contains('dark-mode')) {
+        if (btn) {
+            btn.classList.remove('fa-moon');
+            btn.classList.add('fa-sun');
+        }
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        if (btn) {
+            btn.classList.remove('fa-sun');
+            btn.classList.add('fa-moon');
+        }
+        localStorage.setItem('darkMode', 'disabled');
+    }
+}
+
+function loadDarkModePreference() {
+    const darkMode = localStorage.getItem('darkMode');
+    const btn = document.querySelector('.theme-toggle-btn i');
+
+    if (darkMode === 'enabled') {
+        document.body.classList.add('dark-mode');
+        if (btn) {
+            btn.classList.remove('fa-moon');
+            btn.classList.add('fa-sun');
+        }
+    }
+}
+
+// Initialize Dark Mode on load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadDarkModePreference);
+} else {
+    loadDarkModePreference();
 }

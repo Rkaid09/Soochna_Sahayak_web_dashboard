@@ -59,5 +59,15 @@
     "station": "cp",
     "badgeNumber": "132",
     "createdAt": "2025-12-12T19:31:31.288Z"
+  },
+  {
+    "id": "e92329c9-daf7-48c7-a04a-28d85ad12a6a",
+    "name": "Rajani Kant Jha",
+    "email": "rajani0909@gmail.com",
+    "password": "$2a$10$l.m8d5iImj3DA/WuPciZHOL9IspKNc2fnQ4Sd2fzSr9/zJXtgfF1e",
+    "designation": "Inspector",
+    "station": "cp",
+    "badgeNumber": "001",
+    "createdAt": "2026-01-15T17:18:11.934Z"
   }
 ]

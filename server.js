@@ -50,7 +50,7 @@ fs.ensureDirSync(uploadDir);
 fs.ensureDirSync(dataDir);
 fs.ensureDirSync(path.join(uploadDir, 'cases'));
 fs.ensureDirSync(path.join(uploadDir, 'transcriptions'));
-fs.ensureDirSync(path.join(uploadDir, 'edited_transcriptions'));
+
 
 // Bhashini API Configuration
 const BHASHINI_CONFIG = {

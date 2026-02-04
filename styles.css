@@ -211,9 +211,11 @@ body {
         transform: scale(1);
         box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
     }
+
     50% {
         transform: scale(1.05);
     }
+
     100% {
         transform: scale(1);
         box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
@@ -466,9 +468,17 @@ body {
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .recording-indicator {
@@ -483,8 +493,16 @@ body {
 }
 
 @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.3; }
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0.3;
+    }
 }
 
 /* Enhanced Modal */
@@ -502,7 +520,7 @@ body {
 
 .file-item:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 /* Context Menu */
@@ -512,7 +530,7 @@ body {
     border: 1px solid #e1e8ed;
     border-radius: 8px;
     padding: 8px 0;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     z-index: 5000;
     min-width: 150px;
 }
@@ -796,6 +814,110 @@ body {
     margin-bottom: 8px;
     color: #555;
     font-size: 14px;
+}
+
+/* Investigation Timeline Styles */
+.timeline-container {
+    padding: 20px 0;
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    min-width: 600px;
+    padding: 0 20px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 40px;
+    right: 40px;
+    height: 4px;
+    background: #e1e8ed;
+    z-index: 0;
+}
+
+.timeline-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+    z-index: 1;
+}
+
+.timeline-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid #e1e8ed;
+    color: #bdc3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.timeline-content {
+    padding: 0 10px;
+}
+
+.timeline-content h4 {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.timeline-content p {
+    font-size: 12px;
+    color: #95a5a6;
+    margin: 0;
+}
+
+/* Timeline Status States */
+.timeline-item.completed .timeline-icon {
+    background: #27ae60;
+    border-color: #27ae60;
+    color: white;
+}
+
+.timeline-item.completed .timeline-content h4 {
+    color: #27ae60;
+}
+
+.timeline-item.active .timeline-icon {
+    background: #3498db;
+    border-color: #3498db;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+    transform: scale(1.1);
+}
+
+.timeline-item.active .timeline-content h4 {
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+/* Connector Progress */
+.timeline-connector-progress {
+    position: absolute;
+    top: 24px;
+    left: 40px;
+    height: 4px;
+    background: #27ae60;
+    z-index: 0;
+    width: 0%;
+    transition: width 1s ease;
 }
 
 .case-info strong {
@@ -1271,28 +1393,28 @@ body {
     .sidebar {
         width: 200px;
     }
-    
+
     .main-content {
         margin-left: 200px;
     }
-    
+
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .dashboard-charts {
         grid-template-columns: 1fr;
     }
-    
+
     .chart-row {
         grid-template-columns: 1fr;
     }
-    
+
     .page-header {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .search-bar {
         max-width: none;
     }
@@ -1302,15 +1424,15 @@ body {
     .sidebar {
         width: 180px;
     }
-    
+
     .main-content {
         margin-left: 180px;
     }
-    
+
     .cases-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .stations-grid {
         grid-template-columns: 1fr;
     }
@@ -1396,11 +1518,11 @@ body {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .account-actions {
         flex-direction: column;
     }
-    
+
     .account-actions .btn {
         flex: none;
     }
@@ -1449,10 +1571,12 @@ body {
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.7;
         transform: scale(0.95);
     }
+
     100% {
         opacity: 1;
         transform: scale(1);
@@ -1509,7 +1633,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e9ecef;
 }
 
@@ -1592,7 +1716,7 @@ body {
     background: white;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     padding: 8px 0;
     z-index: 1000;
     min-width: 150px;
@@ -1724,8 +1848,1169 @@ body {
         transform: translateX(100%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+/* Evidence Gallery Styles */
+.evidence-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.evidence-card {
+    background: #fff;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.evidence-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-color: #3498db;
+}
+
+.evidence-thumbnail {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 32px;
+}
+
+.evidence-name {
+    font-size: 11px;
+    color: #2c3e50;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.evidence-meta {
+    font-size: 10px;
+    color: #95a5a6;
+}
+
+.evidence-actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    gap: 10px;
+}
+
+.evidence-card:hover .evidence-actions {
+    opacity: 1;
+}
+
+.evidence-action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: white;
+    color: #333;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.evidence-action-btn:hover {
+    transform: scale(1.1);
+    background: #3498db;
+    color: white;
+}
+
+/* Print Styles */
+@media print {
+
+    /* Hide ALL background elements */
+    .dashboard-container,
+    .loading-overlay,
+    .notification,
+    #account-modal,
+    #transcription-modal,
+    body>*:not(#case-modal) {
+        display: none !important;
+    }
+
+    /* Reset transparency/layout for print */
+    body {
+        background: white;
+        color: black;
+        font-family: 'Times New Roman', serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* FIR Document Layout - Specific for Case Modal */
+    #case-modal {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        background: white !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+        z-index: 10000 !important;
+        visibility: visible !important;
+    }
+
+    .modal-content {
+        box-shadow: none;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        border: none;
+        background: transparent;
+        animation: none;
+    }
+
+    /* Official Header */
+    .modal-header {
+        text-align: center;
+        border-bottom: 2px solid black;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        display: block;
+    }
+
+    .modal-header h2 {
+        font-size: 24px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        color: black;
+        text-align: center;
+    }
+
+    .modal-header::before {
+        content: "FIRST INFORMATION REPORT";
+        display: block;
+        font-weight: bold;
+        font-size: 18px;
+        text-decoration: underline;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .modal-header::after {
+        content: "(Under Section 173 Cr.P.C / Section 193 BNSS)";
+        display: block;
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: center;
+    }
+
+    /* Sections */
+    .case-detail-section {
+        margin-bottom: 20px;
+        page-break-inside: avoid;
+        border: 1px solid #ccc;
+        padding: 15px;
+    }
+
+    .case-detail-section h4 {
+        border-bottom: 1px solid black;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: black;
+        text-transform: uppercase;
+    }
+
+    /* Details Grid */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        font-size: 11pt;
+    }
+
+    .detail-item label {
+        color: black;
+    }
+
+    /* Timeline in Print */
+    .timeline-container {
+        display: none;
+        /* Hide timeline in official print */
+    }
+
+    /* Evidence in Print */
+    .evidence-gallery {
+        display: block;
+    }
+
+    .evidence-card {
+        border: none;
+        text-align: left;
+        padding: 5px 0;
+        margin-bottom: 5px;
+        box-shadow: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .evidence-thumbnail {
+        display: none;
+    }
+
+    .evidence-name {
+        font-size: 12px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .evidence-meta {
+        font-size: 12px;
+        margin: 0;
+    }
+
+    /* Signature Section */
+    .modal-content::after {
+        content: "";
+        display: block;
+        height: 150px;
+        margin-top: 50px;
+        border-top: 1px solid black;
+    }
+
+    /* We inject a div for signature instead of body::after to keep it inside modal flow */
+    .print-signature {
+        display: block !important;
+        margin-top: -120px;
+        text-align: right;
+        padding-right: 50px;
+        font-weight: bold;
+        page-break-inside: avoid;
+    }
+}
+
+.print-signature {
+    display: none;
+}
+
+/* Global Dark Mode Settings */
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #f5f6fa;
+    color-scheme: dark;
+    /* Enables native dark scrollbars with arrows */
+}
+
+/* ... existing styles ... */
+
+/* Recent Activity Items in Dark Mode */
+body.dark-mode .activity-item {
+    background-color: #2c2c2c;
+    /* removed !important to allow hover */
+    border-bottom: 1px solid #4a4a4a;
+    color: #f5f6fa;
+}
+
+body.dark-mode .activity-item:hover {
+    background-color: #363636;
+}
+
+body.dark-mode .activity-icon {
+    background-color: #363636;
+    color: #3498db;
+}
+
+body.dark-mode .activity-content p,
+body.dark-mode .activity-content span {
+    color: #dcdde1;
+}
+
+/* Fix for Select Options (Native dropdowns) */
+body.dark-mode option {
+    background-color: #2c2c2c;
+    color: #ffffff;
+}
+
+/* Fix for specific whitespace containers */
+body.dark-mode .transcription-editor-container,
+body.dark-mode .audio-editor-container,
+body.dark-mode .file-manager-wrapper,
+body.dark-mode .transcription-container,
+body.dark-mode .analytics-container {
+    background: transparent !important;
+}
+
+/* Borders for all panels */
+body.dark-mode .panel,
+body.dark-mode .card,
+body.dark-mode .sidebar-section {
+    border-color: #4a4a4a !important;
+}
+
+/* Header & Sidebar */
+body.dark-mode .header {
+    background-color: #2c2c2c;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .header h1,
+body.dark-mode .logo-section h2,
+body.dark-mode .nav-link i,
+body.dark-mode .nav-link {
+    color: #f5f6fa;
+}
+
+body.dark-mode .nav-link.active {
+    background-color: #3d3d3d;
+    color: #3498db;
+}
+
+body.dark-mode .header-left .theme-toggle-btn i {
+    color: #f1c40f !important;
+    /* Yellow sun/moon */
+}
+
+/* Global Card & Container Styles - !important to override inline */
+body.dark-mode .stat-card,
+body.dark-mode .chart-container,
+body.dark-mode .recent-activity,
+body.dark-mode .case-card,
+body.dark-mode .file-upload-area,
+body.dark-mode .modal-content,
+body.dark-mode .police-db-sidebar,
+body.dark-mode .file-manager-container,
+body.dark-mode .transcription-item,
+body.dark-mode .station-card,
+body.dark-mode .editor-container,
+body.dark-mode .editor-sidebar,
+body.dark-mode .editor-main,
+body.dark-mode .transcription-editor {
+    background-color: #2c2c2c !important;
+    border: 1px solid #404040;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+    color: #f5f6fa !important;
+}
+
+/* Typography High Contrast */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode strong,
+body.dark-mode b,
+body.dark-mode label,
+body.dark-mode .case-id,
+body.dark-mode .file-name {
+    color: #ffffff !important;
+}
+
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode .text-muted,
+body.dark-mode small,
+body.dark-mode .file-meta,
+body.dark-mode .case-info p,
+body.dark-mode .station-info p,
+body.dark-mode .station-stats p {
+    color: #dcdde1 !important;
+}
+
+/* Transcriptions Page */
+body.dark-mode .transcription-item {
+    background: #2c2c2c !important;
+}
+
+body.dark-mode .transcription-content {
+    background-color: #363636 !important;
+    border-color: #4a4a4a;
+    color: #f5f6fa !important;
+}
+
+/* Police Stations Page */
+body.dark-mode .station-card {
+    background: #2c2c2c !important;
+}
+
+body.dark-mode .station-stat {
+    background-color: #363636 !important;
+    border: 1px solid #4a4a4a !important;
+}
+
+body.dark-mode .station-stat h4 {
+    color: #3498db !important;
+}
+
+body.dark-mode .station-stat p {
+    color: #bdc3c7 !important;
+}
+
+/* File Manager Page */
+body.dark-mode .file-display-area,
+body.dark-mode .file-grid,
+body.dark-mode .file-item {
+    background-color: transparent !important;
+}
+
+body.dark-mode .folder-navigation {
+    background-color: #363636 !important;
+    border-color: #4a4a4a;
+}
+
+body.dark-mode .file-item:hover {
+    background-color: #363636 !important;
+}
+
+body.dark-mode .db-section a {
+    background-color: #363636 !important;
+    color: #f5f6fa !important;
+    border: 1px solid #4a4a4a;
+}
+
+body.dark-mode .db-section a:hover {
+    background-color: #4a4a4a !important;
+}
+
+/* Transcription Editor */
+body.dark-mode .waveform-container {
+    background-color: #1a1a1a !important;
+    border-color: #4a4a4a;
+}
+
+body.dark-mode #editor-waveform {
+    background: #2c2c2c !important;
+    border-color: #4a4a4a !important;
+}
+
+body.dark-mode textarea#transcription-text {
+    background-color: #1a1a1a !important;
+    color: #f5f6fa !important;
+    border-color: #4a4a4a;
+}
+
+body.dark-mode .audio-status,
+body.dark-mode .audio-time-display {
+    background-color: #2c2c2c !important;
+    border-color: #404040 !important;
+    color: #f5f6fa !important;
+}
+
+body.dark-mode #language-detection-display {
+    background-color: #0c2d48 !important;
+    border-color: #17a2b8 !important;
+    color: #f5f6fa !important;
+}
+
+body.dark-mode #language-detection-display span {
+    color: #ffffff !important;
+}
+
+/* Modals & Case Details */
+body.dark-mode .case-detail-section {
+    border-color: #4a4a4a;
+}
+
+body.dark-mode .detail-item label {
+    color: #a4b0be !important;
+}
+
+body.dark-mode .detail-item span,
+body.dark-mode .detail-item p {
+    color: #ffffff !important;
+}
+
+/* Inputs & Forms */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+    background-color: #363636 !important;
+    border-color: #576574 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode input::placeholder {
+    color: #7f8c8d;
+}
+
+/* Fix for colored backgrounds in Accused/Witness details */
+/* Using generic attribute selectors to catch inline styles */
+body.dark-mode div[style*="background: #fff3cd"] {
+    background-color: #4b3b00 !important;
+    /* Dark Yellow */
+    border: 1px solid #e1b12c;
+}
+
+body.dark-mode div[style*="background: #e1f5fe"],
+body.dark-mode div[style*="background: #d1ecf1"] {
+    background-color: #0c2d48 !important;
+    /* Dark Blue */
+    border: 1px solid #2980b9;
+}
+
+body.dark-mode div[style*="background: #d4edda"] {
+    background-color: #144226 !important;
+    /* Dark Green */
+    border: 1px solid #27ae60;
+}
+
+body.dark-mode div[style*="color: #856404"],
+body.dark-mode div[style*="color: #0c5460"],
+body.dark-mode div[style*="color: #155724"] {
+    color: #f5f6fa !important;
+}
+
+/* Buttons */
+body.dark-mode .btn-secondary {
+    background-color: #636e72;
+    border-color: #636e72;
+    color: white;
+}
+
+body.dark-mode .btn-secondary:hover {
+    background-color: #2d3436;
+}
+
+/* Timeline */
+body.dark-mode .timeline-item .timeline-content {
+    background: #363636 !important;
+    border-color: #4a4a4a;
+}
+
+body.dark-mode .timeline-date {
+    color: #bdc3c7 !important;
+}
+
+/* Evidence Gallery */
+body.dark-mode .evidence-card {
+    background-color: #363636 !important;
+}
+
+/* Recent Cases List Styling (Light Mode Default) */
+.recent-case-item {
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.recent-case-item .case-id {
+    font-weight: 500;
+    color: #2d3748;
+}
+
+
+.recent-case-item .case-meta {
+    color: #718096;
+    font-size: 11px;
+}
+
+/* Description Box Styling */
+.description-box {
+    margin-top: 5px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   DARK MODE DEEP FIXES (File Manager & Editor)
+   ========================================= */
+
+/* File Manager Sidebar Components */
+body.dark-mode #file-stats,
+body.dark-mode .db-section a,
+body.dark-mode .recent-case-item,
+body.dark-mode #recent-cases-list,
+body.dark-mode .description-box {
+    background-color: #2c2c2c !important;
+    color: #f5f6fa !important;
+    border: 1px solid #4a4a4a !important;
+}
+
+body.dark-mode .recent-case-item:hover {
+    background-color: #3d3d3d !important;
+}
+
+body.dark-mode .recent-case-item .case-id {
+    color: #ffffff !important;
+}
+
+body.dark-mode .recent-case-item .case-meta {
+    color: #bdc3c7 !important;
+}
+
+body.dark-mode .db-section h5 {
+    color: #a4b0be !important;
+}
+
+/* Custom Scrollbars removed in favor of color-scheme: dark for native appearance with arrows */
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 4px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+    background: #f1c40f;
+    color: #fff;
+    /* White text on yellow */
+}
+
+.status-badge.progress {
+    background: #3498db;
+    color: #fff;
+}
+
+.status-badge.closed {
+    background: #27ae60;
+    color: #fff;
+}
+
+.activity-meta {
+    font-size: 13px;
+    color: #666;
+    display: block;
+    margin-top: 4px;
+}
+
+/* Transcription Editor - Save Options Panel & Toolbars */
+body.dark-mode .save-options,
+body.dark-mode .transcription-controls,
+body.dark-mode .file-toolbar,
+body.dark-mode .editor-toolbar {
+    background-color: #2c2c2c !important;
+    border: 1px solid #4a4a4a;
+    color: #f5f6fa !important;
+}
+
+/* Ensure badge text is white in dark mode too */
+body.dark-mode .status-badge {
+    color: #fff !important;
+    /* Force white text regardless of background color in dark mode for contrast */
+}
+
+body.dark-mode .status-badge.pending {
+    background: #d4ac0d !important;
+    /* Slightly darker yellow */
+    color: #fff !important;
+}
+
+body.dark-mode .save-options label {
+    color: #dcdde1 !important;
+}
+
+/* =========================================
+   MODAL & DIALOG FIXES (Account & Transcription)
+   ========================================= */
+
+/* Account Modal Base Styles */
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    color: white;
+}
+
+.profile-avatar-large {
+    font-size: 64px;
+    margin-right: 20px;
+}
+
+.profile-details h2 {
+    margin: 0;
+    color: white;
+}
+
+.profile-details .designation {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+.profile-details .badge-info {
+    margin: 5px 0 0 0;
+    opacity: 0.8;
+    font-size: 14px;
+}
+
+.account-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.account-info-item {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.info-label {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.info-value.status-active {
+    color: #27ae60;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.stat-box {
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.stat-box.stat-blue {
+    background: #e3f2fd;
+}
+
+.stat-box.stat-orange {
+    background: #fff3e0;
+}
+
+.stat-box.stat-green {
+    background: #e8f5e9;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.stat-blue .stat-number {
+    color: #2196f3;
+}
+
+.stat-orange .stat-number {
+    color: #ff9800;
+}
+
+.stat-green .stat-number {
+    color: #4caf50;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Security Section */
+.security-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.security-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.account-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Transcription Modal Styles */
+.recording-section-modal {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.transcription-preview-box {
+    background: #f0f8ff;
+    border: 2px solid #4CAF50;
+    padding: 20px;
+    border-radius: 8px;
+    min-height: 100px;
+    font-size: 18px;
+    line-height: 1.8;
+    color: #000;
+    font-weight: 500;
+}
+
+/* DARK MODE OVERRIDES */
+body.dark-mode .account-info-item,
+body.dark-mode .security-item {
+    background-color: #2c2c2c !important;
+    border: 1px solid #4a4a4a;
+}
+
+body.dark-mode .info-label,
+body.dark-mode .stat-label,
+body.dark-mode .recording-hint,
+body.dark-mode .empty-state-text {
+    color: #a4b0be !important;
+}
+
+body.dark-mode .info-value {
+    color: #f5f6fa !important;
+}
+
+body.dark-mode .section-title {
+    color: #f5f6fa !important;
+}
+
+/* Dark Mode Stats (Tinted Dark) */
+body.dark-mode .stat-box.stat-blue {
+    background: #1a2533 !important;
+    border: 1px solid #1565c0;
+}
+
+body.dark-mode .stat-box.stat-orange {
+    background: #33221a !important;
+    border: 1px solid #e65100;
+}
+
+body.dark-mode .stat-box.stat-green {
+    background: #1a3322 !important;
+    border: 1px solid #2e7d32;
+}
+
+/* Dark Mode Transcription Preview */
+body.dark-mode .transcription-preview-box {
+    background-color: #2c2c2c !important;
+    color: #f5f6fa !important;
+    border-color: #4CAF50 !important;
+    /* Keep green border as it signifies active/ready */
+}
+
+body.dark-mode .security-section {
+    border-top-color: #4a4a4a !important;
+}
+
+/* =========================================
+   FLOATING RECORDING OVERLAY
+   ========================================= */
+.recording-overlay-box {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    min-width: 280px;
+}
+
+.recording-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.recording-title {
+    margin: 0;
+    color: #e74c3c;
+}
+
+.recording-dot {
+    color: #e74c3c;
+    animation: blink 1.5s infinite;
+}
+
+.recording-timer {
+    font-family: monospace;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.recording-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.recording-hint-text {
+    margin: 15px 0 0 0;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0.3;
+    }
+}
+
+/* Dark Mode Recording Overlay */
+body.dark-mode .recording-overlay-box {
+    background-color: #2c2c2c !important;
+    /* Fix white box */
+    border: 1px solid #4a4a4a;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+body.dark-mode .recording-timer {
+    color: #f5f6fa !important;
+}
+
+body.dark-mode .recording-hint-text {
+    color: #dcdde1 !important;
+}
+
+/* =========================================
+   HEADER ACCOUNT HOVER FIX
+   ========================================= */
+/* Prevent account dropdown/name from turning white on hover in dark mode */
+body.dark-mode .header-profile:hover,
+body.dark-mode .profile-name:hover,
+body.dark-mode .nav-link-profile:hover,
+body.dark-mode .user-info:hover {
+    background-color: #363636 !important;
+    /* Dark grey hover instead of white */
+    color: #fff !important;
+    cursor: pointer;
+}
+
+body.dark-mode .user-info:hover i,
+body.dark-mode .user-info:hover span {
+    color: #fff !important;
+}
+
+/* Global Form Elements in Dark Mode (Force Override) */
+body.dark-mode input[type="text"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="number"],
+body.dark-mode select,
+body.dark-mode textarea {
+    background-color: #363636 !important;
+    border: 1px solid #576574 !important;
+    color: #ffffff !important;
+}
+
+/* =========================================
+   CASE DETAILS MODAL STYLES
+   ========================================= */
+
+/* Fix Pending Badge Contrast */
+.status-badge.pending {
+    color: #34495e !important;
+    /* Dark text for better visibility on yellow */
+    background: #f1c40f;
+}
+
+/* Detail Grid */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #7f8c8d;
+    font-size: 13px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.detail-value {
+    font-size: 15px;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.detail-value.text-large {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* Accused & Witness Cards */
+.accused-card,
+.witness-card {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid transparent;
+}
+
+.accused-card {
+    background: #fff3cd;
+    border-left-color: #ffc107;
+}
+
+.witness-card {
+    background: #d1ecf1;
+    border-left-color: #17a2b8;
+}
+
+.empty-text {
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* BNS Badges via Classes */
+.case-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 5px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-bns {
+    background: #2b6cb0;
+}
+
+.badge-ipc {
+    background: #718096;
+}
+
+.badge-cognizable {
+    background: #6b46c1;
+}
+
+.badge-non-cognizable {
+    background: #718096;
+}
+
+.badge-bailable {
+    background: #2f855a;
+}
+
+.badge-non-bailable {
+    background: #c53030;
+}
+
+/* DARK MODE OVERRIDES FOR CASE DETAILS */
+body.dark-mode .detail-label {
+    color: #a4b0be !important;
+}
+
+body.dark-mode .detail-value {
+    color: #f5f6fa !important;
+}
+
+body.dark-mode .detail-value.text-large {
+    color: #fff !important;
+}
+
+/* Dark Mode Cards */
+body.dark-mode .accused-card {
+    background: #33221a !important;
+    /* Dark orange tint */
+    border-left-color: #e67e22;
+    color: #f5f6fa;
+}
+
+body.dark-mode .witness-card {
+    background: #1a2633 !important;
+    /* Dark blue tint */
+    border-left-color: #3498db;
+    color: #f5f6fa;
+}
+
+body.dark-mode .accused-card small,
+body.dark-mode .witness-card small {
+    color: #dcdde1 !important;
+}
+
+body.dark-mode .description-box {
+    background: #2c2c2c !important;
+    color: #f5f6fa !important;
+    border: 1px solid #4a4a4a;
+}
+
+/* Fix for specific whitespace containers */
+body.dark-mode .transcription-editor-container,
+body.dark-mode .audio-editor-container,
+body.dark-mode .file-manager-wrapper,
+body.dark-mode .transcription-container,
+body.dark-mode .analytics-container {
+    background: transparent !important;
+}
+
+/* Borders for all panels */
+body.dark-mode .panel,
+body.dark-mode .card,
+body.dark-mode .sidebar-section {
+    border-color: #4a4a4a !important;
 }

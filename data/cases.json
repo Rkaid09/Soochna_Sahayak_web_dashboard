@@ -1,56 +1,1055 @@
 [
   {
-    "id": "FIR-2025-000001",
-    "complainant": "rajani ",
-    "contact": "9588237",
+    "id": "FIR-2026-000001",
+    "bnsSection": "BNS 303",
+    "bnsSectionName": "Theft",
+    "ipcEquivalent": "IPC 379",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Rajesh Kumar Sharma",
+    "contact": "9876543210",
+    "complainantAddress": "A-45, Lajpat Nagar, New Delhi",
+    "accusedDetails": [
+      {
+        "name": "Unknown Male",
+        "description": "25-30 years, medium build, dark complexion"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Suresh Kumar",
+        "contact": "9811223344",
+        "address": "B-12, Lajpat Nagar"
+      }
+    ],
     "type": "Theft",
     "station": "cp",
     "stationName": "Connaught Place Police Station",
-    "officer": "iuydiuwher",
-    "location": "rtrtr",
-    "address": "rger",
-    "description": "ergtert",
-    "status": "closed",
-    "date": "2025-10-08",
-    "time": "01:50 am",
-    "createdAt": "2025-10-08T20:20:00.503Z",
-    "updatedAt": "2025-10-21T13:26:13.093Z",
-    "evidenceFiles": []
+    "officer": "SI Vikram Singh",
+    "officerBadge": "CP1234",
+    "location": "M-Block Market, Connaught Place",
+    "address": "A-45, Lajpat Nagar, New Delhi",
+    "description": "Complainant reported theft of mobile phone (iPhone 15 Pro, IMEI: 354678901234567) and wallet containing Rs. 15,000 cash and credit cards while shopping at M-Block Market around 3:30 PM.",
+    "status": "progress",
+    "date": "2026-02-01",
+    "time": "03:30 pm",
+    "courtJurisdiction": "Metropolitan Magistrate, Patiala House",
+    "evidenceFiles": [
+      "2025-11-29T10-02-07-651Z_72fe39b3_recording.wav"
+    ],
+    "createdAt": "2026-02-01T10:00:00.000Z",
+    "updatedAt": "2026-02-02T14:30:00.000Z"
   },
   {
-    "id": "FIR-2025-000002",
-    "complainant": "Rape",
-    "contact": "9911002233",
+    "id": "FIR-2026-000002",
+    "bnsSection": "BNS 115",
+    "bnsSectionName": "Voluntarily Causing Hurt",
+    "ipcEquivalent": "IPC 323",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Human Body",
+    "complainant": "Amit Verma",
+    "contact": "9988776655",
+    "complainantAddress": "C-78, Karol Bagh, New Delhi",
+    "accusedDetails": [
+      {
+        "name": "Ravi Gupta",
+        "description": "Neighbor, 35 years, known to complainant"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Priya Sharma",
+        "contact": "9876123456",
+        "address": "C-80, Karol Bagh"
+      }
+    ],
     "type": "Assault",
-    "station": "cp",
-    "stationName": "Connaught Place Police Station",
-    "officer": "RK Bir",
-    "location": "Connaught Place",
-    "address": "Connaught Place",
-    "description": "xyz",
-    "status": "pending",
-    "date": "2025-10-20",
-    "time": "01:08 am",
-    "createdAt": "2025-10-20T19:38:23.992Z",
-    "updatedAt": "2025-10-20T19:38:23.992Z",
-    "evidenceFiles": []
-  },
-  {
-    "id": "FIR-2025-000003",
-    "complainant": "qwerty",
-    "contact": "1234567",
-    "type": "Fraud",
     "station": "kb",
     "stationName": "Karol Bagh Police Station",
-    "officer": "agam ",
-    "location": "asf",
-    "address": "qwertyu",
-    "description": "jhasjdsf assndfafmla j w[o rjip",
+    "officer": "SI Meena Kumari",
+    "officerBadge": "KB2341",
+    "location": "C-Block, Karol Bagh",
+    "address": "C-78, Karol Bagh, New Delhi",
+    "description": "Complainant was assaulted by neighbor Ravi Gupta during dispute over parking space. Sustained injuries on face and arms requiring 7 stitches. Medical report attached.",
+    "status": "progress",
+    "date": "2026-01-28",
+    "time": "07:45 pm",
+    "courtJurisdiction": "Metropolitan Magistrate, Tis Hazari",
+    "evidenceFiles": [
+      "2025-11-29T10-09-50-557Z_c5a63b67_recording.wav"
+    ],
+    "createdAt": "2026-01-28T20:15:00.000Z",
+    "updatedAt": "2026-01-30T11:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000003",
+    "bnsSection": "BNS 318",
+    "bnsSectionName": "Cheating",
+    "ipcEquivalent": "IPC 420",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Dr. Sunita Agarwal",
+    "contact": "9654321098",
+    "complainantAddress": "D-23, Rohini Sector 7, New Delhi",
+    "accusedDetails": [
+      {
+        "name": "Mohit Enterprises",
+        "description": "Fake investment company, office at Netaji Subhash Place"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Rakesh Mittal",
+        "contact": "9811234567",
+        "address": "Rohini Sector 8"
+      }
+    ],
+    "type": "Fraud",
+    "station": "rh",
+    "stationName": "Rohini Police Station",
+    "officer": "Inspector Rajendra Prasad",
+    "officerBadge": "RH0089",
+    "location": "Netaji Subhash Place, Pitampura",
+    "address": "D-23, Rohini Sector 7, New Delhi",
+    "description": "Complainant cheated of Rs. 5,00,000 by fraudulent investment scheme promising 25% monthly returns. Accused absconded after collecting money from multiple victims.",
     "status": "pending",
-    "date": "2025-10-21",
-    "time": "06:54 pm",
-    "createdAt": "2025-10-21T13:24:49.811Z",
-    "updatedAt": "2025-10-21T13:24:49.811Z",
-    "evidenceFiles": []
+    "date": "2026-01-25",
+    "time": "11:30 am",
+    "courtJurisdiction": "Sessions Court, Rohini",
+    "evidenceFiles": [
+      "2025-11-29T10-30-48-216Z_aa572270_recording.wav",
+      "2025-11-29T10-31-13-381Z_aada4de8_recording.wav"
+    ],
+    "createdAt": "2026-01-25T06:00:00.000Z",
+    "updatedAt": "2026-01-25T06:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000004",
+    "bnsSection": "BNS 309",
+    "bnsSectionName": "Robbery",
+    "ipcEquivalent": "IPC 392",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Vikrant Malhotra",
+    "contact": "9123456789",
+    "complainantAddress": "E-56, Delhi Gate, New Delhi",
+    "accusedDetails": [
+      {
+        "name": "Unknown",
+        "description": "2 males on motorcycle, wearing helmets, one had knife"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Auto driver Ram Prasad",
+        "contact": "9876543219",
+        "address": "Delhi Gate area"
+      }
+    ],
+    "type": "Robbery",
+    "station": "dl",
+    "stationName": "Delhi Gate Police Station",
+    "officer": "SI Harish Chandra",
+    "officerBadge": "DG4567",
+    "location": "Near Turkman Gate, Delhi Gate",
+    "address": "E-56, Delhi Gate, New Delhi",
+    "description": "Two bike-borne criminals snatched gold chain (50 grams) and threatened victim with knife. Incident occurred while complainant was walking home from metro station at 9 PM.",
+    "status": "progress",
+    "date": "2026-01-30",
+    "time": "09:00 pm",
+    "courtJurisdiction": "Sessions Court, Patiala House",
+    "evidenceFiles": [
+      "2025-11-29T10-34-43-890Z_d7dbe53d_recording.wav"
+    ],
+    "createdAt": "2026-01-30T21:30:00.000Z",
+    "updatedAt": "2026-02-01T10:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000005",
+    "bnsSection": "BNS 75",
+    "bnsSectionName": "Sexual Harassment",
+    "ipcEquivalent": "IPC 354A",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Sexual Offences",
+    "complainant": "Confidential (Female)",
+    "contact": "9999888877",
+    "complainantAddress": "Confidential - Dwarka Sector 12",
+    "accusedDetails": [
+      {
+        "name": "Sanjay Kapoor",
+        "description": "Senior Manager, XYZ Corp, age 45"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Neha Gupta (Colleague)",
+        "contact": "9876512345",
+        "address": "Dwarka Sector 10"
+      }
+    ],
+    "type": "Sexual Harassment",
+    "station": "cp",
+    "stationName": "Connaught Place Police Station",
+    "officer": "Lady SI Kavita Yadav",
+    "officerBadge": "CP5678",
+    "location": "XYZ Corporate Office, Connaught Place",
+    "address": "Confidential",
+    "description": "Complainant alleges repeated unwelcome physical contact and inappropriate comments by senior manager at workplace over past 3 months. Internal complaint was ignored.",
+    "status": "progress",
+    "date": "2026-01-22",
+    "time": "02:30 pm",
+    "courtJurisdiction": "Metropolitan Magistrate, Patiala House",
+    "evidenceFiles": [
+      "2025-11-29T11-06-16-074Z_c2759ff1_recording.webm"
+    ],
+    "createdAt": "2026-01-22T09:00:00.000Z",
+    "updatedAt": "2026-01-28T16:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000006",
+    "bnsSection": "BNS 137",
+    "bnsSectionName": "Kidnapping",
+    "ipcEquivalent": "IPC 363",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Kidnapping & Trafficking",
+    "complainant": "Ramesh Choudhary",
+    "contact": "9871234560",
+    "complainantAddress": "F-12, Jahangirpuri, New Delhi",
+    "accusedDetails": [
+      {
+        "name": "Unknown",
+        "description": "White Maruti van, 3 occupants"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Shopkeeper Govind",
+        "contact": "9811345678",
+        "address": "Main Road, Jahangirpuri"
+      }
+    ],
+    "type": "Kidnapping",
+    "station": "rh",
+    "stationName": "Rohini Police Station",
+    "officer": "Inspector D.K. Mishra",
+    "officerBadge": "RH1122",
+    "location": "Near Jahangirpuri Metro Station",
+    "address": "F-12, Jahangirpuri, New Delhi",
+    "description": "12-year-old son of complainant was abducted from near metro station by unknown persons in white van. Ransom call received demanding Rs. 10 lakhs. Case transferred to Anti-Kidnapping Cell.",
+    "status": "progress",
+    "date": "2026-02-02",
+    "time": "04:15 pm",
+    "courtJurisdiction": "Sessions Court, Rohini",
+    "evidenceFiles": [
+      "2025-11-29T11-13-43-068Z_a05fa3a9_recording.webm",
+      "2025-11-29T11-21-19-491Z_8ff918bf_recording.webm"
+    ],
+    "createdAt": "2026-02-02T11:00:00.000Z",
+    "updatedAt": "2026-02-03T18:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000007",
+    "bnsSection": "BNS 316",
+    "bnsSectionName": "Criminal Breach of Trust",
+    "ipcEquivalent": "IPC 406",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Anil Kapoor (Company Director)",
+    "contact": "9876001234",
+    "complainantAddress": "Green Park, New Delhi",
+    "accusedDetails": [
+      {
+        "name": "Vivek Sharma",
+        "description": "Ex-Accountant, 38 years, known address Vasant Kunj"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "CA Rohit Mehra",
+        "contact": "9811009988",
+        "address": "Hauz Khas"
+      }
+    ],
+    "type": "Criminal Breach of Trust",
+    "station": "cp",
+    "stationName": "Connaught Place Police Station",
+    "officer": "SI Rakesh Kumar",
+    "officerBadge": "CP7890",
+    "location": "ABC Enterprises, Barakhamba Road",
+    "address": "Green Park, New Delhi",
+    "description": "Company accountant embezzled Rs. 45 lakhs over 2 years by creating fake vendor entries and diverting funds to personal accounts. Discovered during annual audit.",
+    "status": "pending",
+    "date": "2026-01-15",
+    "time": "10:00 am",
+    "courtJurisdiction": "Sessions Court, Patiala House",
+    "evidenceFiles": [
+      "2025-11-29T11-35-01-986Z_95822cd0_recording.webm"
+    ],
+    "createdAt": "2026-01-15T04:30:00.000Z",
+    "updatedAt": "2026-01-20T12:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000008",
+    "bnsSection": "BNS 105",
+    "bnsSectionName": "Culpable Homicide",
+    "ipcEquivalent": "IPC 304",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Offences Against Human Body",
+    "complainant": "Smt. Kamla Devi",
+    "contact": "9654789012",
+    "complainantAddress": "G-Block, Mangolpuri, New Delhi",
+    "accusedDetails": [
+      {
+        "name": "Raju (Truck Driver)",
+        "description": "Driver of truck DL1LC 4567, 42 years"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Constable Surender",
+        "contact": "9818765432",
+        "address": "Police Colony Mangolpuri"
+      }
+    ],
+    "type": "Culpable Homicide",
+    "station": "rh",
+    "stationName": "Rohini Police Station",
+    "officer": "Inspector Sunil Tyagi",
+    "officerBadge": "RH3344",
+    "location": "Outer Ring Road near Mangolpuri",
+    "address": "G-Block, Mangolpuri, New Delhi",
+    "description": "Complainant's husband died after being hit by speeding truck while crossing road. Driver was under influence of alcohol. BAC test positive. Driver arrested from scene.",
+    "status": "closed",
+    "date": "2026-01-10",
+    "time": "11:30 pm",
+    "courtJurisdiction": "Sessions Court, Rohini",
+    "evidenceFiles": [
+      "2025-11-29T11-42-32-372Z_606a401d_recording.webm"
+    ],
+    "createdAt": "2026-01-11T00:00:00.000Z",
+    "updatedAt": "2026-01-25T14:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000009",
+    "bnsSection": "BNS 78",
+    "bnsSectionName": "Stalking",
+    "ipcEquivalent": "IPC 354D",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Sexual Offences",
+    "complainant": "Priyanka Mehra",
+    "contact": "9988112233",
+    "complainantAddress": "H-22, Pitampura, New Delhi",
+    "accusedDetails": [
+      {
+        "name": "Deepak Rawat",
+        "description": "Ex-boyfriend, 28 years, student at Delhi University"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Roommate Anjali",
+        "contact": "9876234567",
+        "address": "H-22, Pitampura"
+      }
+    ],
+    "type": "Stalking",
+    "station": "rh",
+    "stationName": "Rohini Police Station",
+    "officer": "Lady SI Preeti Sharma",
+    "officerBadge": "RH5566",
+    "location": "Pitampura Area",
+    "address": "H-22, Pitampura, New Delhi",
+    "description": "Ex-boyfriend continuously following complainant, sending threatening messages, and appearing uninvited at workplace and home. Over 200 messages and 50 missed calls daily for past month.",
+    "status": "progress",
+    "date": "2026-01-27",
+    "time": "06:00 pm",
+    "courtJurisdiction": "Metropolitan Magistrate, Rohini",
+    "evidenceFiles": [
+      "2025-11-30T17-05-44-809Z_a9a45da6_recorded.wav"
+    ],
+    "createdAt": "2026-01-27T12:30:00.000Z",
+    "updatedAt": "2026-02-01T10:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000010",
+    "bnsSection": "BNS 303",
+    "bnsSectionName": "Theft",
+    "ipcEquivalent": "IPC 379",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Mohammed Salim",
+    "contact": "9811554433",
+    "complainantAddress": "Jama Masjid Area, Old Delhi",
+    "accusedDetails": [
+      {
+        "name": "Unknown",
+        "description": "2 juveniles, approximately 14-16 years"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Shopkeeper Rahim",
+        "contact": "9818223344",
+        "address": "Chandni Chowk"
+      }
+    ],
+    "type": "Theft",
+    "station": "dl",
+    "stationName": "Delhi Gate Police Station",
+    "officer": "ASI Mohd. Irfan",
+    "officerBadge": "DG2233",
+    "location": "Chandni Chowk Market",
+    "address": "Jama Masjid Area, Old Delhi",
+    "description": "Pickup from shop. Two juveniles stole electronic goods worth Rs. 75,000 including 3 smartphones and 2 tablets. CCTV footage available.",
+    "status": "pending",
+    "date": "2026-02-03",
+    "time": "01:45 pm",
+    "courtJurisdiction": "Juvenile Justice Board, Kingsway Camp",
+    "evidenceFiles": [
+      "2025-11-30T17-08-13-520Z_b0c38838_recorded.wav"
+    ],
+    "createdAt": "2026-02-03T08:15:00.000Z",
+    "updatedAt": "2026-02-03T08:15:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000011",
+    "bnsSection": "BNS 111",
+    "bnsSectionName": "Organized Crime",
+    "ipcEquivalent": "New Provision",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Organized Crime",
+    "complainant": "State (suo moto)",
+    "contact": "1100",
+    "complainantAddress": "Crime Branch, Delhi Police HQ",
+    "accusedDetails": [
+      {
+        "name": "Bunty Gang",
+        "description": "5 member gang operating in South Delhi"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Informer (Protected)",
+        "contact": "Protected",
+        "address": "Protected"
+      }
+    ],
+    "type": "Organized Crime",
+    "station": "cp",
+    "stationName": "Connaught Place Police Station",
+    "officer": "ACP Rajiv Kapoor",
+    "officerBadge": "CB0001",
+    "location": "South Delhi",
+    "address": "Crime Branch HQ",
+    "description": "Organized gang involved in series of house break-ins targeting affluent areas of South Delhi. 15 cases linked. Total property stolen estimated at Rs. 2 crores.",
+    "status": "progress",
+    "date": "2026-01-05",
+    "time": "10:00 am",
+    "courtJurisdiction": "Sessions Court, Saket",
+    "evidenceFiles": [
+      "2025-12-01T21-36-27-244Z_c77def7a_recorded.webm",
+      "2025-12-01T21-36-38-946Z_1ea28b04_recorded.webm"
+    ],
+    "createdAt": "2026-01-05T04:30:00.000Z",
+    "updatedAt": "2026-02-01T16:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000012",
+    "bnsSection": "BNS 351",
+    "bnsSectionName": "Criminal Intimidation",
+    "ipcEquivalent": "IPC 506",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Other Offences",
+    "complainant": "Rajiv Nair",
+    "contact": "9876009876",
+    "complainantAddress": "I-45, Greater Kailash Part 2",
+    "accusedDetails": [
+      {
+        "name": "Unknown Caller",
+        "description": "Male voice, threatened via phone calls"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Wife - Lakshmi Nair",
+        "contact": "9876009877",
+        "address": "Same"
+      }
+    ],
+    "type": "Criminal Intimidation",
+    "station": "cp",
+    "stationName": "Connaught Place Police Station",
+    "officer": "SI Anand Sharma",
+    "officerBadge": "CP9012",
+    "location": "Via Phone",
+    "address": "I-45, Greater Kailash Part 2",
+    "description": "Complainant receiving threatening calls demanding Rs. 50 lakhs extortion. Caller claims to be from gang and threatens harm to family. Call recordings preserved as evidence.",
+    "status": "progress",
+    "date": "2026-02-01",
+    "time": "08:30 pm",
+    "courtJurisdiction": "Metropolitan Magistrate, Saket",
+    "evidenceFiles": [
+      "2025-12-01T22-02-05-850Z_faa096e3_recording.webm"
+    ],
+    "createdAt": "2026-02-01T15:00:00.000Z",
+    "updatedAt": "2026-02-02T12:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000013",
+    "bnsSection": "BNS 117",
+    "bnsSectionName": "Grievous Hurt",
+    "ipcEquivalent": "IPC 325",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Offences Against Human Body",
+    "complainant": "Sukhdev Singh",
+    "contact": "9811667788",
+    "complainantAddress": "J-Block, Tilak Nagar",
+    "accusedDetails": [
+      {
+        "name": "Pappu and 2 others",
+        "description": "Local goons, known to police"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Tea stall owner Babu",
+        "contact": "9818334455",
+        "address": "Tilak Nagar Market"
+      }
+    ],
+    "type": "Grievous Hurt",
+    "station": "kb",
+    "stationName": "Karol Bagh Police Station",
+    "officer": "Inspector Balwinder Singh",
+    "officerBadge": "KB3456",
+    "location": "Tilak Nagar Market",
+    "address": "J-Block, Tilak Nagar",
+    "description": "Complainant was attacked with iron rods by 3 accused over property dispute. Suffered multiple fractures in legs and arms. Currently hospitalized in critical condition at Safdarjung Hospital.",
+    "status": "progress",
+    "date": "2026-01-29",
+    "time": "10:30 pm",
+    "courtJurisdiction": "Sessions Court, Tis Hazari",
+    "evidenceFiles": [
+      "2025-12-01T22-11-50-035Z_16601c9a_recording.webm"
+    ],
+    "createdAt": "2026-01-29T17:00:00.000Z",
+    "updatedAt": "2026-02-02T09:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000014",
+    "bnsSection": "BNS 308",
+    "bnsSectionName": "Extortion",
+    "ipcEquivalent": "IPC 384",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Naresh Kumar (Shop Owner)",
+    "contact": "9812345670",
+    "complainantAddress": "K-Market, Laxmi Nagar",
+    "accusedDetails": [
+      {
+        "name": "Monu and Gang",
+        "description": "Local extortion gang, operates in East Delhi"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Neighboring shopkeeper Ramesh",
+        "contact": "9818556677",
+        "address": "K-Market, Laxmi Nagar"
+      }
+    ],
+    "type": "Extortion",
+    "station": "dl",
+    "stationName": "Delhi Gate Police Station",
+    "officer": "SI Pramod Kumar",
+    "officerBadge": "DG7788",
+    "location": "K-Market, Laxmi Nagar",
+    "address": "K-Market, Laxmi Nagar",
+    "description": "Gang demanding Rs. 10,000 monthly 'protection money' from shop owners. Vandalized shop when payment refused. Multiple shopkeepers affected but afraid to file complaints.",
+    "status": "pending",
+    "date": "2026-02-02",
+    "time": "11:00 am",
+    "courtJurisdiction": "Sessions Court, Karkardooma",
+    "evidenceFiles": [
+      "2025-12-12T19-32-38-193Z_10ba7c23_recording.webm"
+    ],
+    "createdAt": "2026-02-02T05:30:00.000Z",
+    "updatedAt": "2026-02-02T05:30:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000015",
+    "bnsSection": "BNS 319",
+    "bnsSectionName": "Online Fraud",
+    "ipcEquivalent": "IPC 420 + IT Act",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Cybercrimes & Fraud",
+    "complainant": "Smt. Usha Rani",
+    "contact": "9876234509",
+    "complainantAddress": "L-56, Dwarka Sector 6",
+    "accusedDetails": [
+      {
+        "name": "Unknown (Cyber)",
+        "description": "Posed as SBI customer care, made calls from +91-8800XXXXXX"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Son - Rahul",
+        "contact": "9876234510",
+        "address": "Same"
+      }
+    ],
+    "type": "Online Fraud",
+    "station": "rh",
+    "stationName": "Rohini Police Station",
+    "officer": "Cyber Cell SI Amit Yadav",
+    "officerBadge": "CC1234",
+    "location": "Online/Phone",
+    "address": "L-56, Dwarka Sector 6",
+    "description": "Victim received call from fake bank representative claiming account blocked. Shared OTP and lost Rs. 3,50,000 in multiple transactions. Case referred to Cyber Crime Cell.",
+    "status": "progress",
+    "date": "2026-01-20",
+    "time": "03:00 pm",
+    "courtJurisdiction": "Metropolitan Magistrate, Dwarka",
+    "evidenceFiles": [
+      "2025-12-12T20-10-34-457Z_534953e5_recording.webm"
+    ],
+    "createdAt": "2026-01-20T09:30:00.000Z",
+    "updatedAt": "2026-01-28T14:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000016",
+    "bnsSection": "BNS 310",
+    "bnsSectionName": "Dacoity",
+    "ipcEquivalent": "IPC 395",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Prakash Jewellers",
+    "contact": "9811223456",
+    "complainantAddress": "M-Block, Karol Bagh Main Market",
+    "accusedDetails": [
+      {
+        "name": "5-6 armed men",
+        "description": "Masked, carrying firearms and rods"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Security guard Ramu",
+        "contact": "9818667788",
+        "address": "Security Quarters, Karol Bagh"
+      }
+    ],
+    "type": "Dacoity",
+    "station": "kb",
+    "stationName": "Karol Bagh Police Station",
+    "officer": "Inspector Jaswant Singh",
+    "officerBadge": "KB0011",
+    "location": "Prakash Jewellers, Karol Bagh",
+    "address": "M-Block, Karol Bagh Main Market",
+    "description": "Armed gang of 5-6 persons looted jewellery shop at gunpoint. Took gold and diamond jewellery worth Rs. 1.5 crores. Security guard injured. CCTV cameras disabled.",
+    "status": "progress",
+    "date": "2026-01-18",
+    "time": "08:45 pm",
+    "courtJurisdiction": "Sessions Court, Tis Hazari",
+    "evidenceFiles": [
+      "2025-12-12T20-18-58-437Z_0d7499d4_recorded.webm",
+      "2025-12-12T20-19-10-970Z_29e51fa9_recorded.webm"
+    ],
+    "createdAt": "2026-01-18T15:15:00.000Z",
+    "updatedAt": "2026-02-01T11:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000017",
+    "bnsSection": "BNS 101",
+    "bnsSectionName": "Murder",
+    "ipcEquivalent": "IPC 302",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Offences Against Human Body",
+    "complainant": "State (Police)",
+    "contact": "100",
+    "complainantAddress": "Police Control Room",
+    "accusedDetails": [
+      {
+        "name": "Suraj Kumar",
+        "description": "Husband of deceased, 35 years, arrested"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Neighbor Smt. Rekha",
+        "contact": "9818990011",
+        "address": "N-45, Seelampur"
+      }
+    ],
+    "type": "Murder",
+    "station": "dl",
+    "stationName": "Delhi Gate Police Station",
+    "officer": "Inspector R.K. Verma",
+    "officerBadge": "DG0001",
+    "location": "N-45, Seelampur",
+    "address": "N-45, Seelampur, Delhi",
+    "description": "Woman found dead with strangulation marks. Husband arrested after neighbors reported history of domestic violence. Post-mortem confirms homicidal death by asphyxiation.",
+    "status": "closed",
+    "date": "2026-01-08",
+    "time": "06:00 am",
+    "courtJurisdiction": "Sessions Court, Karkardooma",
+    "evidenceFiles": [
+      "2025-12-12T20-25-33-781Z_9836c7ea_recorded.webm"
+    ],
+    "createdAt": "2026-01-08T00:30:00.000Z",
+    "updatedAt": "2026-01-20T16:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000018",
+    "bnsSection": "BNS 109",
+    "bnsSectionName": "Attempt to Murder",
+    "ipcEquivalent": "IPC 307",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Offences Against Human Body",
+    "complainant": "Rakesh Sharma",
+    "contact": "9876111222",
+    "complainantAddress": "O-Block, Uttam Nagar",
+    "accusedDetails": [
+      {
+        "name": "Bablu and Tinku",
+        "description": "Business rivals, ages 30-35"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Driver Mahesh",
+        "contact": "9818112233",
+        "address": "Uttam Nagar"
+      }
+    ],
+    "type": "Attempt to Murder",
+    "station": "kb",
+    "stationName": "Karol Bagh Police Station",
+    "officer": "Inspector Yogesh Kumar",
+    "officerBadge": "KB7890",
+    "location": "Near Uttam Nagar Metro Station",
+    "address": "O-Block, Uttam Nagar",
+    "description": "Accused attempted to run over complainant with car following business dispute. Victim jumped to safety and sustained minor injuries. Car seized, accused absconding.",
+    "status": "progress",
+    "date": "2026-01-31",
+    "time": "07:00 pm",
+    "courtJurisdiction": "Sessions Court, Tis Hazari",
+    "evidenceFiles": [
+      "2025-12-12T20-27-37-088Z_ddaab3b4_recorded.webm"
+    ],
+    "createdAt": "2026-01-31T13:30:00.000Z",
+    "updatedAt": "2026-02-02T10:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000019",
+    "bnsSection": "BNS 303",
+    "bnsSectionName": "Theft",
+    "ipcEquivalent": "IPC 379",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Delhi Metro Rail Corporation",
+    "contact": "23417910",
+    "complainantAddress": "DMRC HQ, Barakhamba Road",
+    "accusedDetails": [
+      {
+        "name": "Unknown",
+        "description": "Targeting Metro passengers"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "DMRC Security",
+        "contact": "23417911",
+        "address": "DMRC HQ"
+      }
+    ],
+    "type": "Theft",
+    "station": "cp",
+    "stationName": "Connaught Place Police Station",
+    "officer": "Metro Police SI Raj Kumar",
+    "officerBadge": "MP2345",
+    "location": "Rajiv Chowk Metro Station",
+    "address": "DMRC HQ, Barakhamba Road",
+    "description": "Series thefts reported at Rajiv Chowk Metro. 8 passengers reported stolen wallets and phones in past week. CCTV analysis underway to identify pickpocket gang.",
+    "status": "progress",
+    "date": "2026-02-03",
+    "time": "09:00 am",
+    "courtJurisdiction": "Metropolitan Magistrate, Patiala House",
+    "evidenceFiles": [
+      "2025-12-12T20-34-23-274Z_272a915e_recorded.webm"
+    ],
+    "createdAt": "2026-02-03T03:30:00.000Z",
+    "updatedAt": "2026-02-04T10:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000020",
+    "bnsSection": "BNS 143",
+    "bnsSectionName": "Human Trafficking",
+    "ipcEquivalent": "IPC 370",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Kidnapping & Trafficking",
+    "complainant": "State (NGO Tip)",
+    "contact": "1098",
+    "complainantAddress": "Child Welfare Committee, Delhi",
+    "accusedDetails": [
+      {
+        "name": "Trafficking Network",
+        "description": "Operating from GB Road area"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "NGO Worker (Protected)",
+        "contact": "Protected",
+        "address": "Protected"
+      }
+    ],
+    "type": "Human Trafficking",
+    "station": "dl",
+    "stationName": "Delhi Gate Police Station",
+    "officer": "ACP Anti-Human Trafficking",
+    "officerBadge": "AHT001",
+    "location": "GB Road Area",
+    "address": "Delhi Police HQ",
+    "description": "Rescue operation conducted based on NGO tip. 8 minor girls rescued from trafficking ring. Investigation reveals inter-state network operating for 2 years.",
+    "status": "progress",
+    "date": "2026-01-12",
+    "time": "02:00 am",
+    "courtJurisdiction": "Sessions Court, Patiala House",
+    "evidenceFiles": [
+      "2025-12-12T20-41-19-532Z_43b3d720_recorded.webm",
+      "2025-12-12T20-41-37-835Z_6b19595e_recorded.webm"
+    ],
+    "createdAt": "2026-01-12T21:00:00.000Z",
+    "updatedAt": "2026-02-01T14:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000021",
+    "bnsSection": "BNS 303",
+    "bnsSectionName": "Vehicle Theft",
+    "ipcEquivalent": "IPC 379",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Deepak Malhotra",
+    "contact": "9876543000",
+    "complainantAddress": "P-12, Vasant Vihar",
+    "accusedDetails": [
+      {
+        "name": "Unknown",
+        "description": "Professional car thieves"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Society Guard Shyam",
+        "contact": "9818778899",
+        "address": "Vasant Vihar RWA"
+      }
+    ],
+    "type": "Vehicle Theft",
+    "station": "cp",
+    "stationName": "Connaught Place Police Station",
+    "officer": "SI Naveen Chaudhary",
+    "officerBadge": "CP3456",
+    "location": "Vasant Vihar Market Parking",
+    "address": "P-12, Vasant Vihar",
+    "description": "Toyota Fortuner (DL4C AB 1234) stolen from market parking. Keyless entry and push-button start bypassed. Vehicle was new (6 months old), valued at Rs. 42 lakhs.",
+    "status": "pending",
+    "date": "2026-02-04",
+    "time": "04:30 pm",
+    "courtJurisdiction": "Metropolitan Magistrate, Saket",
+    "evidenceFiles": [
+      "2025-12-12T20-45-52-774Z_0abfb918_recorded.webm"
+    ],
+    "createdAt": "2026-02-04T11:00:00.000Z",
+    "updatedAt": "2026-02-04T11:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000022",
+    "bnsSection": "BNS 63",
+    "bnsSectionName": "Rape",
+    "ipcEquivalent": "IPC 376",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Non-Bailable",
+    "crimeType": "Sexual Offences",
+    "complainant": "Confidential (Victim)",
+    "contact": "Women Helpline 181",
+    "complainantAddress": "Confidential",
+    "accusedDetails": [
+      {
+        "name": "Accused Known to Victim",
+        "description": "Details in sealed cover"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Medical Staff AIIMS",
+        "contact": "AIIMS Trauma",
+        "address": "AIIMS Delhi"
+      }
+    ],
+    "type": "Rape",
+    "station": "cp",
+    "stationName": "Connaught Place Police Station",
+    "officer": "Lady Inspector Sunita Rani",
+    "officerBadge": "CP0002",
+    "location": "South Delhi",
+    "address": "Confidential - Protected",
+    "description": "Case registered under BNS 63. Victim underwent medical examination at AIIMS. Accused arrested. Case being handled by Special Investigation Team with utmost sensitivity.",
+    "status": "progress",
+    "date": "2026-01-24",
+    "time": "Confidential",
+    "courtJurisdiction": "Special Fast Track Court",
+    "evidenceFiles": [],
+    "createdAt": "2026-01-24T10:00:00.000Z",
+    "updatedAt": "2026-02-01T16:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000023",
+    "bnsSection": "BNS 318",
+    "bnsSectionName": "Cheating",
+    "ipcEquivalent": "IPC 420",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Multiple Complainants (Class Action)",
+    "contact": "9876000111",
+    "complainantAddress": "Various Locations, Delhi NCR",
+    "accusedDetails": [
+      {
+        "name": "XYZ Builders Pvt Ltd",
+        "description": "Real estate company, Noida based"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "35 affected buyers",
+        "contact": "Various",
+        "address": "Delhi NCR"
+      }
+    ],
+    "type": "Cheating",
+    "station": "rh",
+    "stationName": "Rohini Police Station",
+    "officer": "Economic Offences Wing",
+    "officerBadge": "EOW0123",
+    "location": "Noida Sector 150",
+    "address": "EOW Delhi",
+    "description": "Builder collected Rs. 25 crores from 35 buyers for flats but failed to deliver possession for 5 years. RERA complaints also filed. Investigation reveals fund diversion.",
+    "status": "progress",
+    "date": "2026-01-02",
+    "time": "11:00 am",
+    "courtJurisdiction": "Economic Offences Court",
+    "evidenceFiles": [
+      "2025-12-12T21-03-24-102Z_300e724b_recorded.webm"
+    ],
+    "createdAt": "2026-01-02T05:30:00.000Z",
+    "updatedAt": "2026-01-30T12:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000024",
+    "bnsSection": "BNS 115",
+    "bnsSectionName": "Voluntarily Causing Hurt",
+    "ipcEquivalent": "IPC 323",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Human Body",
+    "complainant": "Food Delivery Executive Ravi",
+    "contact": "9811000999",
+    "complainantAddress": "Q-Block, Mayur Vihar Phase 1",
+    "accusedDetails": [
+      {
+        "name": "Customer - Arjun Kapoor",
+        "description": "3rd Floor, R-Block, Mayur Vihar"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Society Watchman",
+        "contact": "9818001122",
+        "address": "R-Block Security"
+      }
+    ],
+    "type": "Assault",
+    "station": "dl",
+    "stationName": "Delhi Gate Police Station",
+    "officer": "ASI Surender Pal",
+    "officerBadge": "DG5566",
+    "location": "R-Block, Mayur Vihar Phase 1",
+    "address": "Q-Block, Mayur Vihar Phase 1",
+    "description": "Delivery executive assaulted by customer over late delivery complaint. Sustained injuries to face. Incident captured on society CCTV. Medical expenses Rs. 5,000.",
+    "status": "closed",
+    "date": "2026-01-26",
+    "time": "08:15 pm",
+    "courtJurisdiction": "Metropolitan Magistrate, Karkardooma",
+    "evidenceFiles": [
+      "2025-12-12T21-09-32-652Z_6a30ea09_recorded.webm"
+    ],
+    "createdAt": "2026-01-26T14:45:00.000Z",
+    "updatedAt": "2026-02-02T11:00:00.000Z"
+  },
+  {
+    "id": "FIR-2026-000025",
+    "bnsSection": "BNS 303",
+    "bnsSectionName": "Theft",
+    "ipcEquivalent": "IPC 379",
+    "caseCategory": "Cognizable",
+    "bailableStatus": "Bailable",
+    "crimeType": "Offences Against Property",
+    "complainant": "Government Hospital (DDU)",
+    "contact": "23344556",
+    "complainantAddress": "DDU Hospital, Hari Nagar",
+    "accusedDetails": [
+      {
+        "name": "Hospital Staff (Suspected)",
+        "description": "Under investigation"
+      }
+    ],
+    "witnessDetails": [
+      {
+        "name": "Nursing Staff",
+        "contact": "Hospital Admin",
+        "address": "DDU Hospital"
+      }
+    ],
+    "type": "Theft",
+    "station": "kb",
+    "stationName": "Karol Bagh Police Station",
+    "officer": "SI Dinesh Rawat",
+    "officerBadge": "KB4455",
+    "location": "DDU Hospital Pharmacy",
+    "address": "DDU Hospital, Hari Nagar",
+    "description": "Theft of medicines worth Rs. 8 lakhs from hospital pharmacy over 3 months. Stock audit revealed systematic pilferage. Internal inquiry and police investigation ongoing.",
+    "status": "progress",
+    "date": "2026-01-16",
+    "time": "10:30 am",
+    "courtJurisdiction": "Metropolitan Magistrate, Tis Hazari",
+    "evidenceFiles": [
+      "2025-12-12T21-17-36-362Z_8dc7ae3c_recorded.webm"
+    ],
+    "createdAt": "2026-01-16T05:00:00.000Z",
+    "updatedAt": "2026-02-01T09:00:00.000Z"
   }
 ]

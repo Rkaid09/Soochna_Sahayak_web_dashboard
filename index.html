@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/wavesurfer.js@6.6.3"></script>
     <script src="https://unpkg.com/wavesurfer.js@6.6.3/dist/plugin/wavesurfer.regions.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -43,8 +44,12 @@
         <!-- Main Content -->
         <div class="main-content">
             <header class="header">
-                <div class="header-left">
+                <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
                     <h1 id="page-title">Dashboard</h1>
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()" title="Toggle Dark Mode"
+                        style="background: none; border: none; font-size: 20px; color: #7f8c8d; cursor: pointer;">
+                        <i class="fas fa-moon"></i>
+                    </button>
                 </div>
                 <div class="header-right">
                     <div class="user-info" onclick="openAccountModal()">
@@ -66,7 +71,7 @@
                             <i class="fas fa-file-alt"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>247</h3>
+                            <h3 id="dashboard-total-cases">0</h3>
                             <p>Total FIRs</p>
                         </div>
                     </div>
@@ -75,7 +80,7 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>89</h3>
+                            <h3 id="dashboard-pending-cases">0</h3>
                             <p>Pending Cases</p>
                         </div>
                     </div>
@@ -84,7 +89,7 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>142</h3>
+                            <h3 id="dashboard-closed-cases">0</h3>
                             <p>Closed Cases</p>
                         </div>
                     </div>
@@ -93,7 +98,7 @@
                             <i class="fas fa-spinner"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>16</h3>
+                            <h3 id="dashboard-progress-cases">0</h3>
                             <p>In Progress</p>
                         </div>
                     </div>
@@ -122,10 +127,10 @@
             <div id="cases-page" class="page">
                 <div class="page-header">
                     <div class="search-bar">
-                        <input type="text" placeholder="Search FIR cases..." id="case-search">
+                        <input type="text" placeholder="Search FIR cases, BNS sections..." id="case-search">
                         <button class="search-btn"><i class="fas fa-search"></i></button>
                     </div>
-                    <div class="filter-controls">
+                    <div class="filter-controls" style="display: flex; flex-wrap: wrap; gap: 10px;">
                         <select id="status-filter">
                             <option value="">All Status</option>
                             <option value="pending">Pending</option>
@@ -139,23 +144,46 @@
                             <option value="rh">Rohini</option>
                             <option value="dl">Delhi Gate</option>
                         </select>
+                        <select id="bns-category-filter">
+                            <option value="">All BNS Categories</option>
+                            <option value="human-body">Offences Against Human Body (101-136)</option>
+                            <option value="sexual">Sexual Offences (63-78)</option>
+                            <option value="property">Property Offences (303-334)</option>
+                            <option value="kidnapping">Kidnapping & Trafficking (137-145)</option>
+                            <option value="organized">Organized Crime (111-112)</option>
+                            <option value="other">Other Offences</option>
+                        </select>
+                        <select id="cognizable-filter">
+                            <option value="">All Categories</option>
+                            <option value="Cognizable">Cognizable</option>
+                            <option value="Non-Cognizable">Non-Cognizable</option>
+                        </select>
+                        <select id="bail-filter">
+                            <option value="">All Bail Status</option>
+                            <option value="Bailable">Bailable</option>
+                            <option value="Non-Bailable">Non-Bailable</option>
+                        </select>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="font-size: 12px; color: #666;">From:</label>
+                            <input type="date" id="date-from"
+                                style="padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="font-size: 12px; color: #666;">To:</label>
+                            <input type="date" id="date-to"
+                                style="padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <select id="sort-cases">
+                            <option value="date-desc">Sort: Newest First</option>
+                            <option value="date-asc">Sort: Oldest First</option>
+                            <option value="id-asc">Sort: FIR Number (A-Z)</option>
+                            <option value="id-desc">Sort: FIR Number (Z-A)</option>
+                            <option value="status">Sort: By Status</option>
+                        </select>
                     </div>
                 </div>
                 <div class="cases-grid" id="cases-grid">
                     <!-- Cases will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Case Detail Modal -->
-            <div id="case-modal" class="modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 id="modal-case-id">FIR Details</h2>
-                        <span class="close-modal" onclick="closeCaseModal()">&times;</span>
-                    </div>
-                    <div class="modal-body" id="case-details">
-                        <!-- Case details will be populated by JavaScript -->
-                    </div>
                 </div>
             </div>
 
@@ -197,17 +225,92 @@
             </div>
 
             <div id="file-manager-page" class="page">
-                <div class="file-manager-container">
-                    <div class="file-toolbar">
-                        <button class="btn btn-primary" onclick="uploadFile()"><i class="fas fa-upload"></i>
-                            Upload</button>
-                        <button class="btn btn-secondary" onclick="createFolder()"><i class="fas fa-folder-plus"></i>
-                            New Folder</button>
-                        <button class="btn btn-danger" onclick="deleteSelected()"><i class="fas fa-trash"></i>
-                            Delete</button>
+                <div class="file-manager-wrapper" style="display: flex; gap: 20px;">
+                    <!-- Police Database Sidebar -->
+                    <div class="police-db-sidebar"
+                        style="width: 250px; background: #f8f9fa; border-radius: 8px; padding: 15px; flex-shrink: 0;">
+                        <h4
+                            style="margin: 0 0 15px 0; color: #2c5282; border-bottom: 2px solid #2c5282; padding-bottom: 10px;">
+                            <i class="fas fa-database"></i> Police Database
+                        </h4>
+
+                        <!-- Browse by Section -->
+                        <div class="db-section" style="margin-bottom: 15px;">
+                            <h5 style="margin: 0 0 8px 0; color: #4a5568; font-size: 13px; text-transform: uppercase;">
+                                Browse By</h5>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                <li style="margin-bottom: 5px;">
+                                    <a href="#" onclick="browseByCategory('cases'); return false;"
+                                        style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #fff; border-radius: 5px; color: #2d3748; text-decoration: none; transition: all 0.2s;">
+                                        <i class="fas fa-folder-open" style="color: #2b6cb0;"></i> FIR Cases
+                                    </a>
+                                </li>
+                                <li style="margin-bottom: 5px;">
+                                    <a href="#" onclick="browseByCategory('year'); return false;"
+                                        style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #fff; border-radius: 5px; color: #2d3748; text-decoration: none; transition: all 0.2s;">
+                                        <i class="fas fa-calendar-alt" style="color: #6b46c1;"></i> By Year
+                                    </a>
+                                </li>
+                                <li style="margin-bottom: 5px;">
+                                    <a href="#" onclick="browseByCategory('station'); return false;"
+                                        style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #fff; border-radius: 5px; color: #2d3748; text-decoration: none; transition: all 0.2s;">
+                                        <i class="fas fa-building" style="color: #2f855a;"></i> By Station
+                                    </a>
+                                </li>
+                                <li style="margin-bottom: 5px;">
+                                    <a href="#" onclick="browseByCategory('crime'); return false;"
+                                        style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #fff; border-radius: 5px; color: #2d3748; text-decoration: none; transition: all 0.2s;">
+                                        <i class="fas fa-gavel" style="color: #c53030;"></i> By Crime Type
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="db-section" style="margin-bottom: 15px;">
+                            <h5 style="margin: 0 0 8px 0; color: #4a5568; font-size: 13px; text-transform: uppercase;">
+                                Quick Stats</h5>
+                            <div id="file-stats"
+                                style="background: #fff; padding: 10px; border-radius: 5px; font-size: 13px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Total Files:</span>
+                                    <strong id="stat-total-files">0</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Audio Files:</span>
+                                    <strong id="stat-audio-files">0</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Evidence Linked:</span>
+                                    <strong id="stat-evidence-files">0</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Cases -->
+                        <div class="db-section">
+                            <h5 style="margin: 0 0 8px 0; color: #4a5568; font-size: 13px; text-transform: uppercase;">
+                                Recent Cases</h5>
+                            <div id="recent-cases-list" style="max-height: 200px; overflow-y: auto;">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
                     </div>
-                    <div class="file-grid" id="file-grid">
-                        <!-- Files will be populated by JavaScript -->
+
+                    <!-- Main File Manager -->
+                    <div class="file-manager-container" style="flex: 1;">
+                        <div class="file-toolbar">
+                            <button class="btn btn-primary" onclick="uploadFile()"><i class="fas fa-upload"></i>
+                                Upload</button>
+                            <button class="btn btn-secondary" onclick="createFolder()"><i
+                                    class="fas fa-folder-plus"></i>
+                                New Folder</button>
+                            <button class="btn btn-danger" onclick="deleteSelected()"><i class="fas fa-trash"></i>
+                                Delete</button>
+                        </div>
+                        <div class="file-grid" id="file-grid">
+                            <!-- Files will be populated by JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -406,6 +509,19 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Case Detail Modal -->
+    <div id="case-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 id="modal-case-id">FIR Details</h2>
+                <span class="close-modal" onclick="closeCaseModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="case-details">
+                <!-- Case details will be populated by JavaScript -->
             </div>
         </div>
     </div>
