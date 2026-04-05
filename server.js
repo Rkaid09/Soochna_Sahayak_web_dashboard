@@ -543,6 +543,15 @@ app.post('/api/files/upload', upload.array('files', 10), async (req, res) => {
                 folder
             });
             await fileRecord.save();
+            
+            // Add file to the Case's evidence array so it appears in the dashboard
+            if (caseId) {
+                await Case.findOneAndUpdate(
+                    { id: caseId },
+                    { $push: { evidenceFiles: fileRecord.filename } }
+                );
+            }
+            
             uploadedFiles.push(fileRecord.toObject());
         }
         res.json({ message: 'Files uploaded successfully', files: uploadedFiles });
@@ -996,6 +1005,33 @@ app.post('/api/external/fir', requireApiKey, async (req, res) => {
     } catch (error) {
         console.error('External FIR intake error:', error);
         res.status(500).json({ error: 'Failed to record FIR' });
+    }
+});
+
+// ─── External Transcription Intake (for friend's recording app) ────────────────────────
+app.post('/api/external/transcription', requireApiKey, async (req, res) => {
+    try {
+        if (!req.body.transcription) {
+            return res.status(400).json({ error: 'Missing transcription text' });
+        }
+        const transCount = await Transcription.countDocuments();
+        const transcriptionId = req.body.id || `TR-${new Date().getFullYear()}-${String(transCount + 1).padStart(6, '0')}`;
+        
+        const newTranscription = new Transcription({
+            id: transcriptionId,
+            caseId: req.body.caseId || null,
+            transcription: req.body.transcription,
+            language: req.body.language || 'en',
+            audioFile: req.body.audioFile || 'iOS Application Recording',
+            status: 'completed',
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+        await newTranscription.save();
+        res.status(201).json({ success: true, id: newTranscription.id, message: 'Transcription saved successfully' });
+    } catch (error) {
+        console.error('External Transcription intake error:', error);
+        res.status(500).json({ error: 'Failed to record transcription' });
     }
 });
 
