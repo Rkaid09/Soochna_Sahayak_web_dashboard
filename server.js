@@ -21,9 +21,10 @@ const connectDB = async () => {
     if (mongoose.connection.readyState >= 1) return mongoose.connection;
     try {
         await mongoose.connect(process.env.MONGODB_URI, {
-            serverSelectionTimeoutMS: 5000,
+            serverSelectionTimeoutMS: 30000,
             socketTimeoutMS: 45000,
-            connectTimeoutMS: 10000
+            connectTimeoutMS: 30000,
+            family: 4
         });
         console.log('✅ Connected to MongoDB Atlas');
         return mongoose.connection;
@@ -122,7 +123,7 @@ app.use(async (req, res, next) => {
         await connectDB();
         next();
     } catch (error) {
-        res.status(503).json({ error: `DB Error: ${error.message} | URI Set: ${!!process.env.MONGODB_URI}` });
+        res.status(503).json({ error: 'Database connection is currently unavailable. Please try again in a few seconds.', details: error.message });
     }
 });
 
