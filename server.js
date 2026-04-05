@@ -966,6 +966,8 @@ app.post('/api/external/fir', requireApiKey, async (req, res) => {
         const count = await Case.countDocuments();
         const caseId = req.body.firNumber ||
             `FIR-${new Date().getFullYear()}-${String(count + 1).padStart(6, '0')}`;
+            
+        // 1. Create the Case
         const newCase = new Case({
             id: caseId,
             ...req.body,
@@ -974,7 +976,23 @@ app.post('/api/external/fir', requireApiKey, async (req, res) => {
             updatedAt: new Date()
         });
         await newCase.save();
-        res.status(201).json({ success: true, id: newCase.id, message: 'FIR received successfully' });
+        
+        // 2. If the payload contains transcription text, create a matching Transcription entry
+        if (req.body.transcription) {
+            const transCount = await Transcription.countDocuments();
+            const newTranscription = new Transcription({
+                id: `TR-${new Date().getFullYear()}-${String(transCount + 1).padStart(6, '0')}`,
+                caseId: caseId,
+                transcription: req.body.transcription,
+                language: req.body.language || 'en',
+                status: 'completed',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+            await newTranscription.save();
+        }
+
+        res.status(201).json({ success: true, id: newCase.id, message: 'FIR and transcription received successfully' });
     } catch (error) {
         console.error('External FIR intake error:', error);
         res.status(500).json({ error: 'Failed to record FIR' });
