@@ -8,7 +8,7 @@ const fetch = require('node-fetch');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const mongoose = require('mongoose');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo').MongoStore;
 const { put, del } = require('@vercel/blob');
 
 const app = express();
