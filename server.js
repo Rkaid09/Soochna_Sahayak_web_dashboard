@@ -1,35 +1,117 @@
+require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs-extra');
 const { v4: uuidv4 } = require('uuid');
 const fetch = require('node-fetch');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
+const { put, del } = require('@vercel/blob');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware
+// ─── MongoDB Connection ───────────────────────────────────────────────────────
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('✅ Connected to MongoDB Atlas'))
+    .catch(err => console.error('❌ MongoDB connection failed:', err));
+
+// ─── Mongoose Schemas ─────────────────────────────────────────────────────────
+
+const caseSchema = new mongoose.Schema({
+    id: { type: String, unique: true },
+    title: String,
+    complainant: Object,
+    accused: Object,
+    incident: Object,
+    sections: [String],
+    status: { type: String, default: 'pending' },
+    assignedOfficer: Object,
+    stationCode: String,
+    evidenceFiles: { type: Array, default: [] },
+    transcription: String,
+    sourceApp: String,
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+}, { strict: false });
+
+const transcriptionSchema = new mongoose.Schema({
+    id: { type: String, unique: true },
+    audioFile: String,
+    audioUrl: String,
+    transcription: String,
+    language: String,
+    status: { type: String, default: 'pending' },
+    caseId: String,
+    duration: String,
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+}, { strict: false });
+
+const fileSchema = new mongoose.Schema({
+    id: { type: String, unique: true },
+    name: String,
+    filename: String,
+    type: String,
+    size: String,
+    sizeBytes: Number,
+    url: String,       // Vercel Blob URL
+    blobKey: String,   // Vercel Blob pathname (for deletion)
+    folder: String,
+    caseId: String,
+    uploadedAt: { type: Date, default: Date.now }
+}, { strict: false });
+
+const userSchema = new mongoose.Schema({
+    id: { type: String, unique: true },
+    name: String,
+    email: { type: String, unique: true },
+    password: String,
+    designation: String,
+    station: String,
+    badgeNumber: String,
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Case = mongoose.model('Case', caseSchema);
+const Transcription = mongoose.model('Transcription', transcriptionSchema);
+const FileRecord = mongoose.model('FileRecord', fileSchema);
+const User = mongoose.model('User', userSchema);
+
+// ─── Bhashini API Configuration ───────────────────────────────────────────────
+const BHASHINI_CONFIG = {
+    userId: process.env.BHASHINI_USER_ID || '21d41f1e0ae54d958d93d8a1c65f96a4',
+    ulcaApiKey: process.env.BHASHINI_API_KEY || '55f53d25d7-50b9-47ec-87e5-f2fe3be4e164',
+    baseURL: 'https://meity-auth.ulcacontrib.org',
+    pipelineURL: 'https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline',
+    computeURL: 'https://dhruva-api.bhashini.gov.in/services/inference/pipeline'
+};
+
+// Cache for pipeline configurations (in-memory per instance)
+const pipelineConfigCache = new Map();
+
+// ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({
     origin: true,
     credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(session({
-    secret: 'soochna-sahayak-secret-key-' + uuidv4(),
+    secret: process.env.SESSION_SECRET || 'soochna-sahayak-dev-secret',
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
     cookie: {
-        secure: false, // Set to true if using HTTPS with ngrok
+        secure: process.env.NODE_ENV === 'production',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 }));
 
-// Cache control - prevent caching of JavaScript files
+// Cache control — prevent caching of JavaScript files
 app.use((req, res, next) => {
-    // Disable caching for JS files to prevent old code from loading
     if (req.url.endsWith('.js')) {
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.setHeader('Pragma', 'no-cache');
@@ -43,90 +125,14 @@ app.use(express.static(__dirname, {
     extensions: ['html', 'htm']
 }));
 
-// Create directories if they don't exist
-const uploadDir = 'uploads';
-const dataDir = 'data';
-fs.ensureDirSync(uploadDir);
-fs.ensureDirSync(dataDir);
-fs.ensureDirSync(path.join(uploadDir, 'cases'));
-fs.ensureDirSync(path.join(uploadDir, 'transcriptions'));
-
-
-// Bhashini API Configuration
-const BHASHINI_CONFIG = {
-    userId: '21d41f1e0ae54d958d93d8a1c65f96a4',
-    ulcaApiKey: '55f53d25d7-50b9-47ec-87e5-f2fe3be4e164',
-    baseURL: 'https://meity-auth.ulcacontrib.org',
-    pipelineURL: 'https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline',
-    computeURL: 'https://dhruva-api.bhashini.gov.in/services/inference/pipeline'
-};
-
-// Cache for pipeline configurations
-const pipelineConfigCache = new Map();
-
-// Data files
-const casesFile = path.join(dataDir, 'cases.json');
-const transcriptionsFile = path.join(dataDir, 'transcriptions.json');
-const filesFile = path.join(dataDir, 'files.json');
-const usersFile = path.join(dataDir, 'users.json');
-
-// Initialize data files if they don't exist
-const initDataFiles = () => {
-    if (!fs.existsSync(casesFile)) {
-        fs.writeJsonSync(casesFile, []);
-    }
-    if (!fs.existsSync(transcriptionsFile)) {
-        fs.writeJsonSync(transcriptionsFile, []);
-    }
-    if (!fs.existsSync(filesFile)) {
-        fs.writeJsonSync(filesFile, []);
-    }
-    if (!fs.existsSync(usersFile)) {
-        fs.writeJsonSync(usersFile, []);
-    }
-};
-
-initDataFiles();
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const folder = req.body.folder || req.query.folder || 'root';
-        const caseId = req.body.caseId || req.query.caseId;
-
-        let destPath = uploadDir;
-
-        console.log('Multer storage - folder:', folder, 'caseId:', caseId);
-
-        if (caseId) {
-            destPath = path.join(uploadDir, 'cases', caseId);
-        } else if (folder && folder !== 'root' && folder !== '') {
-            destPath = path.join(uploadDir, folder);
-        }
-
-        console.log('Multer destination path:', destPath);
-        fs.ensureDirSync(destPath);
-        cb(null, destPath);
-    },
-    filename: function (req, file, cb) {
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const uniqueName = `${timestamp}_${uuidv4().substring(0, 8)}_${file.originalname}`;
-        cb(null, uniqueName);
-    }
-});
-
+// ─── Multer — Memory Storage (for Vercel Blob) ────────────────────────────────
 const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 100 * 1024 * 1024 // 100MB limit
-    },
-    fileFilter: function (req, file, cb) {
-        // Allow all file types for police evidence
-        cb(null, true);
-    }
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
+    fileFilter: function (req, file, cb) { cb(null, true); }
 });
 
-// Helper functions
+// ─── Helper Functions ─────────────────────────────────────────────────────────
 const getFileType = (filename) => {
     const ext = path.extname(filename).toLowerCase();
     if (['.mp3', '.wav', '.m4a', '.aac'].includes(ext)) return 'audio';
@@ -143,15 +149,14 @@ const formatFileSize = (bytes) => {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
-// ============================================================
-// INVERSE TEXT NORMALIZATION — Convert spoken numbers to digits
-// Handles Hindi/Hinglish digit words and डबल/ट्रिपल multipliers
-// ============================================================
+
+// ─── Inverse Text Normalization ───────────────────────────────────────────────
+// Convert spoken numbers to digits (Hindi/Hinglish + डबल/ट्रिपल multipliers)
 function normalizeNumbers(text) {
     if (!text || typeof text !== 'string') return text;
 
     const DIGIT_WORDS = {
-        'शून्य':'0','जीरो':'0','ज़ीरो':'0','जिरो':'0','ज़िरो':'0','ज़ेरो':'0','ज़ेरो':'0',
+        'शून्य':'0','जीरो':'0','ज़ीरो':'0','जिरो':'0','ज़िरो':'0','ज़ेरो':'0',
         'एक':'1','वन':'1','वॉन':'1',
         'दो':'2','टू':'2',
         'तीन':'3','थ्री':'3','थ्रि':'3',
@@ -173,25 +178,16 @@ function normalizeNumbers(text) {
     }
 
     const words = text.split(/\s+/);
-
-    // --- state ---
-    let buf = [];    // original tokens in current number run
-    let digits = ''; // digits accumulated so far in current run
-
-    // out is built as an array of strings then joined at the end
+    let buf = [];
+    let digits = '';
     const out = [];
-
-    // Flush the current buffer. If it has digits, decide to convert or not.
-    // seqHasMult: true if a डबल/ट्रिपल was used — always convert in that case
     let seqHasMult = false;
 
     function flush(nextWord) {
         if (digits.length > 0) {
-            // Convert if: any multiplier was used OR 2+ digits accumulated
             if (seqHasMult || digits.length >= 2) {
                 out.push(digits);
             } else {
-                // Single ambiguous digit word like standalone "दो" — keep original
                 out.push(...buf);
             }
         }
@@ -205,7 +201,6 @@ function normalizeNumbers(text) {
     while (i < words.length) {
         const w = words[i];
         const k = clean(w);
-
         const digit = DIGIT_WORDS[k];
         const mult  = MULTIPLIERS[k];
 
@@ -214,7 +209,6 @@ function normalizeNumbers(text) {
             digits += digit;
             i++;
         } else if (mult !== undefined) {
-            // Look ahead for the digit word that follows the multiplier
             const nw = words[i + 1];
             const nd = nw ? DIGIT_WORDS[clean(nw)] : undefined;
             if (nd !== undefined) {
@@ -223,7 +217,6 @@ function normalizeNumbers(text) {
                 seqHasMult = true;
                 i += 2;
             } else {
-                // Multiplier with no digit after it — treat as plain word
                 flush(w);
                 i++;
             }
@@ -232,61 +225,52 @@ function normalizeNumbers(text) {
             i++;
         }
     }
-    flush(); // flush trailing sequence
-
+    flush();
     return out.join(' ').replace(/\s+/g, ' ').trim();
 }
+
+// ─── API Key Auth (for friend's external app) ─────────────────────────────────
+const VALID_API_KEYS = new Set(
+    (process.env.EXTERNAL_API_KEYS || '').split(',').filter(Boolean)
+);
+
+function requireApiKey(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Missing API key' });
+    }
+    const key = authHeader.split(' ')[1];
+    if (VALID_API_KEYS.size > 0 && !VALID_API_KEYS.has(key)) {
+        return res.status(403).json({ error: 'Invalid API key' });
+    }
+    next();
+}
+
+// ─── AUTH ROUTES ──────────────────────────────────────────────────────────────
 
 app.post('/api/auth/signup', async (req, res) => {
     try {
         const { name, email, password, designation, station, badgeNumber } = req.body;
-
-        // Validation
         if (!name || !email || !password || !designation || !station) {
             return res.status(400).json({ error: 'All fields are required' });
         }
+        const existing = await User.findOne({ email });
+        if (existing) return res.status(400).json({ error: 'User with this email already exists' });
 
-        const users = fs.readJsonSync(usersFile);
-
-        // Check if user already exists
-        if (users.find(u => u.email === email)) {
-            return res.status(400).json({ error: 'User with this email already exists' });
-        }
-
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            id: uuidv4(), name, email,
+            password: hashedPassword, designation, station,
+            badgeNumber: badgeNumber || 'N/A'
+        });
+        await newUser.save();
 
-        // Create new user
-        const newUser = {
-            id: uuidv4(),
-            name,
-            email,
-            password: hashedPassword,
-            designation,
-            station,
-            badgeNumber: badgeNumber || 'N/A',
-            createdAt: new Date().toISOString()
-        };
-
-        users.push(newUser);
-        fs.writeJsonSync(usersFile, users, { spaces: 2 });
-
-        // Set session
         req.session.userId = newUser.id;
         req.session.user = {
-            id: newUser.id,
-            name: newUser.name,
-            email: newUser.email,
-            designation: newUser.designation,
-            station: newUser.station,
+            id: newUser.id, name, email, designation, station,
             badgeNumber: newUser.badgeNumber
         };
-
-        res.json({
-            success: true,
-            message: 'Registration successful',
-            user: req.session.user
-        });
+        res.json({ success: true, message: 'Registration successful', user: req.session.user });
     } catch (error) {
         console.error('Signup error:', error);
         res.status(500).json({ error: 'Registration failed' });
@@ -296,41 +280,21 @@ app.post('/api/auth/signup', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
 
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
-        }
+        const user = await User.findOne({ email });
+        if (!user) return res.status(401).json({ error: 'Invalid email or password' });
 
-        const users = fs.readJsonSync(usersFile);
-        const user = users.find(u => u.email === email);
-
-        if (!user) {
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-
-        // Verify password
         const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) return res.status(401).json({ error: 'Invalid email or password' });
 
-        if (!passwordMatch) {
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-
-        // Set session
         req.session.userId = user.id;
         req.session.user = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            designation: user.designation,
-            station: user.station,
+            id: user.id, name: user.name, email: user.email,
+            designation: user.designation, station: user.station,
             badgeNumber: user.badgeNumber
         };
-
-        res.json({
-            success: true,
-            message: 'Login successful',
-            user: req.session.user
-        });
+        res.json({ success: true, message: 'Login successful', user: req.session.user });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Login failed' });
@@ -338,20 +302,15 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.post('/api/auth/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Logout failed' });
-        }
+    req.session.destroy(err => {
+        if (err) return res.status(500).json({ error: 'Logout failed' });
         res.json({ success: true, message: 'Logged out successfully' });
     });
 });
 
 app.get('/api/auth/session', (req, res) => {
     if (req.session && req.session.user) {
-        res.json({
-            authenticated: true,
-            user: req.session.user
-        });
+        res.json({ authenticated: true, user: req.session.user });
     } else {
         res.json({ authenticated: false });
     }
@@ -359,56 +318,26 @@ app.get('/api/auth/session', (req, res) => {
 
 app.put('/api/auth/update-profile', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Not authenticated' });
-        }
-
+        if (!req.session || !req.session.userId) return res.status(401).json({ error: 'Not authenticated' });
         const { name, email, designation, badgeNumber } = req.body;
+        if (!name || !email || !designation) return res.status(400).json({ error: 'Name, email, and designation are required' });
 
-        if (!name || !email || !designation) {
-            return res.status(400).json({ error: 'Name, email, and designation are required' });
-        }
+        const existingUser = await User.findOne({ email, id: { $ne: req.session.userId } });
+        if (existingUser) return res.status(400).json({ error: 'Email already in use by another user' });
 
-        const users = fs.readJsonSync(usersFile);
-        const userIndex = users.findIndex(u => u.id === req.session.userId);
+        const user = await User.findOneAndUpdate(
+            { id: req.session.userId },
+            { name, email, designation, badgeNumber: badgeNumber || undefined, updatedAt: new Date() },
+            { new: true }
+        );
+        if (!user) return res.status(404).json({ error: 'User not found' });
 
-        if (userIndex === -1) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Check if new email is already used by another user
-        const existingUser = users.find(u => u.email === email && u.id !== req.session.userId);
-        if (existingUser) {
-            return res.status(400).json({ error: 'Email already in use by another user' });
-        }
-
-        // Update user
-        users[userIndex] = {
-            ...users[userIndex],
-            name,
-            email,
-            designation,
-            badgeNumber: badgeNumber || users[userIndex].badgeNumber,
-            updatedAt: new Date().toISOString()
-        };
-
-        fs.writeJsonSync(usersFile, users, { spaces: 2 });
-
-        // Update session
         req.session.user = {
-            id: users[userIndex].id,
-            name: users[userIndex].name,
-            email: users[userIndex].email,
-            designation: users[userIndex].designation,
-            station: users[userIndex].station,
-            badgeNumber: users[userIndex].badgeNumber
+            id: user.id, name: user.name, email: user.email,
+            designation: user.designation, station: user.station,
+            badgeNumber: user.badgeNumber
         };
-
-        res.json({
-            success: true,
-            message: 'Profile updated successfully',
-            user: req.session.user
-        });
+        res.json({ success: true, message: 'Profile updated successfully', user: req.session.user });
     } catch (error) {
         console.error('Profile update error:', error);
         res.status(500).json({ error: 'Failed to update profile' });
@@ -417,213 +346,172 @@ app.put('/api/auth/update-profile', async (req, res) => {
 
 app.post('/api/auth/change-password', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Not authenticated' });
-        }
-
+        if (!req.session || !req.session.userId) return res.status(401).json({ error: 'Not authenticated' });
         const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword) return res.status(400).json({ error: 'Current and new passwords are required' });
+        if (newPassword.length < 6) return res.status(400).json({ error: 'New password must be at least 6 characters long' });
 
-        if (!currentPassword || !newPassword) {
-            return res.status(400).json({ error: 'Current and new passwords are required' });
-        }
+        const user = await User.findOne({ id: req.session.userId });
+        if (!user) return res.status(404).json({ error: 'User not found' });
 
-        if (newPassword.length < 6) {
-            return res.status(400).json({ error: 'New password must be at least 6 characters long' });
-        }
+        const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!passwordMatch) return res.status(401).json({ error: 'Current password is incorrect' });
 
-        const users = fs.readJsonSync(usersFile);
-        const userIndex = users.findIndex(u => u.id === req.session.userId);
-
-        if (userIndex === -1) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Verify current password
-        const passwordMatch = await bcrypt.compare(currentPassword, users[userIndex].password);
-
-        if (!passwordMatch) {
-            return res.status(401).json({ error: 'Current password is incorrect' });
-        }
-
-        // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // Update password
-        users[userIndex].password = hashedPassword;
-        users[userIndex].updatedAt = new Date().toISOString();
-
-        fs.writeJsonSync(usersFile, users, { spaces: 2 });
-
-        res.json({
-            success: true,
-            message: 'Password changed successfully'
-        });
+        await User.findOneAndUpdate({ id: req.session.userId }, { password: hashedPassword, updatedAt: new Date() });
+        res.json({ success: true, message: 'Password changed successfully' });
     } catch (error) {
         console.error('Password change error:', error);
         res.status(500).json({ error: 'Failed to change password' });
     }
 });
 
-// CASES API ENDPOINTS
-app.get('/api/cases', (req, res) => {
+// ─── CASES API ────────────────────────────────────────────────────────────────
+
+app.get('/api/cases', async (req, res) => {
     try {
-        const cases = fs.readJsonSync(casesFile);
+        const cases = await Case.find().sort({ createdAt: -1 }).lean();
         res.json(cases);
     } catch (error) {
         res.status(500).json({ error: 'Failed to load cases' });
     }
 });
 
-app.post('/api/cases', (req, res) => {
+app.post('/api/cases', async (req, res) => {
     try {
-        const cases = fs.readJsonSync(casesFile);
-        const newCase = {
-            id: `FIR-${new Date().getFullYear()}-${String(cases.length + 1).padStart(6, '0')}`,
+        const count = await Case.countDocuments();
+        const caseId = `FIR-${new Date().getFullYear()}-${String(count + 1).padStart(6, '0')}`;
+        const newCase = new Case({
+            id: caseId,
             ...req.body,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
             evidenceFiles: req.body.evidenceFiles || []
-        };
-        cases.push(newCase);
-        fs.writeJsonSync(casesFile, cases, { spaces: 2 });
-        res.json(newCase);
+        });
+        await newCase.save();
+        res.json(newCase.toObject());
     } catch (error) {
+        console.error('Create case error:', error);
         res.status(500).json({ error: 'Failed to create case' });
     }
 });
 
-app.put('/api/cases/:id', (req, res) => {
+app.put('/api/cases/:id', async (req, res) => {
     try {
-        const cases = fs.readJsonSync(casesFile);
-        const index = cases.findIndex(c => c.id === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ error: 'Case not found' });
-        }
-        cases[index] = { ...cases[index], ...req.body, updatedAt: new Date().toISOString() };
-        fs.writeJsonSync(casesFile, cases, { spaces: 2 });
-        res.json(cases[index]);
+        const updated = await Case.findOneAndUpdate(
+            { id: req.params.id },
+            { ...req.body, updatedAt: new Date() },
+            { new: true }
+        );
+        if (!updated) return res.status(404).json({ error: 'Case not found' });
+        res.json(updated.toObject());
     } catch (error) {
         res.status(500).json({ error: 'Failed to update case' });
     }
 });
 
-app.delete('/api/cases/:id', (req, res) => {
+app.delete('/api/cases/:id', async (req, res) => {
     try {
-        const cases = fs.readJsonSync(casesFile);
-        const index = cases.findIndex(c => c.id === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ error: 'Case not found' });
-        }
-        cases.splice(index, 1);
-        fs.writeJsonSync(casesFile, cases, { spaces: 2 });
+        const deleted = await Case.findOneAndDelete({ id: req.params.id });
+        if (!deleted) return res.status(404).json({ error: 'Case not found' });
         res.json({ message: 'Case deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete case' });
     }
 });
 
-// TRANSCRIPTIONS API ENDPOINTS
-app.get('/api/transcriptions', (req, res) => {
+// ─── TRANSCRIPTIONS API ───────────────────────────────────────────────────────
+
+app.get('/api/transcriptions', async (req, res) => {
     try {
-        const transcriptions = fs.readJsonSync(transcriptionsFile);
+        const transcriptions = await Transcription.find().sort({ createdAt: -1 }).lean();
         res.json(transcriptions);
     } catch (error) {
         res.status(500).json({ error: 'Failed to load transcriptions' });
     }
 });
 
-app.post('/api/transcriptions', (req, res) => {
+app.post('/api/transcriptions', async (req, res) => {
     try {
-        const transcriptions = fs.readJsonSync(transcriptionsFile);
-        const newTranscription = {
-            id: `TRANS-${String(transcriptions.length + 1).padStart(3, '0')}`,
+        const count = await Transcription.countDocuments();
+        const newTranscription = new Transcription({
+            id: `TRANS-${String(count + 1).padStart(3, '0')}`,
             ...req.body,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
             status: req.body.status || 'pending'
-        };
-        transcriptions.push(newTranscription);
-        fs.writeJsonSync(transcriptionsFile, transcriptions, { spaces: 2 });
-        res.json(newTranscription);
+        });
+        await newTranscription.save();
+        res.json(newTranscription.toObject());
     } catch (error) {
         res.status(500).json({ error: 'Failed to create transcription' });
     }
 });
 
-app.put('/api/transcriptions/:id', (req, res) => {
+app.put('/api/transcriptions/:id', async (req, res) => {
     try {
-        const transcriptions = fs.readJsonSync(transcriptionsFile);
-        const index = transcriptions.findIndex(t => t.id === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ error: 'Transcription not found' });
-        }
-        transcriptions[index] = { ...transcriptions[index], ...req.body, updatedAt: new Date().toISOString() };
-        fs.writeJsonSync(transcriptionsFile, transcriptions, { spaces: 2 });
-        res.json(transcriptions[index]);
+        const updated = await Transcription.findOneAndUpdate(
+            { id: req.params.id },
+            { ...req.body, updatedAt: new Date() },
+            { new: true }
+        );
+        if (!updated) return res.status(404).json({ error: 'Transcription not found' });
+        res.json(updated.toObject());
     } catch (error) {
         res.status(500).json({ error: 'Failed to update transcription' });
     }
 });
 
-app.delete('/api/transcriptions/:id', (req, res) => {
+app.delete('/api/transcriptions/:id', async (req, res) => {
     try {
-        const transcriptions = fs.readJsonSync(transcriptionsFile);
-        const index = transcriptions.findIndex(t => t.id === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ error: 'Transcription not found' });
-        }
-        transcriptions.splice(index, 1);
-        fs.writeJsonSync(transcriptionsFile, transcriptions, { spaces: 2 });
+        const deleted = await Transcription.findOneAndDelete({ id: req.params.id });
+        if (!deleted) return res.status(404).json({ error: 'Transcription not found' });
         res.json({ message: 'Transcription deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete transcription' });
     }
 });
 
-// FILES API ENDPOINTS
-app.get('/api/files', (req, res) => {
+// ─── FILES API ────────────────────────────────────────────────────────────────
+
+app.get('/api/files', async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
+        const files = await FileRecord.find().sort({ uploadedAt: -1 }).lean();
         res.json(files);
     } catch (error) {
         res.status(500).json({ error: 'Failed to load files' });
     }
 });
 
-app.post('/api/files/upload', upload.array('files', 10), (req, res) => {
+app.post('/api/files/upload', upload.array('files', 10), async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
         const uploadedFiles = [];
+        const caseId = req.body.caseId || null;
+        const folder = req.body.folder || null;
 
-        const targetFolder = req.body.folder || 'root';
-        console.log(`Uploading ${req.files.length} files to folder: ${targetFolder}`);
+        for (const file of req.files) {
+            const blobPath = `uploads/${caseId ? `cases/${caseId}` : folder || 'general'}/${Date.now()}_${file.originalname}`;
 
-        req.files.forEach(file => {
-            console.log(`Processing file: ${file.originalname}, saved to: ${file.path}`);
+            const blob = await put(blobPath, file.buffer, {
+                access: 'private',
+                contentType: file.mimetype
+            });
 
-            const fileInfo = {
+            const fileRecord = new FileRecord({
                 id: uuidv4(),
                 name: file.originalname,
-                filename: file.filename,
+                filename: file.originalname,
                 type: getFileType(file.originalname),
                 size: formatFileSize(file.size),
                 sizeBytes: file.size,
-                path: file.path,
-                uploadedAt: new Date().toISOString(),
-                caseId: req.body.caseId || null,
-                folder: targetFolder === 'root' ? null : targetFolder // Set to null for root, folder name for subfolders
-            };
-            files.push(fileInfo);
-            uploadedFiles.push(fileInfo);
-
-            console.log(`File record created:`, {
-                name: fileInfo.name,
-                folder: fileInfo.folder,
-                path: fileInfo.path
+                url: blob.url,
+                blobKey: blob.pathname,
+                caseId,
+                folder
             });
-        });
-
-        fs.writeJsonSync(filesFile, files, { spaces: 2 });
+            await fileRecord.save();
+            uploadedFiles.push(fileRecord.toObject());
+        }
         res.json({ message: 'Files uploaded successfully', files: uploadedFiles });
     } catch (error) {
         console.error('Upload error:', error);
@@ -631,233 +519,150 @@ app.post('/api/files/upload', upload.array('files', 10), (req, res) => {
     }
 });
 
-app.post('/api/files/folder', (req, res) => {
+app.post('/api/files/folder', async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
-        const newFolder = {
+        const newFolder = new FileRecord({
             id: uuidv4(),
             name: req.body.name,
             type: 'folder',
             size: '-',
             sizeBytes: 0,
-            createdAt: new Date().toISOString(),
-            parentFolder: req.body.parentFolder || 'root'
-        };
-        files.push(newFolder);
-        fs.writeJsonSync(filesFile, files, { spaces: 2 });
-        res.json(newFolder);
+            folder: req.body.parentFolder || null
+        });
+        await newFolder.save();
+        res.json(newFolder.toObject());
     } catch (error) {
         res.status(500).json({ error: 'Failed to create folder' });
     }
 });
 
-app.delete('/api/files/:id', (req, res) => {
+app.delete('/api/files/:id', async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
-        const index = files.findIndex(f => f.id === req.params.id);
-        if (index === -1) {
-            return res.status(404).json({ error: 'File not found' });
-        }
+        const file = await FileRecord.findOne({ id: req.params.id });
+        if (!file) return res.status(404).json({ error: 'File not found' });
 
-        const fileToDelete = files[index];
-
-        // Delete physical file if it exists
-        if (fileToDelete.path && fileToDelete.type !== 'folder') {
-            try {
-                fs.removeSync(fileToDelete.path);
-            } catch (err) {
-                console.log('File already deleted or not found:', err.message);
+        if (file.url && file.type !== 'folder') {
+            try { await del(file.url); } catch (err) {
+                console.log('Blob delete warning:', err.message);
             }
         }
-
-        files.splice(index, 1);
-        fs.writeJsonSync(filesFile, files, { spaces: 2 });
+        await FileRecord.findOneAndDelete({ id: req.params.id });
         res.json({ message: 'File deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete file' });
     }
 });
 
-app.delete('/api/files', (req, res) => {
+app.delete('/api/files', async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
         const fileIds = req.body.fileIds || [];
-
-        fileIds.forEach(fileId => {
-            const index = files.findIndex(f => f.id === fileId);
-            if (index !== -1) {
-                const fileToDelete = files[index];
-
-                // Delete physical file if it exists
-                if (fileToDelete.path && fileToDelete.type !== 'folder') {
-                    try {
-                        fs.removeSync(fileToDelete.path);
-                    } catch (err) {
-                        console.log('File already deleted or not found:', err.message);
-                    }
+        for (const fileId of fileIds) {
+            const file = await FileRecord.findOne({ id: fileId });
+            if (file) {
+                if (file.url && file.type !== 'folder') {
+                    try { await del(file.url); } catch (e) { /* ignore */ }
                 }
-
-                files.splice(index, 1);
+                await FileRecord.findOneAndDelete({ id: fileId });
             }
-        });
-
-        fs.writeJsonSync(filesFile, files, { spaces: 2 });
+        }
         res.json({ message: `${fileIds.length} files deleted successfully` });
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete files' });
     }
 });
 
-// Move files to folder
-app.put('/api/files/move', (req, res) => {
+app.put('/api/files/move', async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
         const { fileIds, targetFolder } = req.body;
-
-        fileIds.forEach(fileId => {
-            const fileIndex = files.findIndex(f => f.id === fileId);
-            if (fileIndex !== -1) {
-                const file = files[fileIndex];
-                const oldPath = file.path;
-
-                // Create new path
-                let newDir = uploadDir;
-                if (targetFolder && targetFolder !== 'root') {
-                    newDir = path.join(uploadDir, targetFolder);
-                    fs.ensureDirSync(newDir);
-                }
-
-                const newPath = path.join(newDir, path.basename(oldPath));
-
-                // Move physical file
-                if (fs.existsSync(oldPath)) {
-                    fs.moveSync(oldPath, newPath);
-                }
-
-                // Update file record
-                files[fileIndex].path = newPath;
-                files[fileIndex].folder = targetFolder || 'root';
-            }
-        });
-
-        fs.writeJsonSync(filesFile, files, { spaces: 2 });
+        for (const fileId of fileIds) {
+            await FileRecord.findOneAndUpdate(
+                { id: fileId },
+                { folder: targetFolder || null, updatedAt: new Date() }
+            );
+        }
         res.json({ message: 'Files moved successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to move files' });
     }
 });
 
-// Rename file
-app.put('/api/files/:id/rename', (req, res) => {
+app.put('/api/files/:id/move', async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
+        const { targetFolder } = req.body;
+        const file = await FileRecord.findOneAndUpdate(
+            { id: req.params.id },
+            { folder: targetFolder || null, updatedAt: new Date() },
+            { new: true }
+        );
+        if (!file) return res.status(404).json({ error: 'File not found' });
+        res.json(file.toObject());
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to move file' });
+    }
+});
+
+app.put('/api/files/:id/rename', async (req, res) => {
+    try {
         const { newName } = req.body;
-        const fileIndex = files.findIndex(f => f.id === req.params.id);
-
-        if (fileIndex === -1) {
-            return res.status(404).json({ error: 'File not found' });
-        }
-
-        const file = files[fileIndex];
-        const oldPath = file.path;
-
-        if (file.type !== 'folder') {
-            const ext = path.extname(file.name);
-            const newFileName = newName.endsWith(ext) ? newName : newName + ext;
-            const newPath = path.join(path.dirname(oldPath), newFileName);
-
-            if (fs.existsSync(oldPath)) {
-                fs.renameSync(oldPath, newPath);
-                files[fileIndex].path = newPath;
-            }
-            files[fileIndex].name = newFileName;
-        } else {
-            files[fileIndex].name = newName;
-        }
-
-        fs.writeJsonSync(filesFile, files, { spaces: 2 });
-        res.json(files[fileIndex]);
+        const file = await FileRecord.findOneAndUpdate(
+            { id: req.params.id },
+            { name: newName, updatedAt: new Date() },
+            { new: true }
+        );
+        if (!file) return res.status(404).json({ error: 'File not found' });
+        res.json(file.toObject());
     } catch (error) {
         res.status(500).json({ error: 'Failed to rename file' });
     }
 });
 
-// Serve uploaded files
-app.get('/uploads/:filename', (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(uploadDir, filename);
+// ─── File Serving — Proxy Private Blobs Through Server ───────────────────────
 
-    if (fs.existsSync(filePath)) {
-        res.sendFile(path.resolve(filePath));
-    } else {
-        res.status(404).json({ error: 'File not found' });
-    }
-});
-
-// Serve files from subfolders
-app.get('/uploads/:folder/:filename', (req, res) => {
-    const { folder, filename } = req.params;
-    const filePath = path.join(uploadDir, folder, filename);
-
-    if (fs.existsSync(filePath)) {
-        res.sendFile(path.resolve(filePath));
-    } else {
-        res.status(404).json({ error: 'File not found' });
-    }
-});
-
-// Serve files with proper MIME types and headers
-app.get('/file/:fileId', (req, res) => {
+app.get('/file/:fileId', async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
-        const file = files.find(f => f.id === req.params.fileId);
-
+        const file = await FileRecord.findOne({ id: req.params.fileId });
         if (!file || file.type === 'folder') {
             return res.status(404).json({ error: 'File not found' });
         }
-
-        const filePath = path.resolve(file.path);
-        if (!fs.existsSync(filePath)) {
-            console.log(`File not found at path: ${filePath}`);
-            console.log(`Original path from database: ${file.path}`);
-            return res.status(404).json({ error: 'Physical file not found', path: file.path, resolvedPath: filePath });
+        if (!file.url) {
+            return res.status(404).json({ error: 'File has no stored URL' });
         }
 
-        // Set appropriate MIME type based on file extension
         const ext = path.extname(file.name).toLowerCase();
         const mimeTypes = {
             '.pdf': 'application/pdf',
-            '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
-            '.png': 'image/png',
-            '.gif': 'image/gif',
-            '.mp3': 'audio/mpeg',
-            '.wav': 'audio/wav',
-            '.webm': 'audio/webm',
-            '.mp4': 'video/mp4',
-            '.txt': 'text/plain',
-            '.json': 'application/json',
-            '.html': 'text/html',
-            '.css': 'text/css',
-            '.js': 'application/javascript'
+            '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
+            '.gif': 'image/gif', '.mp3': 'audio/mpeg', '.wav': 'audio/wav',
+            '.webm': 'audio/webm', '.mp4': 'video/mp4', '.txt': 'text/plain',
+            '.json': 'application/json', '.html': 'text/html',
         };
+        if (mimeTypes[ext]) res.setHeader('Content-Type', mimeTypes[ext]);
+        res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
 
-        if (mimeTypes[ext]) {
-            res.setHeader('Content-Type', mimeTypes[ext]);
-        }
-
-        res.sendFile(path.resolve(filePath));
+        // Fetch private blob using server token and pipe to browser
+        const blobResponse = await fetch(file.url, {
+            headers: { 'Authorization': `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` }
+        });
+        if (!blobResponse.ok) return res.status(404).json({ error: 'File not found in blob storage' });
+        blobResponse.body.pipe(res);
     } catch (error) {
         console.error('Error serving file:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// Bhashini ASR Pipeline Configuration
+// Legacy /uploads/* routes — redirect via fileId lookup won't work, return 404 gracefully
+app.get('/uploads/:folder/:filename', (req, res) => {
+    res.status(404).json({ error: 'Direct upload paths are no longer served. Use /file/:fileId instead.' });
+});
+app.get('/uploads/:filename', (req, res) => {
+    res.status(404).json({ error: 'Direct upload paths are no longer served. Use /file/:fileId instead.' });
+});
+
+// ─── Bhashini ASR Pipeline Configuration ─────────────────────────────────────
 async function getBhashiniPipeline(language = 'hi') {
     console.log(`Getting pipeline config for language: ${language}`);
 
-    // Check cache first
     if (pipelineConfigCache.has(language)) {
         console.log(`Using cached config for ${language}`);
         return pipelineConfigCache.get(language);
@@ -867,15 +672,9 @@ async function getBhashiniPipeline(language = 'hi') {
         const payload = {
             pipelineTasks: [{
                 taskType: "asr",
-                config: {
-                    language: {
-                        sourceLanguage: language
-                    }
-                }
+                config: { language: { sourceLanguage: language } }
             }],
-            pipelineRequestConfig: {
-                pipelineId: "64392f96daac500b55c543cd"
-            }
+            pipelineRequestConfig: { pipelineId: "64392f96daac500b55c543cd" }
         };
 
         console.log('Pipeline request payload:', JSON.stringify(payload, null, 2));
@@ -899,15 +698,17 @@ async function getBhashiniPipeline(language = 'hi') {
         const data = await response.json();
         console.log('Pipeline config response:', JSON.stringify(data, null, 2));
 
-        // Parse the successful response
         if (data.pipelineResponseConfig &&
             data.pipelineResponseConfig[0] &&
             data.pipelineResponseConfig[0].config &&
             data.pipelineResponseConfig[0].config[0] &&
             data.pipelineInferenceAPIEndPoint) {
 
-            const authName = (data.pipelineInferenceAPIEndPoint.inferenceApiKey && (data.pipelineInferenceAPIEndPoint.inferenceApiKey.name || data.pipelineInferenceAPIEndPoint.inferenceApiKey.key)) || 'Authorization';
-            const authValue = data.pipelineInferenceAPIEndPoint.inferenceApiKey && data.pipelineInferenceAPIEndPoint.inferenceApiKey.value;
+            const authName = (data.pipelineInferenceAPIEndPoint.inferenceApiKey &&
+                (data.pipelineInferenceAPIEndPoint.inferenceApiKey.name ||
+                 data.pipelineInferenceAPIEndPoint.inferenceApiKey.key)) || 'Authorization';
+            const authValue = data.pipelineInferenceAPIEndPoint.inferenceApiKey &&
+                data.pipelineInferenceAPIEndPoint.inferenceApiKey.value;
             if (!authValue) throw new Error('Missing inference API auth token in pipeline response');
 
             const config = {
@@ -920,8 +721,6 @@ async function getBhashiniPipeline(language = 'hi') {
             };
 
             pipelineConfigCache.set(language, config);
-            // FIX #3: Auto-expire cache after 30 minutes — Bhashini rotates auth tokens
-            // periodically. Stale tokens cause 502 Bad Gateway errors that are hard to debug.
             setTimeout(() => {
                 pipelineConfigCache.delete(language);
                 console.log(`🔄 Pipeline config cache expired for language: ${language}`);
@@ -937,20 +736,19 @@ async function getBhashiniPipeline(language = 'hi') {
     }
 }
 
-// ASR Transcription endpoint
+// ─── ASR Transcription Endpoint ───────────────────────────────────────────────
 app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No audio file provided' });
         }
 
-        // FIX #4: Resolve language — run server-side ALD if 'auto' is requested
         let language = req.body.language || 'auto';
         console.log(`Requested language: ${language}`);
-        console.log(`Audio file: ${req.file.originalname}, size: ${req.file.size} bytes, path: ${req.file.path}`);
+        console.log(`Audio file: ${req.file.originalname}, size: ${req.file.size} bytes`);
 
-        // Read audio file and convert to base64 for Bhashini (done once, used for both ALD and ASR)
-        const audioData = fs.readFileSync(req.file.path);
+        // Use buffer directly from memory storage — no disk read needed
+        const audioData = req.file.buffer;
         const base64Audio = audioData.toString('base64');
 
         if (language === 'auto' || language === '') {
@@ -983,7 +781,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         }
         console.log(`Final transcription language: ${language}`);
 
-        // Determine audio format from mimetype first, then extension
+        // Determine audio format
         let audioFormat = 'wav';
         if (req.file.mimetype) {
             if (req.file.mimetype.includes('webm')) audioFormat = 'webm';
@@ -999,7 +797,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
             else if (fileExt === '.mp3') audioFormat = 'mp3';
         }
 
-        // Try to detect sampling rate for WAV
+        // Detect sampling rate for WAV from buffer header
         let samplingRate = 16000;
         try {
             if (audioFormat === 'wav' && audioData.length > 28) {
@@ -1011,37 +809,27 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
         console.log(`Audio format: ${audioFormat}, samplingRate: ${samplingRate}, size: ${audioData.length} bytes`);
 
-        // Get Bhashini ASR pipeline config for the resolved language
         const config = await getBhashiniPipeline(language);
         console.log('Using Bhashini ASR service:', config.serviceId);
 
-        // Prepare inference request with correct structure
         const payload = {
             pipelineTasks: [{
                 taskType: "asr",
                 config: {
-                    language: {
-                        sourceLanguage: language
-                    },
+                    language: { sourceLanguage: language },
                     serviceId: config.serviceId,
                     audioFormat: audioFormat,
                     samplingRate: samplingRate
                 }
             }],
-            inputData: {
-                audio: [{ audioContent: base64Audio }]
-            }
+            inputData: { audio: [{ audioContent: base64Audio }] }
         };
 
         console.log('ASR compute payload (audio truncated for logging):', JSON.stringify({
             ...payload,
-            inputData: {
-                ...payload.inputData,
-                audio: [{ audioContent: `[BASE64_DATA_${base64Audio.length}_CHARS]` }]
-            }
+            inputData: { ...payload.inputData, audio: [{ audioContent: `[BASE64_DATA_${base64Audio.length}_CHARS]` }] }
         }, null, 2));
 
-        // Call Bhashini compute API
         const headers = { 'Content-Type': 'application/json' };
         headers[config.authHeaderName || 'Authorization'] = config.authToken;
 
@@ -1059,15 +847,12 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         const result = await response.json();
         console.log('ASR compute response:', JSON.stringify(result, null, 2));
 
-        // Extract transcription
         if (result.pipelineResponse &&
             result.pipelineResponse[0] &&
             result.pipelineResponse[0].output &&
             result.pipelineResponse[0].output[0]) {
 
             const rawTranscription = result.pipelineResponse[0].output[0].source;
-            // Apply Inverse Text Normalization: convert spoken numbers to digits
-            // e.g. "डबल नाइन डबल सिक्स फोर ज़ीरो" → "996640"
             const transcription = normalizeNumbers(rawTranscription);
             if (rawTranscription !== transcription) {
                 console.log(`ITN applied:  "${rawTranscription}" → "${transcription}"`);
@@ -1075,11 +860,9 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
                 console.log(`Transcription result: ${transcription}`);
             }
 
-            // Save transcription result
             const transcriptionData = {
                 id: `ASR-${uuidv4().substring(0, 8)}`,
-                audioFile: req.file.filename,
-                audioPath: req.file.path,
+                audioFile: req.file.originalname,
                 transcription: transcription || 'No transcription available',
                 language: language,
                 timestamp: new Date().toISOString(),
@@ -1090,7 +873,7 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
             res.json({
                 success: true,
                 transcription: transcription || 'No transcription available',
-                audioFile: req.file.filename,
+                audioFile: req.file.originalname,
                 language: language,
                 data: transcriptionData
             });
@@ -1100,21 +883,15 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
     } catch (error) {
         console.error('ASR Error:', error);
-        res.status(502).json({
-            error: 'Transcription failed',
-            details: error.message
-        });
+        res.status(502).json({ error: 'Transcription failed', details: error.message });
     }
 });
 
-// Test endpoint to check Bhashini connectivity
+// ─── Test Bhashini Connectivity ───────────────────────────────────────────────
 app.get('/api/test-bhashini', async (req, res) => {
     try {
         console.log('Testing Bhashini connectivity...');
-
-        // Test pipeline configuration
         const config = await getBhashiniPipeline('hi');
-
         res.json({
             success: true,
             message: 'Bhashini connection successful',
@@ -1135,148 +912,53 @@ app.get('/api/test-bhashini', async (req, res) => {
     }
 });
 
-// File operations endpoints
-app.put('/api/files/:id/move', (req, res) => {
+// ─── Analytics ────────────────────────────────────────────────────────────────
+app.get('/api/analytics/dashboard', async (req, res) => {
     try {
-        const files = fs.readJsonSync(filesFile);
-        const fileIndex = files.findIndex(f => f.id === req.params.id);
-
-        if (fileIndex === -1) {
-            return res.status(404).json({ error: 'File not found' });
-        }
-
-        const targetFolder = req.body.targetFolder;
-        const file = files[fileIndex];
-
-        console.log(`Moving file: ${file.name} to folder: ${targetFolder || 'root'}`);
-        console.log(`Current file path: ${file.path}`);
-
-        // Don't move folders for now, just update their metadata
-        if (file.type === 'folder') {
-            files[fileIndex] = {
-                ...file,
-                folder: targetFolder,
-                updatedAt: new Date().toISOString()
-            };
-            fs.writeJsonSync(filesFile, files, { spaces: 2 });
-            return res.json(files[fileIndex]);
-        }
-
-        // For actual files, move the physical file
-        const currentPath = path.resolve(file.path || path.join(uploadDir, file.filename || file.name));
-
-        // Determine new path based on target folder
-        let newDir;
-        let targetFolderName = null;
-
-        if (targetFolder) {
-            // Find the folder name from the folder ID
-            const targetFolderObj = files.find(f => f.id === targetFolder && f.type === 'folder');
-            if (!targetFolderObj) {
-                return res.status(400).json({ error: 'Target folder not found' });
-            }
-            targetFolderName = targetFolderObj.name;
-            newDir = path.join(uploadDir, targetFolderName);
-            // Ensure target directory exists
-            fs.ensureDirSync(newDir);
-            console.log(`Target folder: ${targetFolderName} (ID: ${targetFolder})`);
-        } else {
-            newDir = uploadDir; // Root directory
-        }
-
-        const newPath = path.join(newDir, path.basename(currentPath));
-
-        console.log(`Moving from: ${currentPath} to: ${newPath}`);
-
-        // Check if source file exists
-        if (!fs.existsSync(currentPath)) {
-            console.error(`Source file not found: ${currentPath}`);
-            return res.status(404).json({ error: 'Source file not found' });
-        }
-
-        // Move the physical file
-        fs.moveSync(currentPath, newPath);
-
-        // Update file record - use folder ID for consistency but ensure physical folder name is used for directory
-        files[fileIndex] = {
-            ...file,
-            folder: targetFolder || null, // Store folder ID for database consistency, null for root
-            path: newPath,
-            updatedAt: new Date().toISOString()
-        };
-
-        console.log(`Updated file metadata:`, {
-            id: file.id,
-            name: file.name,
-            folder: targetFolder,
-            path: newPath
-        });
-
-        fs.writeJsonSync(filesFile, files, { spaces: 2 });
-        console.log(`File moved successfully from ${currentPath} to ${newPath}`);
-
-        res.json(files[fileIndex]);
-    } catch (error) {
-        console.error('Move file error:', error);
-        res.status(500).json({ error: `Failed to move file: ${error.message}` });
-    }
-});
-
-app.put('/api/files/:id/rename', (req, res) => {
-    try {
-        const files = fs.readJsonSync(filesFile);
-        const fileIndex = files.findIndex(f => f.id === req.params.id);
-
-        if (fileIndex === -1) {
-            return res.status(404).json({ error: 'File not found' });
-        }
-
-        const newName = req.body.newName;
-        files[fileIndex] = {
-            ...files[fileIndex],
-            name: newName,
-            updatedAt: new Date().toISOString()
-        };
-
-        fs.writeJsonSync(filesFile, files, { spaces: 2 });
-        res.json(files[fileIndex]);
-    } catch (error) {
-        console.error('Rename file error:', error);
-        res.status(500).json({ error: 'Failed to rename file' });
-    }
-});
-
-// ANALYTICS ENDPOINTS (for charts - keeping mock data for now)
-app.get('/api/analytics/dashboard', (req, res) => {
-    try {
-        const cases = fs.readJsonSync(casesFile);
-        const totalFirs = cases.length;
-        const pendingCases = cases.filter(c => c.status === 'pending').length;
-        const closedCases = cases.filter(c => c.status === 'closed').length;
-        const inProgressCases = cases.filter(c => c.status === 'progress').length;
-
-        res.json({
-            totalFirs,
-            pendingCases,
-            closedCases,
-            inProgressCases
-        });
+        const [totalFirs, pendingCases, closedCases, inProgressCases] = await Promise.all([
+            Case.countDocuments(),
+            Case.countDocuments({ status: 'pending' }),
+            Case.countDocuments({ status: 'closed' }),
+            Case.countDocuments({ status: 'progress' })
+        ]);
+        res.json({ totalFirs, pendingCases, closedCases, inProgressCases });
     } catch (error) {
         res.status(500).json({ error: 'Failed to load analytics' });
     }
 });
 
-// Default route - serve the main page
+// ─── External FIR Intake (for friend's recording app) ────────────────────────
+app.post('/api/external/fir', requireApiKey, async (req, res) => {
+    try {
+        const count = await Case.countDocuments();
+        const caseId = req.body.firNumber ||
+            `FIR-${new Date().getFullYear()}-${String(count + 1).padStart(6, '0')}`;
+        const newCase = new Case({
+            id: caseId,
+            ...req.body,
+            status: 'received',
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+        await newCase.save();
+        res.status(201).json({ success: true, id: newCase.id, message: 'FIR received successfully' });
+    } catch (error) {
+        console.error('External FIR intake error:', error);
+        res.status(500).json({ error: 'Failed to record FIR' });
+    }
+});
+
+// ─── Default Route ────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`🚀 Soochna Sahayak Server running on http://localhost:${PORT}`);
-    console.log(`📁 Upload directory: ${path.resolve(uploadDir)}`);
-    console.log(`💾 Data directory: ${path.resolve(dataDir)}`);
-    console.log('✅ Server ready and fully operational!');
-});
+// ─── Start Server (local dev only — Vercel uses module.exports) ───────────────
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Soochna Sahayak running on http://localhost:${PORT}`);
+        console.log('✅ Server ready and fully operational!');
+    });
+}
 
 module.exports = app;
