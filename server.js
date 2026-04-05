@@ -120,7 +120,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.static(__dirname, {
+app.use(express.static(path.join(__dirname, 'public'), {
     index: 'index.html',
     extensions: ['html', 'htm']
 }));
@@ -950,7 +950,7 @@ app.post('/api/external/fir', requireApiKey, async (req, res) => {
 
 // ─── Default Route ────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ─── Start Server (local dev only — Vercel uses module.exports) ───────────────
