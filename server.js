@@ -273,7 +273,7 @@ app.post('/api/auth/signup', async (req, res) => {
         res.json({ success: true, message: 'Registration successful', user: req.session.user });
     } catch (error) {
         console.error('Signup error:', error);
-        res.status(500).json({ error: 'Registration failed' });
+        res.status(500).json({ error: 'Registration failed', details: error.message, stack: error.stack });
     }
 });
 
@@ -297,7 +297,7 @@ app.post('/api/auth/login', async (req, res) => {
         res.json({ success: true, message: 'Login successful', user: req.session.user });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ error: 'Login failed' });
+        res.status(500).json({ error: 'Login failed', details: error.message, stack: error.stack });
     }
 });
 
