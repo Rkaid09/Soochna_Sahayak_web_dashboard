@@ -14,10 +14,28 @@ const { put, del } = require('@vercel/blob');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── MongoDB Connection ───────────────────────────────────────────────────────
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ Connected to MongoDB Atlas'))
-    .catch(err => console.error('❌ MongoDB connection failed:', err));
+// ─── MongoDB Connection (Serverless Optimized) ────────────────────────────────
+mongoose.set('strictQuery', false);
+
+const connectDB = async () => {
+    if (mongoose.connection.readyState >= 1) return mongoose.connection;
+    try {
+        await mongoose.connect(process.env.MONGODB_URI, {
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+            connectTimeoutMS: 10000
+        });
+        console.log('✅ Connected to MongoDB Atlas');
+        return mongoose.connection;
+    } catch (err) {
+        console.error('❌ MongoDB connection failed:', err);
+        throw err;
+    }
+};
+
+const clientPromise = connectDB().then(conn => conn.getClient()).catch(err => {
+    console.error('MongoDB Client extraction failed:', err);
+});
 
 // ─── Mongoose Schemas ─────────────────────────────────────────────────────────
 
@@ -99,11 +117,23 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        res.status(503).json({ error: 'Database connection is currently unavailable', details: error.message });
+    }
+});
+
 app.use(session({
     secret: process.env.SESSION_SECRET || 'soochna-sahayak-dev-secret',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    store: MongoStore.create({ 
+        clientPromise: clientPromise,
+        collectionName: 'sessions' 
+    }),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
