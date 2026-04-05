@@ -12,6 +12,7 @@ const MongoStore = require('connect-mongo').MongoStore;
 const { put, del } = require('@vercel/blob');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // ─── MongoDB Connection (Serverless Optimized) ────────────────────────────────
@@ -137,6 +138,7 @@ app.use(session({
     }),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 }));
