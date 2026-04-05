@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,17 +15,17 @@
             border-radius: 50%;
             background: white;
             padding: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             margin: 0 auto 20px;
             display: block;
         }
-        
+
         .auth-tabs {
             display: flex;
             margin-bottom: 30px;
             border-bottom: 2px solid #e0e0e0;
         }
-        
+
         .auth-tab {
             flex: 1;
             padding: 15px;
@@ -38,36 +39,36 @@
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
         }
-        
+
         .auth-tab.active {
             color: #1e40af;
             border-bottom-color: #1e40af;
         }
-        
+
         .auth-tab:hover {
             color: #1e40af;
         }
-        
+
         .auth-form {
             display: none;
         }
-        
+
         .auth-form.active {
             display: block;
         }
-        
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
-        
+
         .notification {
             position: fixed;
             top: 20px;
@@ -78,26 +79,27 @@
             font-weight: 500;
             z-index: 10000;
             animation: slideIn 0.3s ease-out;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        
+
         .notification.success {
             background: #27ae60;
         }
-        
+
         .notification.error {
             background: #e74c3c;
         }
-        
+
         .notification.info {
             background: #3498db;
         }
-        
+
         @keyframes slideIn {
             from {
                 transform: translateX(400px);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -105,12 +107,18 @@
         }
     </style>
 </head>
+
 <body>
+    <!-- Dark Mode Toggle Button -->
+    <button class="theme-toggle-btn-login" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
     <div class="login-container">
         <div class="login-background">
             <div class="background-overlay"></div>
         </div>
-        
+
         <div class="login-form-container">
             <div class="login-form">
                 <div class="logo-section">
@@ -118,7 +126,7 @@
                     <h1>Soochna Sahayak</h1>
                     <p>Smart FIR & Transcription Management</p>
                 </div>
-                
+
                 <!-- Auth Tabs -->
                 <div class="auth-tabs">
                     <button class="auth-tab active" onclick="switchTab('login')">
@@ -128,30 +136,29 @@
                         <i class="fas fa-user-plus"></i> Sign Up
                     </button>
                 </div>
-                
+
                 <!-- Login Form -->
                 <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label for="login-email">Email Address</label>
                         <div class="input-group">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" id="login-email" name="email" required 
-                                   placeholder="Enter your email">
+                            <input type="email" id="login-email" name="email" required placeholder="Enter your email">
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="login-password">Password</label>
                         <div class="input-group">
                             <i class="fas fa-lock"></i>
-                            <input type="password" id="login-password" name="password" required 
-                                   placeholder="Enter your password">
+                            <input type="password" id="login-password" name="password" required
+                                placeholder="Enter your password">
                             <span class="password-toggle" onclick="togglePassword('login-password')">
                                 <i class="fas fa-eye"></i>
                             </span>
                         </div>
                     </div>
-                    
+
                     <div class="form-options">
                         <label class="checkbox-container">
                             <input type="checkbox" id="rememberMe">
@@ -159,13 +166,13 @@
                             Remember me
                         </label>
                     </div>
-                    
+
                     <button type="submit" class="login-btn">
                         <i class="fas fa-sign-in-alt"></i>
                         Login to Dashboard
                     </button>
                 </form>
-                
+
                 <!-- Signup Form -->
                 <form id="signupForm" class="auth-form" onsubmit="handleSignup(event)">
                     <div class="form-row">
@@ -173,21 +180,19 @@
                             <label for="signup-name">Full Name</label>
                             <div class="input-group">
                                 <i class="fas fa-user"></i>
-                                <input type="text" id="signup-name" name="name" required 
-                                       placeholder="Enter full name">
+                                <input type="text" id="signup-name" name="name" required placeholder="Enter full name">
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="signup-email">Email Address</label>
                             <div class="input-group">
                                 <i class="fas fa-envelope"></i>
-                                <input type="email" id="signup-email" name="email" required 
-                                       placeholder="Enter email">
+                                <input type="email" id="signup-email" name="email" required placeholder="Enter email">
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="signup-designation">Designation</label>
@@ -203,17 +208,16 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="signup-badge">Badge Number (Optional)</label>
                             <div class="input-group">
                                 <i class="fas fa-shield-alt"></i>
-                                <input type="text" id="signup-badge" name="badgeNumber" 
-                                       placeholder="Badge number">
+                                <input type="text" id="signup-badge" name="badgeNumber" placeholder="Badge number">
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="signup-station">Police Station</label>
                         <div class="input-group">
@@ -227,26 +231,26 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="signup-password">Password</label>
                         <div class="input-group">
                             <i class="fas fa-lock"></i>
-                            <input type="password" id="signup-password" name="password" required 
-                                   placeholder="Create password" minlength="6">
+                            <input type="password" id="signup-password" name="password" required
+                                placeholder="Create password" minlength="6">
                             <span class="password-toggle" onclick="togglePassword('signup-password')">
                                 <i class="fas fa-eye"></i>
                             </span>
                         </div>
                         <small style="color: #666; font-size: 12px;">Minimum 6 characters</small>
                     </div>
-                    
+
                     <button type="submit" class="login-btn">
                         <i class="fas fa-user-plus"></i>
                         Create Account
                     </button>
                 </form>
-                
+
                 <div class="login-footer">
                     <p>&copy; 2025 Soochna Sahayak. Government of India.</p>
                     <p style="font-size: 12px; color: #666; margin-top: 5px;">
@@ -256,15 +260,52 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         const API_BASE = window.location.origin;
-        
+
+        // Dark Mode Toggle Function
+        function toggleDarkMode() {
+            const body = document.body;
+            const icon = document.querySelector('.theme-toggle-btn-login i');
+
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // Initialize dark mode on page load
+        function initDarkMode() {
+            const darkMode = localStorage.getItem('darkMode');
+            const body = document.body;
+            const icon = document.querySelector('.theme-toggle-btn-login i');
+
+            if (darkMode === 'enabled') {
+                body.classList.add('dark-mode');
+                if (icon) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+        }
+
+        // Call initialization
+        initDarkMode();
+
+
         function switchTab(tab) {
             // Update tabs
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-            
+
             if (tab === 'login') {
                 document.querySelector('.auth-tab:first-child').classList.add('active');
                 document.getElementById('loginForm').classList.add('active');
@@ -273,11 +314,11 @@
                 document.getElementById('signupForm').classList.add('active');
             }
         }
-        
+
         function togglePassword(fieldId) {
             const field = document.getElementById(fieldId);
             const icon = field.parentElement.querySelector('.password-toggle i');
-            
+
             if (field.type === 'password') {
                 field.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -288,38 +329,38 @@
                 icon.classList.add('fa-eye');
             }
         }
-        
+
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.remove();
             }, 4000);
         }
-        
+
         async function handleLogin(event) {
             event.preventDefault();
-            
+
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            
+
             try {
                 const response = await fetch(`${API_BASE}/api/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok && data.success) {
                     // Store session
                     localStorage.setItem('soochna_sahayak_session', JSON.stringify(data.user));
                     showNotification('Login successful! Redirecting...', 'success');
-                    
+
                     setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 1000);
@@ -331,10 +372,10 @@
                 showNotification('Connection error. Please try again.', 'error');
             }
         }
-        
+
         async function handleSignup(event) {
             event.preventDefault();
-            
+
             const formData = {
                 name: document.getElementById('signup-name').value,
                 email: document.getElementById('signup-email').value,
@@ -343,21 +384,21 @@
                 station: document.getElementById('signup-station').value,
                 badgeNumber: document.getElementById('signup-badge').value
             };
-            
+
             try {
                 const response = await fetch(`${API_BASE}/api/auth/signup`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok && data.success) {
                     // Store session
                     localStorage.setItem('soochna_sahayak_session', JSON.stringify(data.user));
                     showNotification('Registration successful! Redirecting...', 'success');
-                    
+
                     setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 1000);
@@ -369,13 +410,13 @@
                 showNotification('Connection error. Please try again.', 'error');
             }
         }
-        
+
         // Check if already logged in
         window.addEventListener('DOMContentLoaded', async () => {
             try {
                 const response = await fetch(`${API_BASE}/api/auth/session`);
                 const data = await response.json();
-                
+
                 if (data.authenticated) {
                     window.location.href = 'index.html';
                 }
@@ -385,4 +426,5 @@
         });
     </script>
 </body>
+
 </html>

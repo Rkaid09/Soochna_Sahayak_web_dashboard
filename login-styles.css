@@ -34,8 +34,15 @@ body {
 }
 
 @keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 .background-overlay {
@@ -178,12 +185,12 @@ body {
     transition: all 0.3s ease;
 }
 
-.checkbox-container input:checked + .checkmark {
+.checkbox-container input:checked+.checkmark {
     background: #3498db;
     border-color: #3498db;
 }
 
-.checkbox-container input:checked + .checkmark::after {
+.checkbox-container input:checked+.checkmark::after {
     content: '';
     position: absolute;
     top: 2px;
@@ -297,8 +304,13 @@ body {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Error Message */
@@ -323,6 +335,7 @@ body {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -351,20 +364,20 @@ body {
     .login-form-container {
         padding: 10px;
     }
-    
+
     .login-form {
         padding: 30px 25px;
     }
-    
+
     .logo {
         width: 60px;
         height: 60px;
     }
-    
+
     .logo-section h1 {
         font-size: 24px;
     }
-    
+
     .form-options {
         flex-direction: column;
         gap: 10px;
@@ -390,10 +403,176 @@ body {
 }
 
 @keyframes shine {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(-100%) translateY(-100%) rotate(45deg);
     }
+
     50% {
         transform: translateX(100%) translateY(100%) rotate(45deg);
     }
+}
+
+/* =========================================
+   DARK MODE TOGGLE BUTTON
+   ========================================= */
+.theme-toggle-btn-login {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    font-size: 20px;
+    color: #2c3e50;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-toggle-btn-login:hover {
+    background: white;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* =========================================
+   DARK MODE STYLES
+   ========================================= */
+body.dark-mode {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+body.dark-mode .theme-toggle-btn-login {
+    background: rgba(44, 44, 44, 0.9);
+    color: #f5f6fa;
+}
+
+body.dark-mode .theme-toggle-btn-login:hover {
+    background: #2c2c2c;
+}
+
+body.dark-mode .login-background {
+    background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #0f0f1e 100%);
+}
+
+body.dark-mode .login-form {
+    background: #2c2c2c;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+body.dark-mode .logo-section h1 {
+    color: #f5f6fa;
+}
+
+body.dark-mode .logo-section p {
+    color: #bdc3c7;
+}
+
+body.dark-mode .auth-tab {
+    color: #7f8c8d;
+    border-bottom-color: #4a4a4a;
+}
+
+body.dark-mode .auth-tabs {
+    border-bottom-color: #4a4a4a;
+}
+
+body.dark-mode .auth-tab.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+}
+
+body.dark-mode .auth-tab:hover {
+    color: #5dade2;
+}
+
+body.dark-mode .form-group label {
+    color: #bdc3c7;
+}
+
+body.dark-mode .input-group i {
+    color: #95a5a6;
+}
+
+body.dark-mode .input-group input,
+body.dark-mode .input-group select {
+    background: #363636;
+    border-color: #4a4a4a;
+    color: #f5f6fa;
+}
+
+body.dark-mode .input-group input::placeholder {
+    color: #7f8c8d;
+}
+
+body.dark-mode .input-group input:focus,
+body.dark-mode .input-group select:focus {
+    background: #404040;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+body.dark-mode .password-toggle {
+    color: #95a5a6;
+}
+
+body.dark-mode .password-toggle:hover {
+    color: #3498db;
+}
+
+body.dark-mode .checkbox-container {
+    color: #bdc3c7;
+}
+
+body.dark-mode .checkmark {
+    border-color: #4a4a4a;
+    background: #363636;
+}
+
+body.dark-mode .checkbox-container input:checked+.checkmark {
+    background: #3498db;
+    border-color: #3498db;
+}
+
+body.dark-mode .demo-credentials {
+    background: #363636;
+    border-left-color: #3498db;
+}
+
+body.dark-mode .demo-credentials h4 {
+    color: #f5f6fa;
+}
+
+body.dark-mode .demo-user {
+    background: #2c2c2c;
+    color: #bdc3c7;
+}
+
+body.dark-mode .demo-user strong {
+    color: #f5f6fa;
+}
+
+body.dark-mode .login-footer {
+    border-top-color: #4a4a4a;
+}
+
+body.dark-mode .login-footer p {
+    color: #95a5a6;
+}
+
+body.dark-mode .notification {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark mode for inline styled elements */
+body.dark-mode small[style*="color"] {
+    color: #95a5a6 !important;
 }

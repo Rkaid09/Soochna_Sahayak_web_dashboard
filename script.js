@@ -1927,14 +1927,13 @@ async function startRecording(targetTextarea, language = 'hi') {
             console.log('⏹️ RECORDING STOPPED - onstop triggered');
             console.log('📦 Total chunks:', audioChunks.length);
 
-            // Try to create WAV format for better compatibility
-            let audioBlob;
-            if (MediaRecorder.isTypeSupported('audio/wav')) {
-                audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            } else {
-                audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            }
-            console.log('✅ Audio blob created:', audioBlob.size, 'bytes, type:', audioBlob.type);
+            // FIX #1: Always use the ACTUAL MIME type from the recorder.
+            // MediaRecorder cannot record WAV — it always outputs WebM/Opus in browsers.
+            // Previously this could tag a WebM blob as 'audio/wav', causing Bhashini
+            // to receive WebM bytes while expecting WAV — causing Bad Gateway or garbled output.
+            const actualMimeType = audioRecorder.mimeType || 'audio/webm';
+            const audioBlob = new Blob(audioChunks, { type: actualMimeType });
+            console.log('✅ Audio blob created:', audioBlob.size, 'bytes, actual type:', actualMimeType);
 
             currentRecording = audioBlob; // Store for potential saving
             console.log('🔄 Calling transcribeAudioBlob...');
@@ -3662,30 +3661,22 @@ async function transcribeAudioBlob(audioBlob, displayDiv, language) {
                     });
 
                     if (aldResult.success) {
-                        languageToUse = aldResult.language;
+                        const confidence = aldResult.confidence || 0;
+                        const CONFIDENCE_THRESHOLD = 0.70;
 
-                        // Store detected language globally
-                        detectedLanguageInfo.language = aldResult.language;
-                        detectedLanguageInfo.languageName = aldResult.languageName;
-                        detectedLanguageInfo.confidence = aldResult.confidence;
-
-                        console.log('✅ Language detected:', detectedLanguageInfo);
-
-                        // Display detected language in UI
-                        const languageDetectionDisplay = document.getElementById('language-detection-display');
-                        const languageText = document.getElementById('detected-language-text');
-                        const confidenceText = document.getElementById('detected-language-confidence');
-
-                        if (languageDetectionDisplay && languageText) {
-                            languageDetectionDisplay.style.display = 'block';
-                            languageText.textContent = aldResult.languageName;
-                            if (confidenceText && aldResult.confidence) {
-                                confidenceText.textContent = `(Confidence: ${(aldResult.confidence * 100).toFixed(1)}%)`;
-                            }
+                        if (confidence >= CONFIDENCE_THRESHOLD) {
+                            languageToUse = aldResult.language;
+                            detectedLanguageInfo.language = aldResult.language;
+                            detectedLanguageInfo.languageName = aldResult.languageName;
+                            detectedLanguageInfo.confidence = aldResult.confidence;
+                            console.log(`✅ ALD trusted: ${aldResult.language} (${(confidence * 100).toFixed(1)}%)`);
+                            displayDiv.innerHTML = `<em style="color: #27ae60;">✅ Detected: ${aldResult.languageName} (${(confidence * 100).toFixed(1)}%)</em>`;
+                            showNotification(`✅ Detected: ${aldResult.languageName}`, 'success');
+                        } else {
+                            languageToUse = 'hi'; // Low confidence — fall back
+                            console.warn(`⚠️ ALD confidence too low: ${(confidence * 100).toFixed(1)}% — using Hindi fallback`);
+                            displayDiv.innerHTML = `<em style="color: #f39c12;">⚠️ Low confidence (${(confidence * 100).toFixed(1)}%), using Hindi...</em>`;
                         }
-
-                        displayDiv.innerHTML = `<em style="color: #27ae60;">✅ Language Detected: ${aldResult.languageName}</em>`;
-                        showNotification(`✅ Detected: ${aldResult.languageName}`, 'success');
                         await new Promise(resolve => setTimeout(resolve, 1000));
                     } else {
                         console.warn('⚠️ ALD failed. Using Hindi fallback.');
@@ -3708,7 +3699,9 @@ async function transcribeAudioBlob(audioBlob, displayDiv, language) {
         displayDiv.innerHTML = '<em style="color: #17a2b8;">🎤 Transcribing...</em>';
 
         const formData = new FormData();
-        formData.append('audio', audioBlob, 'recorded.webm');
+        // FIX #1b: Use actual MIME type extension, not hardcoded 'recorded.webm'
+        const mimeExt = audioBlob.type.includes('webm') ? 'webm' : audioBlob.type.includes('mp4') ? 'mp4' : audioBlob.type.includes('ogg') ? 'ogg' : 'webm';
+        formData.append('audio', audioBlob, `recorded.${mimeExt}`);
         formData.append('language', languageToUse);
 
         const result = await api.transcribeAudio(formData);
@@ -4102,33 +4095,61 @@ function initializeAudioEditor() {
 function setupModal() {
     // Setup modal closing functionality
     document.addEventListener('click', function (e) {
-        // Close modal when clicking outside or on close button
-        if (e.target.classList.contains('modal') || e.target.classList.contains('close-modal')) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (modal.style.display !== 'none') {
-                    modal.style.display = 'none';
-                    // Remove dynamically created modals
-                    if (modal.id && modal.id.includes('modal')) {
-                        modal.remove();
-                    }
+        // Handle close button click
+        if (e.target.classList.contains('close-modal')) {
+            // Find the closest modal parent
+            const modal = e.target.closest('.modal');
+            if (modal) {
+                modal.style.display = 'none';
+                // Remove dynamically created file-view modals
+                if (modal.id === 'file-view-modal') {
+                    modal.remove();
                 }
-            });
+            }
+            e.stopPropagation();
+            return;
+        }
+
+        // Handle clicking on modal backdrop (outside modal-content)
+        if (e.target.classList.contains('modal')) {
+            // Only close if clicking directly on the backdrop, not content
+            // Check if a file-view-modal is open - close only that
+            const fileViewModal = document.getElementById('file-view-modal');
+            if (fileViewModal) {
+                fileViewModal.remove();
+                e.stopPropagation();
+                return;
+            }
+
+            // Otherwise close the clicked modal
+            e.target.style.display = 'none';
+            if (e.target.id && e.target.id.includes('modal')) {
+                e.target.remove();
+            }
         }
     });
 
-    // Close modals with Escape key
+    // Close topmost modal with Escape key
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
+            // Close file-view-modal first if open
+            const fileViewModal = document.getElementById('file-view-modal');
+            if (fileViewModal) {
+                fileViewModal.remove();
+                return;
+            }
+
+            // Otherwise close the topmost visible modal
             const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (modal.style.display !== 'none') {
-                    modal.style.display = 'none';
-                    if (modal.id && modal.id.includes('modal')) {
-                        modal.remove();
+            for (let i = modals.length - 1; i >= 0; i--) {
+                if (modals[i].style.display !== 'none') {
+                    modals[i].style.display = 'none';
+                    if (modals[i].id && modals[i].id.includes('modal')) {
+                        modals[i].remove();
                     }
+                    break; // Only close one modal at a time
                 }
-            });
+            }
         }
     });
 
@@ -4549,17 +4570,37 @@ async function loadCaseEvidenceFiles(caseId) {
     }
 }
 
-// Open evidence file by filename
+// Open evidence file by filename - uses in-page modal players for audio/video
 function openEvidenceFile(fileName) {
-    // Try to find in allFiles first
-    const file = allFiles.find(f => f.name === fileName || f.originalName === fileName);
+    // Build file URL from uploads folder
+    const fileUrl = `/uploads/${fileName}`;
 
-    if (file && file.id) {
-        viewFileById(file.id);
-    } else {
-        // Open directly from uploads folder
-        const fileUrl = `/uploads/${fileName}`;
+    // Determine file type
+    const isAudio = /\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(fileName);
+    const isVideo = /\.(mp4|webm|mov|avi|mkv)$/i.test(fileName);
+    const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(fileName);
+    const isPdf = /\.pdf$/i.test(fileName);
+
+    if (isAudio) {
+        // Use audio modal player
+        showAudioModal(fileUrl, fileName);
+    } else if (isVideo) {
+        // Use video modal player
+        showVideoModal(fileUrl, fileName);
+    } else if (isImage) {
+        // Use image modal viewer
+        showImageModal(fileUrl, fileName);
+    } else if (isPdf) {
+        // PDF opens in new tab
         window.open(fileUrl, '_blank');
+    } else {
+        // Try to find in allFiles for other types
+        const file = allFiles.find(f => f.name === fileName || f.originalName === fileName);
+        if (file && file.id) {
+            viewFileById(file.id);
+        } else {
+            window.open(fileUrl, '_blank');
+        }
     }
 }
 
@@ -4616,19 +4657,33 @@ async function viewAudioTranscription(fileId, fileName) {
     try {
         showLoadingMessage('Loading transcription...');
 
-        // Find the audio file
-        const audioFile = allFiles.find(f => f.id === fileId);
-        if (!audioFile) {
-            showNotification('Audio file not found', 'error');
-            hideLoadingMessage();
-            return;
+        // Try to find the audio file in allFiles, but don't require it
+        let audioFile = null;
+        let audioUrl = null;
+
+        if (fileId) {
+            audioFile = allFiles.find(f => f.id === fileId);
+            if (audioFile) {
+                audioUrl = `/file/${fileId}`;
+            }
+        }
+
+        // If not found by ID, use the uploads folder path
+        if (!audioUrl) {
+            audioUrl = `/uploads/${fileName}`;
+            // Create a mock file object for display
+            audioFile = {
+                id: null,
+                name: fileName,
+                caseId: null
+            };
         }
 
         // Check if transcription already exists for this audio file
         let transcription = allTranscriptions.find(t =>
             t.audioFile === fileName ||
-            t.audioFileId === fileId ||
-            t.audioFile === audioFile.name
+            (fileId && t.audioFileId === fileId) ||
+            (audioFile && t.audioFile === audioFile.name)
         );
 
         if (transcription) {
@@ -4640,12 +4695,35 @@ async function viewAudioTranscription(fileId, fileName) {
             showLoadingMessage('Creating transcription using Bhashini ASR...');
 
             try {
-                // Fetch the audio file
-                const audioBlob = await fetch(`/file/${fileId}`).then(r => r.blob());
+                // Fetch the audio file from the appropriate URL
+                const response = await fetch(audioUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch audio file');
+                }
+                const audioBlob = await response.blob();
 
-                // Send to Bhashini for transcription
+                // Determine correct MIME type from filename
+                let mimeType = audioBlob.type || 'audio/wav';
+                const ext = fileName.toLowerCase().split('.').pop();
+                const mimeTypes = {
+                    'mp3': 'audio/mpeg',
+                    'wav': 'audio/wav',
+                    'm4a': 'audio/mp4',
+                    'aac': 'audio/aac',
+                    'ogg': 'audio/ogg',
+                    'webm': 'audio/webm'
+                };
+                if (mimeTypes[ext]) {
+                    mimeType = mimeTypes[ext];
+                }
+
+                // Create new blob with correct MIME type if needed
+                const typedBlob = new Blob([audioBlob], { type: mimeType });
+
+                // Send to Bhashini for transcription - use simple filename without special chars
                 const formData = new FormData();
-                formData.append('audio', audioBlob, fileName);
+                const simpleFilename = 'evidence.' + ext;  // Use simple filename like working transcription
+                formData.append('audio', typedBlob, simpleFilename);
                 formData.append('language', 'hi'); // Default to Hindi
 
                 const result = await api.transcribeAudio(formData);
@@ -4653,10 +4731,10 @@ async function viewAudioTranscription(fileId, fileName) {
                 if (result.success && result.transcription) {
                     // Create transcription record
                     const transcriptionData = {
-                        caseId: audioFile.caseId || null,
+                        caseId: audioFile?.caseId || null,
                         content: result.transcription,
                         audioFile: fileName,
-                        audioFileId: fileId,
+                        audioFileId: fileId || null,
                         language: result.language || 'hi',
                         status: 'completed'
                     };
@@ -4672,7 +4750,7 @@ async function viewAudioTranscription(fileId, fileName) {
                 }
             } catch (error) {
                 console.error('Error creating transcription:', error);
-                showNotification('Failed to create transcription', 'error');
+                showNotification('Failed to create transcription: ' + error.message, 'error');
                 hideLoadingMessage();
             }
         }
@@ -5220,59 +5298,8 @@ function showWaveformPlaceholder() {
 
 // Main Interface Functions for Transcription Editor
 function loadAudioFileForEditing() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'audio/*';
-
-    input.onchange = async function (e) {
-        const file = e.target.files[0];
-        if (file) {
-            console.log('Loading audio file:', file.name);
-            loadAudioFile(file);
-
-            // Clear any previous regions
-            clearSelection();
-            currentRegion = null;
-            updateSelectionDisplay(0, 0);
-            enableSelectionControls(false);
-
-            // Set filename
-            document.getElementById('save-filename').value = file.name.replace(/\.[^/.]+$/, '');
-
-            // AUTO-TRANSCRIBE THE LOADED AUDIO FILE
-            const languageSelect = document.getElementById('editor-language');
-            const language = languageSelect ? languageSelect.value : 'hi';
-
-            try {
-                showLoadingMessage('Transcribing audio file...');
-                const formData = new FormData();
-                formData.append('audio', file);
-                formData.append('language', language);
-
-                const result = await api.transcribeAudio(formData);
-
-                if (result.success && result.transcription) {
-                    const textarea = document.getElementById('transcription-text');
-                    if (textarea) {
-                        textarea.value = result.transcription;
-                        textarea.dispatchEvent(new Event('input'));
-                    }
-                    showNotification(`✅ Audio transcribed: "${result.transcription}"`, 'success');
-                } else {
-                    document.getElementById('transcription-text').value = '';
-                    showNotification('Audio loaded - Transcription unavailable', 'warning');
-                }
-            } catch (error) {
-                console.error('Transcription error:', error);
-                document.getElementById('transcription-text').value = '';
-                showNotification('Audio loaded - Transcription failed', 'warning');
-            } finally {
-                hideLoadingMessage();
-            }
-        }
-    };
-
-    input.click();
+    // Open the FIR Load Modal instead of file explorer
+    openFIRLoadModal();
 }
 
 // Recording state variables
@@ -5602,6 +5629,12 @@ async function saveToCase() {
         return;
     }
 
+    // REQUIRED: FIR case must be selected
+    if (!caseId) {
+        showNotification('Please select a FIR case to save the transcription', 'warning');
+        return;
+    }
+
     try {
         console.log('Getting audio blob...');
         const audioBlob = await getCurrentAudioBlob();
@@ -5614,16 +5647,10 @@ async function saveToCase() {
 
         const formData = new FormData();
         formData.append('files', audioBlob, filename + '.wav');
+        formData.append('caseId', caseId);
 
-        // If no case selected, save to root
-        if (!caseId) {
-            console.log('No case selected - saving to root folder');
-            showLoadingMessage('Saving audio to File Manager...');
-        } else {
-            formData.append('caseId', caseId);
-            console.log('FormData created, uploading to case...');
-            showLoadingMessage('Saving audio to FIR case...');
-        }
+        console.log('FormData created, uploading to case...');
+        showLoadingMessage('Saving audio to FIR case...');
 
         const result = await api.uploadFiles(formData);
         console.log('Upload result:', result);
@@ -5639,7 +5666,7 @@ async function saveToCase() {
                 const language = languageSelect ? languageSelect.value : 'hi';
 
                 const transcriptionData = {
-                    caseId: caseId || null,
+                    caseId: caseId,
                     content: transcriptionText.value.trim(),
                     audioFile: result.files[0].name,
                     audioFileId: result.files[0].id,
@@ -5652,11 +5679,7 @@ async function saveToCase() {
             }
         }
 
-        if (!caseId) {
-            showNotification(`✅ Audio saved to File Manager!`, 'success');
-        } else {
-            showNotification(`✅ Audio saved to FIR case ${caseId} successfully!`, 'success');
-        }
+        showNotification(`✅ Audio saved to FIR case ${caseId} successfully!`, 'success');
         hideLoadingMessage();
 
     } catch (error) {

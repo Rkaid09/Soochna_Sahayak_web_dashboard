@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soochna Sahayak - Police Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="fir_modal_styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/wavesurfer.js@6.6.3"></script>
@@ -348,8 +349,8 @@
                     <h3>Audio Transcription Editor</h3>
 
                     <div class="editor-toolbar">
-                        <button class="btn btn-primary" onclick="loadAudioFileForEditing()"><i
-                                class="fas fa-folder-open"></i> Load Audio File</button>
+                        <button class="btn btn-primary" onclick="openFIRLoadModal()"><i class="fas fa-folder-open"></i>
+                            Load Audio File</button>
                         <button class="btn btn-secondary" onclick="recordNewAudio()"><i class="fas fa-microphone"></i>
                             Record New</button>
                         <button class="btn btn-secondary" onclick="playPauseAudio()" disabled id="play-pause-btn"><i
@@ -490,7 +491,8 @@
                                     style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                             </div>
                             <div class="form-group">
-                                <label for="save-case-link">Link to FIR Case (Optional)</label>
+                                <label for="save-case-link">Select FIR Case <span
+                                        style="color: #e74c3c;">*</span></label>
                                 <select id="save-case-link"
                                     style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                                     <option value="">No case selected</option>
@@ -498,13 +500,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div style="margin-top: 15px; display: flex; gap: 10px;">
-                            <button class="btn btn-primary" onclick="saveToFileManager()" disabled
-                                id="save-to-files-btn">
-                                <i class="fas fa-folder"></i> Save to File Manager
-                            </button>
-                            <button class="btn btn-success" onclick="saveToCase()" disabled id="save-to-case-btn">
-                                <i class="fas fa-gavel"></i> Save to FIR Case
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-success" onclick="saveToCase()" disabled id="save-to-case-btn"
+                                style="width: 100%;">
+                                <i class="fas fa-save"></i> Save Transcription to FIR Case
                             </button>
                         </div>
                     </div>
@@ -513,7 +512,54 @@
         </div>
     </div>
 
+    <!-- FIR Audio Load Modal -->
+    <div id="fir-load-modal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-folder-open"></i> Load Audio from FIR Case</h2>
+                <span class="close-modal" onclick="closeFIRLoadModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; min-height: 400px;">
+                    <!-- FIR Cases List -->
+                    <div>
+                        <h3 style="margin-bottom: 15px; font-size: 16px; color: #2c3e50;">
+                            <i class="fas fa-gavel"></i> Select FIR Case
+                        </h3>
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" id="fir-search-input" placeholder="Search FIR cases..."
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                                onkeyup="filterFIRCases()">
+                        </div>
+                        <div id="fir-cases-list"
+                            style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 10px;">
+                            <!-- FIR cases will be populated by JavaScript -->
+                            <p style="text-align: center; color: #95a5a6; padding: 20px;">Loading FIR cases...</p>
+                        </div>
+                    </div>
+
+                    <!-- Audio Files List -->
+                    <div>
+                        <h3 style="margin-bottom: 15px; font-size: 16px; color: #2c3e50;">
+                            <i class="fas fa-file-audio"></i> Audio/Video Files
+                        </h3>
+                        <div id="fir-audio-files-list"
+                            style="max-height: 450px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 10px;">
+                            <!-- Audio files will be populated when FIR is selected -->
+                            <p style="text-align: center; color: #95a5a6; padding: 40px;">
+                                <i class="fas fa-hand-pointer"
+                                    style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                                Select a FIR case to view its audio files
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Case Detail Modal -->
+
     <div id="case-modal" class="modal">
         <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
@@ -605,8 +651,10 @@
     <!-- Use 'defer' to ensure scripts execute in order after DOM is ready -->
     <script defer src="bhashini-config.js"></script>
     <script defer src="bhashini-asr.js"></script>
+    <script defer src="fir_load_modal.js"></script>
 
     <script defer src="script.js"></script>
+
 
     <!-- Script Load Diagnostics -->
     <script>

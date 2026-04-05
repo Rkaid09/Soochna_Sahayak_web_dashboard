@@ -143,8 +143,100 @@ const formatFileSize = (bytes) => {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
+// ============================================================
+// INVERSE TEXT NORMALIZATION — Convert spoken numbers to digits
+// Handles Hindi/Hinglish digit words and डबल/ट्रिपल multipliers
+// ============================================================
+function normalizeNumbers(text) {
+    if (!text || typeof text !== 'string') return text;
 
-// AUTHENTICATION ENDPOINTS
+    const DIGIT_WORDS = {
+        'शून्य':'0','जीरो':'0','ज़ीरो':'0','जिरो':'0','ज़िरो':'0','ज़ेरो':'0','ज़ेरो':'0',
+        'एक':'1','वन':'1','वॉन':'1',
+        'दो':'2','टू':'2',
+        'तीन':'3','थ्री':'3','थ्रि':'3',
+        'चार':'4','फोर':'4','फ़ोर':'4',
+        'पाँच':'5','पांच':'5','फाइव':'5','फ़ाइव':'5',
+        'छह':'6','छः':'6','सिक्स':'6',
+        'सात':'7','सेवन':'7',
+        'आठ':'8','एट':'8',
+        'नौ':'9','नाइन':'9','नाइँ':'9',
+    };
+
+    const MULTIPLIERS = {
+        'डबल':2,'दोहरा':2,'double':2,
+        'ट्रिपल':3,'तिहरा':3,'triple':3,
+    };
+
+    function clean(w) {
+        return w.toLowerCase().replace(/[\u0964\u0965।॥,\.?!;:"'()\[\]]/g, '');
+    }
+
+    const words = text.split(/\s+/);
+
+    // --- state ---
+    let buf = [];    // original tokens in current number run
+    let digits = ''; // digits accumulated so far in current run
+
+    // out is built as an array of strings then joined at the end
+    const out = [];
+
+    // Flush the current buffer. If it has digits, decide to convert or not.
+    // seqHasMult: true if a डबल/ट्रिपल was used — always convert in that case
+    let seqHasMult = false;
+
+    function flush(nextWord) {
+        if (digits.length > 0) {
+            // Convert if: any multiplier was used OR 2+ digits accumulated
+            if (seqHasMult || digits.length >= 2) {
+                out.push(digits);
+            } else {
+                // Single ambiguous digit word like standalone "दो" — keep original
+                out.push(...buf);
+            }
+        }
+        buf = [];
+        digits = '';
+        seqHasMult = false;
+        if (nextWord !== undefined) out.push(nextWord);
+    }
+
+    let i = 0;
+    while (i < words.length) {
+        const w = words[i];
+        const k = clean(w);
+
+        const digit = DIGIT_WORDS[k];
+        const mult  = MULTIPLIERS[k];
+
+        if (digit !== undefined) {
+            buf.push(w);
+            digits += digit;
+            i++;
+        } else if (mult !== undefined) {
+            // Look ahead for the digit word that follows the multiplier
+            const nw = words[i + 1];
+            const nd = nw ? DIGIT_WORDS[clean(nw)] : undefined;
+            if (nd !== undefined) {
+                buf.push(w, nw);
+                digits += nd.repeat(mult);
+                seqHasMult = true;
+                i += 2;
+            } else {
+                // Multiplier with no digit after it — treat as plain word
+                flush(w);
+                i++;
+            }
+        } else {
+            flush(w);
+            i++;
+        }
+    }
+    flush(); // flush trailing sequence
+
+    return out.join(' ').replace(/\s+/g, ' ').trim();
+}
+
 app.post('/api/auth/signup', async (req, res) => {
     try {
         const { name, email, password, designation, station, badgeNumber } = req.body;
@@ -828,6 +920,12 @@ async function getBhashiniPipeline(language = 'hi') {
             };
 
             pipelineConfigCache.set(language, config);
+            // FIX #3: Auto-expire cache after 30 minutes — Bhashini rotates auth tokens
+            // periodically. Stale tokens cause 502 Bad Gateway errors that are hard to debug.
+            setTimeout(() => {
+                pipelineConfigCache.delete(language);
+                console.log(`🔄 Pipeline config cache expired for language: ${language}`);
+            }, 30 * 60 * 1000); // 30 minutes
             console.log(`Config cached for ${language}:`, config);
             return config;
         } else {
@@ -846,17 +944,44 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
             return res.status(400).json({ error: 'No audio file provided' });
         }
 
-        const language = req.body.language || 'hi'; // Default to Hindi
-        console.log(`Transcribing audio for language: ${language}`);
+        // FIX #4: Resolve language — run server-side ALD if 'auto' is requested
+        let language = req.body.language || 'auto';
+        console.log(`Requested language: ${language}`);
         console.log(`Audio file: ${req.file.originalname}, size: ${req.file.size} bytes, path: ${req.file.path}`);
 
-        // Get Bhashini configuration (no fallback)
-        const config = await getBhashiniPipeline(language);
-        console.log('Using Bhashini ASR');
-
-        // Read audio file and convert to base64 for Bhashini
+        // Read audio file and convert to base64 for Bhashini (done once, used for both ALD and ASR)
         const audioData = fs.readFileSync(req.file.path);
         const base64Audio = audioData.toString('base64');
+
+        if (language === 'auto' || language === '') {
+            console.log('🔍 Running server-side ALD...');
+            try {
+                const aldPayload = {
+                    pipelineTasks: [{ taskType: 'audio-lang-detection', config: { serviceId: 'bhashini/iitmandi/audio-lang-detection/gpu' } }],
+                    inputData: { audio: [{ audioContent: base64Audio }] }
+                };
+                const aldResponse = await fetch(BHASHINI_CONFIG.computeURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': BHASHINI_CONFIG.ulcaApiKey },
+                    body: JSON.stringify(aldPayload)
+                });
+                if (aldResponse.ok) {
+                    const aldResult = await aldResponse.json();
+                    const aldOutput = aldResult?.pipelineResponse?.[0]?.output;
+                    if (aldOutput?.[0]?.langPrediction?.[0]) {
+                        const detectedLang = aldOutput[0].langPrediction[0].langCode;
+                        const confidence = aldOutput[0].langPrediction[0].langScore || 0;
+                        console.log(`✅ Server ALD: ${detectedLang} (confidence: ${(confidence * 100).toFixed(1)}%)`);
+                        language = (confidence >= 0.70) ? detectedLang : 'hi';
+                        if (confidence < 0.70) console.warn(`⚠️ ALD confidence too low, defaulting to 'hi'`);
+                    } else { language = 'hi'; }
+                } else { language = 'hi'; }
+            } catch (aldErr) {
+                console.warn('⚠️ Server ALD failed, defaulting to hi:', aldErr.message);
+                language = 'hi';
+            }
+        }
+        console.log(`Final transcription language: ${language}`);
 
         // Determine audio format from mimetype first, then extension
         let audioFormat = 'wav';
@@ -885,6 +1010,10 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
         }
 
         console.log(`Audio format: ${audioFormat}, samplingRate: ${samplingRate}, size: ${audioData.length} bytes`);
+
+        // Get Bhashini ASR pipeline config for the resolved language
+        const config = await getBhashiniPipeline(language);
+        console.log('Using Bhashini ASR service:', config.serviceId);
 
         // Prepare inference request with correct structure
         const payload = {
@@ -936,8 +1065,15 @@ app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
             result.pipelineResponse[0].output &&
             result.pipelineResponse[0].output[0]) {
 
-            const transcription = result.pipelineResponse[0].output[0].source;
-            console.log(`Transcription result: ${transcription}`);
+            const rawTranscription = result.pipelineResponse[0].output[0].source;
+            // Apply Inverse Text Normalization: convert spoken numbers to digits
+            // e.g. "डबल नाइन डबल सिक्स फोर ज़ीरो" → "996640"
+            const transcription = normalizeNumbers(rawTranscription);
+            if (rawTranscription !== transcription) {
+                console.log(`ITN applied:  "${rawTranscription}" → "${transcription}"`);
+            } else {
+                console.log(`Transcription result: ${transcription}`);
+            }
 
             // Save transcription result
             const transcriptionData = {

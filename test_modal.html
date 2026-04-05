@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test FIR Modal</title>
+</head>
+
+<body>
+    <h1>Testing if scripts load correctly</h1>
+    <button onclick="testFunctions()">Test Functions</button>
+    <div id="output"></div>
+
+    <script>
+        function testFunctions() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<h3>Function Check:</h3>';
+
+            output.innerHTML += typeof openFIRLoadModal !== 'undefined'
+                ? '✅ openFIRLoadModal exists<br>'
+                : '❌ openFIRLoadModal NOT FOUND<br>';
+
+            output.innerHTML += typeof loadAudioFileForEditing !== 'undefined'
+                ? '✅ loadAudioFileForEditing exists<br>'
+                : '❌ loadAudioFileForEditing NOT FOUND<br>';
+
+            output.innerHTML += typeof closeFIRLoadModal !== 'undefined'
+                ? '✅ closeFIRLoadModal exists<br>'
+                : '❌ closeFIRLoadModal NOT FOUND<br>';
+        }
+    </script>
+
+    <script src="fir_load_modal.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

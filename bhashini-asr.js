@@ -322,8 +322,18 @@ class BhashiniASR {
                 languageDetectionResult = await this.detectLanguage(audioBlob, onProgress);
 
                 if (languageDetectionResult.success) {
-                    detectedLanguage = languageDetectionResult.language;
-                    console.log(`✅ Using detected language: ${detectedLanguage}`);
+                    const confidence = languageDetectionResult.confidence || 0;
+                    const CONFIDENCE_THRESHOLD = 0.70; // Minimum confidence to trust ALD
+
+                    if (confidence >= CONFIDENCE_THRESHOLD) {
+                        detectedLanguage = languageDetectionResult.language;
+                        console.log(`✅ ALD trusted: ${detectedLanguage} (confidence: ${(confidence * 100).toFixed(1)}%)`);
+                    } else {
+                        // Low confidence — ALD is unreliable, use fallback
+                        detectedLanguage = sourceLanguage || 'hi';
+                        console.warn(`⚠️ ALD confidence too low (${(confidence * 100).toFixed(1)}% < ${CONFIDENCE_THRESHOLD * 100}%). Falling back to: ${detectedLanguage}`);
+                        if (onProgress) onProgress(`⚠️ Low confidence detection (${(confidence * 100).toFixed(1)}%), using ${this.getLanguageName(detectedLanguage)}...`);
+                    }
                 } else {
                     // Fallback to provided language or default to English
                     detectedLanguage = sourceLanguage || 'en';
