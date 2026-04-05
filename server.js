@@ -122,7 +122,7 @@ app.use(async (req, res, next) => {
         await connectDB();
         next();
     } catch (error) {
-        res.status(503).json({ error: 'Database connection is currently unavailable', details: error.message });
+        res.status(503).json({ error: `DB Error: ${error.message} | URI Set: ${!!process.env.MONGODB_URI}` });
     }
 });
 
