@@ -502,7 +502,7 @@ app.post('/api/cases', async (req, res) => {
             evidenceFiles: req.body.evidenceFiles || []
         });
         await newCase.save();
-        res.json(newCase.toObject());
+        res.json(normalizeCaseForFrontend(newCase.toObject()));
     } catch (error) {
         console.error('Create case error:', error);
         res.status(500).json({ error: 'Failed to create case' });
@@ -517,7 +517,7 @@ app.put('/api/cases/:id', async (req, res) => {
             { new: true }
         );
         if (!updated) return res.status(404).json({ error: 'Case not found' });
-        res.json(updated.toObject());
+        res.json(normalizeCaseForFrontend(updated.toObject()));
     } catch (error) {
         res.status(500).json({ error: 'Failed to update case' });
     }
