@@ -9,7 +9,6 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
-const { MongoClient } = require('mongodb');
 const { put, del } = require('@vercel/blob');
 
 const app = express();
@@ -36,24 +35,7 @@ const connectDB = async () => {
     }
 };
 
-// ─── Native MongoDB Client (cached for session store — Vercel serverless pattern) ─
-// Caching on `global` ensures a single MongoClient is reused across warm invocations
-let cachedMongoClient = global._mongoClient || null;
-const mongoClientPromise = (() => {
-    if (!process.env.MONGODB_URI) return Promise.resolve(null);
-    if (!cachedMongoClient) {
-        cachedMongoClient = new MongoClient(process.env.MONGODB_URI, {
-            maxPoolSize: 5,
-            serverSelectionTimeoutMS: 10000
-        });
-        global._mongoClient = cachedMongoClient;
-    }
-    return cachedMongoClient.connect().catch(err => {
-        console.error('Native MongoClient connect failed:', err.message);
-        return null;
-    });
-})();
-
+// ─── Note: session store is set up after schemas — uses mongoose.connection directly
 // ─── Mongoose Schemas ─────────────────────────────────────────────────────────
 
 const caseSchema = new mongoose.Schema({
@@ -143,8 +125,9 @@ app.use(async (req, res, next) => {
     }
 });
 
-// Build session store using the cached native MongoClient promise (Vercel serverless safe)
-const sessionStoreConfig = {
+// Session store — uses Mongoose connection client (connect-mongo v4+/v6)
+// Falls back to in-memory store if MONGODB_URI is not configured
+const sessionOptions = {
     secret: process.env.SESSION_SECRET || 'soochna-sahayak-dev-secret',
     resave: false,
     saveUninitialized: false,
@@ -152,20 +135,33 @@ const sessionStoreConfig = {
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000
     }
 };
 
 if (process.env.MONGODB_URI) {
-    sessionStoreConfig.store = MongoStore.create({
-        clientPromise: mongoClientPromise,
-        collectionName: 'sessions',
-        ttl: 7 * 24 * 60 * 60,
-        touchAfter: 24 * 3600
-    });
+    // Get native MongoDB client from Mongoose after connecting
+    const sessionClientPromise = connectDB()
+        .then(conn => conn.getClient())
+        .catch(err => {
+            console.error('⚠️ Session store client unavailable:', err.message);
+            return null;
+        });
+    try {
+        sessionOptions.store = MongoStore.create({
+            clientPromise: sessionClientPromise,
+            collectionName: 'sessions',
+            ttl: 7 * 24 * 60 * 60,
+            touchAfter: 24 * 3600
+        });
+    } catch (e) {
+        console.error('⚠️ MongoStore.create failed, using memory store:', e.message);
+    }
+} else {
+    console.warn('⚠️ MONGODB_URI not set — sessions will use in-memory store (not persistent)');
 }
 
-app.use(session(sessionStoreConfig));
+app.use(session(sessionOptions));
 
 // Cache control — prevent caching of JavaScript files
 app.use((req, res, next) => {
