@@ -421,14 +421,74 @@ app.post('/api/auth/change-password', async (req, res) => {
 
 // ─── CASES API ────────────────────────────────────────────────────────────────
 
+// Normalize case data for the dashboard frontend.
+// Mobile app sends nested objects (complainant.name, incident.location, assignedOfficer.name),
+// but the dashboard card/modal expects flat string fields (complainant, location, officer).
+function normalizeCaseForFrontend(c) {
+    const complainant = c.complainant;
+    const complainantName = typeof complainant === 'object' && complainant !== null
+        ? (complainant.name || complainant.fullName || '')
+        : (complainant || '');
+    const complainantContact = typeof complainant === 'object' && complainant !== null
+        ? (complainant.phone || complainant.contact || complainant.mobile || '')
+        : (c.contact || '');
+    const complainantAddress = typeof complainant === 'object' && complainant !== null
+        ? (complainant.address || '')
+        : (c.complainantAddress || c.address || '');
+
+    const incident = c.incident || {};
+    const location = c.location || incident.location || '';
+    const incidentDate = c.date || incident.date || '';
+    const incidentTime = c.time || incident.time || '';
+    const description = c.description || incident.description || '';
+
+    const assignedOfficer = c.assignedOfficer || {};
+    const officerName = c.officer ||
+        (typeof assignedOfficer === 'object' && assignedOfficer !== null
+            ? (assignedOfficer.name || assignedOfficer.officerName || '')
+            : (assignedOfficer || ''));
+    const officerBadge = c.officerBadge ||
+        (typeof assignedOfficer === 'object' && assignedOfficer !== null
+            ? (assignedOfficer.badge || assignedOfficer.badgeNumber || '')
+            : '');
+
+    // Map mobile-app statuses to dashboard-recognised ones
+    const statusMap = { received: 'pending', open: 'open', investigating: 'progress', closed: 'closed' };
+    const status = statusMap[c.status?.toLowerCase()] || c.status || 'pending';
+
+    return {
+        ...c,
+        // Flat display fields
+        complainant: complainantName,
+        contact: complainantContact,
+        complainantAddress,
+        location,
+        date: incidentDate,
+        time: incidentTime,
+        description,
+        officer: officerName,
+        officerBadge,
+        status,
+        // Keep originals available under private keys for modal detail display
+        _complainantObj: typeof c.complainant === 'object' ? c.complainant : null,
+        _incidentObj: incident,
+        _assignedOfficerObj: typeof c.assignedOfficer === 'object' ? c.assignedOfficer : null,
+        // Derive crime type from nested data if needed
+        bnsSectionName: c.bnsSectionName || c.type ||
+            (Array.isArray(c.sections) && c.sections.length ? c.sections[0] : '') ||
+            (Array.isArray(c.bnsCategories) && c.bnsCategories.length ? c.bnsCategories[0] : '') || ''
+    };
+}
+
 app.get('/api/cases', async (req, res) => {
     try {
         const cases = await Case.find().sort({ createdAt: -1 }).lean();
-        res.json(cases);
+        res.json(cases.map(normalizeCaseForFrontend));
     } catch (error) {
         res.status(500).json({ error: 'Failed to load cases' });
     }
 });
+
 
 app.post('/api/cases', async (req, res) => {
     try {

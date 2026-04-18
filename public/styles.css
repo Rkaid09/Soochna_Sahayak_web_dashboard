@@ -806,6 +806,16 @@ body {
     color: #155724;
 }
 
+.case-status.open {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.case-status.received {
+    background: #fff3cd;
+    color: #856404;
+}
+
 .case-info {
     margin-bottom: 15px;
 }

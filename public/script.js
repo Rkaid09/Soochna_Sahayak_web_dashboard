@@ -1595,10 +1595,12 @@ function getStationName(stationId) {
 function getStatusText(status) {
     const statusMap = {
         'pending': 'Pending',
-        'progress': 'In Progress',
-        'closed': 'Closed'
+        'open': 'Open',
+        'progress': 'Investigating',
+        'closed': 'Closed',
+        'received': 'Pending'
     };
-    return statusMap[status] || status;
+    return statusMap[status] || status?.charAt(0).toUpperCase() + status?.slice(1) || 'Pending';
 }
 
 function formatDate(dateString) {
@@ -4399,15 +4401,19 @@ function openCaseModal(caseItem) {
                 <div class="detail-grid">
                     <div class="detail-item">
                         <label class="detail-label">Name</label>
-                        <span class="detail-value">${caseItem.complainant || 'N/A'}</span>
+                        <span class="detail-value">${caseItem._complainantObj?.name || caseItem.complainant || 'N/A'}</span>
                     </div>
                     <div class="detail-item">
                         <label class="detail-label">Contact</label>
-                        <span class="detail-value">${caseItem.contact || 'N/A'}</span>
+                        <span class="detail-value">${caseItem._complainantObj?.phone || caseItem._complainantObj?.mobile || caseItem.contact || 'N/A'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Aadhaar</label>
+                        <span class="detail-value">${caseItem._complainantObj?.aadhaar || 'N/A'}</span>
                     </div>
                     <div class="detail-item full-width">
                         <label class="detail-label">Address</label>
-                        <span class="detail-value">${caseItem.complainantAddress || caseItem.address || 'N/A'}</span>
+                        <span class="detail-value">${caseItem._complainantObj?.address || caseItem.complainantAddress || caseItem.address || 'N/A'}</span>
                     </div>
                 </div>
             </div>
@@ -4424,6 +4430,24 @@ function openCaseModal(caseItem) {
             
             <div class="case-detail-section">
                 <h4><i class="fas fa-map-marker-alt"></i> Incident Details</h4>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label class="detail-label">Date</label>
+                        <span class="detail-value">${caseItem._incidentObj?.date || caseItem.date || 'N/A'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Time</label>
+                        <span class="detail-value">${caseItem._incidentObj?.time || caseItem.time || 'N/A'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Location</label>
+                        <span class="detail-value">${caseItem._incidentObj?.location || caseItem.location || 'N/A'}</span>
+                    </div>
+                    <div class="detail-item full-width">
+                        <label class="detail-label">Description</label>
+                        <span class="detail-value">${caseItem._incidentObj?.description || caseItem.description || 'N/A'}</span>
+                    </div>
+                </div>
             </div>
             
             <div class="case-detail-section" style="margin-top: 20px;">
