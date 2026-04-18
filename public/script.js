@@ -2164,16 +2164,19 @@ function getFilesInCurrentFolder() {
         if (file.type === 'folder') return true;
 
         if (!currentFolderId) {
-            // Root level: show files with no folder or explicitly root
-            // Also show files with string folder names that don't match any existing folder ID (legacy/orphaned files)
+            // Root level: show files with no folder, explicitly root, or no caseId
             if (!file.folder || file.folder === '' || file.folder === 'root' || file.folder === null) {
+                // If this file has a caseId, it belongs under a case — hide from root
+                if (file.caseId) return false;
                 return true;
             }
-            // Check if folder value is a string that doesn't match any folder ID (orphaned files)
+            // Check if folder value is a known folder ID or caseId (not orphaned)
             const folderExists = allFiles.some(f => f.type === 'folder' && (f.id === file.folder || f.name === file.folder));
-            return !folderExists;
+            // Also treat folder values that look like case IDs (FIR-...) as non-root
+            const looksLikeCaseId = /^FIR-/i.test(file.folder);
+            return !folderExists && !looksLikeCaseId;
         } else {
-            // Inside a folder: match by folder ID or by folder name (for legacy compatibility)
+            // Inside a folder: match by folder ID, folder name, or caseId
             const folderObj = allFiles.find(f => f.id === currentFolderId && f.type === 'folder');
             const folderName = folderObj ? folderObj.name : null;
             return file.folder === currentFolderId || (folderName && file.folder === folderName);
@@ -2285,7 +2288,18 @@ function showCaseEvidenceFiles(caseItem) {
     const fileGrid = document.getElementById('file-grid');
     fileGrid.innerHTML = '';
 
-    if (!caseItem.evidenceFiles || caseItem.evidenceFiles.length === 0) {
+    // Files linked via caseId in the FileRecord collection (proper upload records with IDs)
+    const uploadedCaseFiles = allFiles.filter(f => f.caseId === caseItem.id && f.type !== 'folder');
+    // Filenames from the case's evidenceFiles array (may include legacy entries)
+    const evidenceNames = caseItem.evidenceFiles || [];
+
+    // Merge: start with properly uploaded files (have IDs), then add any legacy-only entries
+    const seenNames = new Set(uploadedCaseFiles.map(f => f.name || f.filename));
+    const legacyOnlyNames = evidenceNames.filter(n => !seenNames.has(n));
+
+    const totalCount = uploadedCaseFiles.length + legacyOnlyNames.length;
+
+    if (totalCount === 0) {
         fileGrid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
                 <h3>No Evidence Files</h3>
@@ -2295,20 +2309,38 @@ function showCaseEvidenceFiles(caseItem) {
         return;
     }
 
-    caseItem.evidenceFiles.forEach(fileName => {
-        const file = allFiles.find(f => f.name === fileName || f.originalName === fileName);
+    const renderFileItem = (file, fileName) => {
         const fileItem = document.createElement('div');
         fileItem.className = 'file-item';
         fileItem.style.cursor = 'pointer';
-        fileItem.onclick = () => openEvidenceFile(fileName);
+        fileItem.onclick = () => file ? viewFile(file) : openEvidenceFile(fileName);
+
+        const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(fileName);
+        const iconClass = getFileTypeIcon(file?.type || 'file');
+        const thumbnailHTML = (isImage && file?.id)
+            ? `<img src="/file/${file.id}" alt="${fileName}" style="width:100%;height:80px;object-fit:cover;border-radius:6px;"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+               <span style="display:none;align-items:center;justify-content:center;height:80px;">
+                   <i class="fas ${iconClass}" style="font-size:2rem;color:#3498db;"></i>
+               </span>`
+            : `<i class="fas ${iconClass}" style="color: #3498db;"></i>`;
+
         fileItem.innerHTML = `
-            <div class="file-icon">
-                <i class="fas ${getFileTypeIcon(file?.type || 'audio')}" style="color: #3498db;"></i>
+            <div class="file-icon" style="${isImage && file?.id ? 'padding:0;overflow:hidden;' : ''}">
+                ${thumbnailHTML}
             </div>
             <div class="file-name">${fileName}</div>
             <div class="file-size">${file?.size || 'Evidence'}</div>
         `;
         fileGrid.appendChild(fileItem);
+    };
+
+    // Show files with proper FileRecord objects first
+    uploadedCaseFiles.forEach(file => renderFileItem(file, file.name || file.filename));
+    // Then show any legacy filenames that don't have FileRecord entries
+    legacyOnlyNames.forEach(fileName => {
+        const file = allFiles.find(f => f.name === fileName || f.filename === fileName);
+        renderFileItem(file || null, fileName);
     });
 
     addCustomNavigationHeader(`${caseItem.id} Evidence`, 'cases');
@@ -3975,8 +4007,8 @@ function renderTranscriptions() {
                     ${transcription.status || 'completed'}
                 </div>
             </div>
-            <div class="transcription-content" style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px; line-height: 1.6;">
-                ${transcription.content || 'No content available'}
+            <div class="transcription-content" style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px; line-height: 1.6; font-family: monospace; white-space: pre-wrap; word-break: break-word;">
+                ${transcription.transcription || transcription.content || '<em style="color:#999">No transcription text available</em>'}
             </div>
             <div class="transcription-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button class="btn btn-secondary" onclick="editTranscription('${transcription.id}')">
@@ -4501,48 +4533,48 @@ async function loadCaseEvidenceFiles(caseId) {
 
         const processFile = (fileName, fileObj = null) => {
             // Try to find the file in allFiles for additional info if not provided
-            const file = fileObj || allFiles.find(f => f.name === fileName || f.originalName === fileName);
+            const file = fileObj || allFiles.find(f => f.name === fileName || f.filename === fileName || f.originalName === fileName);
             const name = file ? file.name : fileName;
+            const fileId = file ? file.id : null;
 
             const isAudio = /\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(name);
             const isVideo = /\.(mp4|webm|mov|avi)$/i.test(name);
-            const isImage = /\.(jpg|jpeg|png|gif|bmp)$/i.test(name);
+            const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(name);
             const isPdf = /\.pdf$/i.test(name);
 
-            let fileType = 'file';
             let iconClass = 'fa-file';
             let iconColor = '#95a5a6';
 
-            if (isAudio) {
-                fileType = 'audio';
-                iconClass = 'fa-file-audio';
-                iconColor = '#e74c3c';
-            } else if (isVideo) {
-                fileType = 'video';
-                iconClass = 'fa-file-video';
-                iconColor = '#e67e22';
-            } else if (isImage) {
-                fileType = 'image';
-                iconClass = 'fa-file-image';
-                iconColor = '#2ecc71';
-            } else if (isPdf) {
-                fileType = 'document';
-                iconClass = 'fa-file-pdf';
-                iconColor = '#e74c3c';
-            }
+            if (isAudio) { iconClass = 'fa-file-audio'; iconColor = '#e74c3c'; }
+            else if (isVideo) { iconClass = 'fa-file-video'; iconColor = '#e67e22'; }
+            else if (isImage) { iconClass = 'fa-file-image'; iconColor = '#2ecc71'; }
+            else if (isPdf) { iconClass = 'fa-file-pdf'; iconColor = '#e74c3c'; }
+
+            // For images with a known file ID, show a real thumbnail preview
+            const thumbnailHTML = (isImage && fileId)
+                ? `<img src="/file/${fileId}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" 
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                   <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">
+                       <i class="fas ${iconClass}" style="font-size:2rem;color:${iconColor};"></i>
+                   </span>`
+                : `<i class="fas ${iconClass}" style="color: ${iconColor};"></i>`;
+
+            const openCall = fileId
+                ? `viewFileById('${fileId}')`
+                : `openEvidenceFile('${name.replace(/'/g, "\\'")}')`;
 
             return `
-                <div class="evidence-card" onclick="openEvidenceFile('${name.replace(/'/g, "\\'")}')">
-                    <div class="evidence-thumbnail">
-                        <i class="fas ${iconClass}" style="color: ${iconColor};"></i>
+                <div class="evidence-card" onclick="${openCall}">
+                    <div class="evidence-thumbnail" style="${isImage && fileId ? 'padding:0;overflow:hidden;' : ''}">
+                        ${thumbnailHTML}
                     </div>
                     <div class="evidence-name" title="${name}">${name}</div>
                     <div class="evidence-meta">${file?.size || 'Evidence'}</div>
                     <div class="evidence-actions">
-                        <button class="evidence-action-btn" title="View" onclick="event.stopPropagation(); openEvidenceFile('${name.replace(/'/g, "\\'")}')">
+                        <button class="evidence-action-btn" title="View" onclick="event.stopPropagation(); ${openCall}">
                             <i class="fas fa-eye"></i>
                         </button>
-                        ${isAudio ? `<button class="evidence-action-btn" title="Transcribe" onclick="event.stopPropagation(); viewAudioTranscription('${file?.id || ''}', '${name.replace(/'/g, "\\'")}')">
+                        ${isAudio ? `<button class="evidence-action-btn" title="Transcribe" onclick="event.stopPropagation(); viewAudioTranscription('${fileId || ''}', '${name.replace(/'/g, "\\'")}')">
                             <i class="fas fa-file-alt"></i>
                         </button>` : ''}
                     </div>
@@ -4570,37 +4602,31 @@ async function loadCaseEvidenceFiles(caseId) {
     }
 }
 
-// Open evidence file by filename - uses in-page modal players for audio/video
+// Open evidence file by filename - resolves file ID from allFiles for secure /file/:id serving
 function openEvidenceFile(fileName) {
-    // Build file URL from uploads folder
-    const fileUrl = `/uploads/${fileName}`;
+    // Look up file object by name to get its ID for the secure endpoint
+    const file = allFiles.find(f => f.name === fileName || f.filename === fileName || f.originalName === fileName);
 
-    // Determine file type
+    if (file && file.id) {
+        // Use the secure /file/:id endpoint (proxied through server with blob token)
+        viewFile(file);
+        return;
+    }
+
+    // Fallback: determine file type and try opening by filename
+    // (This covers older evidence entries stored only as filename strings)
     const isAudio = /\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(fileName);
     const isVideo = /\.(mp4|webm|mov|avi|mkv)$/i.test(fileName);
     const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(fileName);
     const isPdf = /\.pdf$/i.test(fileName);
 
-    if (isAudio) {
-        // Use audio modal player
-        showAudioModal(fileUrl, fileName);
-    } else if (isVideo) {
-        // Use video modal player
-        showVideoModal(fileUrl, fileName);
-    } else if (isImage) {
-        // Use image modal viewer
-        showImageModal(fileUrl, fileName);
-    } else if (isPdf) {
-        // PDF opens in new tab
-        window.open(fileUrl, '_blank');
+    if (isImage || isAudio || isVideo || isPdf) {
+        showNotification(
+            `File "${fileName}" not found in the file store. It may have been uploaded via an older workflow. Please re-upload through Add Evidence Files.`,
+            'error'
+        );
     } else {
-        // Try to find in allFiles for other types
-        const file = allFiles.find(f => f.name === fileName || f.originalName === fileName);
-        if (file && file.id) {
-            viewFileById(file.id);
-        } else {
-            window.open(fileUrl, '_blank');
-        }
+        showNotification(`File "${fileName}" not found in the file store.`, 'error');
     }
 }
 

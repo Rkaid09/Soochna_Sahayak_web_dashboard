@@ -8,7 +8,7 @@ const fetch = require('node-fetch');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const mongoose = require('mongoose');
-const MongoStore = require('connect-mongo').MongoStore;
+const MongoStore = require('connect-mongo');
 const { put, del } = require('@vercel/blob');
 
 const app = express();
@@ -35,9 +35,7 @@ const connectDB = async () => {
     }
 };
 
-const clientPromise = connectDB().then(conn => conn.getClient()).catch(err => {
-    console.error('MongoDB Client extraction failed:', err);
-});
+// MongoStore will use mongoUrl directly for session storage — avoids Mongoose getClient() incompatibility
 
 // ─── Mongoose Schemas ─────────────────────────────────────────────────────────
 
@@ -132,13 +130,15 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'soochna-sahayak-dev-secret',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ 
-        clientPromise: clientPromise,
-        collectionName: 'sessions' 
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        collectionName: 'sessions',
+        ttl: 7 * 24 * 60 * 60 // 7 days in seconds
     }),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 }));
@@ -520,7 +520,9 @@ app.post('/api/files/upload', upload.array('files', 10), async (req, res) => {
     try {
         const uploadedFiles = [];
         const caseId = req.body.caseId || null;
-        const folder = req.body.folder || null;
+        // When a caseId is provided, use it as the folder so files appear
+        // under the case folder in the File Manager rather than at root
+        const folder = req.body.folder || (caseId ? caseId : null);
 
         for (const file of req.files) {
             const blobPath = `uploads/${caseId ? `cases/${caseId}` : folder || 'general'}/${Date.now()}_${file.originalname}`;

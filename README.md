@@ -1,90 +1,128 @@
-# README: Soochna Sahayak – Smart FIR & Transcription Management for Law Enforcement
+# 🚔 Soochna Sahayak: Smart FIR & Transcription Hub
 
-## Overview
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-repo)
+[![Bhashini Powered](https://img.shields.io/badge/Powered%20By-Bhashini-blue)](https://bhashini.gov.in/)
+[![Tech Stack](https://img.shields.io/badge/Stack-Express%20%7C%20MongoDB%20%7C%20Vercel%20%7C%20Bhashini-brightgreen)](#tech-stack)
 
-**Soochna Sahayak** is an innovative platform designed to modernize and streamline the process of FIR (First Information Report) filing, transcription, and document management for law enforcement agencies. The project harnesses AI-powered multilingual transcription (via Bhashini) and rich web/mobile dashboard features to enhance efficiency, accuracy, and accessibility in police processes, both online and offline.
+**Soochna Sahayak** (Meaning: *Information Assistant*) is a centralized, AI-powered platform designed to modernize law enforcement documentation. It acts as a **Central Hub** for multiple client applications (like field recording apps) to ingest FIR data, voice transcriptions, and evidence, providing a unified dashboard for analysis and management.
 
-## Problem Statement
+---
 
-Traditional FIR systems in India (and similar regions) are **manual, slow, error-prone, and lack user-friendliness**:
-- Manual writing is time-intensive.
-- Language barriers and lack of multi-language support impede accessibility.
-- No unified national database for easy FIR search and retrieval.
-- Poor integration of audio/video evidence; transcription is tedious.
-- No easy way to file, update, or sync FIRs across devices and platforms.
+## 🌟 Key Features
 
-Soochna Sahayak targets these **gaps with a seamless, technology-driven solution**.
+### 🎙️ AI-Powered Transcription (Bhashini)
+- **Multilingual Support:** Transcribe audio into 22+ Indian languages.
+- **Auto-Language Detection (ALD):** Automatically identifies the language being spoken.
+- **Smart ITN (Inverse Text Normalization):** Converts spoken digits (e.g., "double nine") into written numerals (99) to accurately record phone numbers and IDs.
 
-## Key Features
+### 🏢 The Central Hub (API First)
+- **External App Integration:** Connect multiple field apps to a single dashboard.
+- **Unified Intake:** Dedicated API endpoints for FIRs and Transcriptions from external sources.
+- **Vercel Cloud Deployment:** Scalable, serverless architecture ready for high availability.
 
-- **Real-Time, Multilingual Transcription:** 
-  - Audio/video-to-text conversion, supporting 13+ languages via Bhashini API.
-  - Works both offline and online for uninterrupted police work.
-- **FIR Management:**
-  - File new FIRs quickly by speaking or uploading audio/video.
-  - Edit and append new updates to FIRs (original entries remain immutable).
-  - Export and share FIRs in text format.
-- **Audio/Video Integration:**
-  - Record and upload files as direct FIR evidence.
-  - Transcribe and extract structured information for FIR auto-generation.
-- **Intuitive Web and Mobile Dashboards:**
-  - Manage FIRs (create, update, close) with status tracking.
-  - Analytics for case types, police station performance, case distribution, and more.
-  - File manager with folder/tag support for all evidence types.
-  - Sorting and advanced search for FIRs and transcriptions.
-- **Transcription Editor:**
-  - Tools for noise reduction, speed control, cropping, and volume adjustment.
-- **User/Officer Management:**
-  - Profile management for police personnel.
-  - Secure login and session tracking.
-- **Seamless Sync:**
-  - Cloud-native, offline-first architecture with real-time sync when connectivity is restored.
-  - Integration with web dashboard for enhanced collaboration, analytics, and reporting.
+### 👮 Officer Dashboard
+- **Case Management:** Create, update, and track FIR statuses.
+- **Evidence Vault:** Securely store and manage audio/video/image evidence.
+- **Advanced Analytics:** Visualize crime statistics and station performance.
 
-## Technical Vision
+---
 
-- **Scalable, Secure, Cloud-Native:** 
-  - Built using microservices for module-wise scaling (e.g., AWS/Azure support).
-- **APIs & Interoperability:** 
-  - Designed for integration with existing police databases, government portals, and case management systems.
-- **Device-Agnostic:** 
-  - Works across desktops, laptops, tablets, and smartphones.
+## 🛠️ Tech Stack
 
-## Unique Selling Points (USP)
+- **Frontend:** Vanilla JS, CSS3, Google Fonts (Outfit/Roboto).
+- **Backend:** Node.js, Express.js (v4.x).
+- **Database:** MongoDB Atlas (Mongoose ODM).
+- **Cloud Storage:** Vercel Blob / S3.
+- **AI/NLP:** Bhashini ULCA API (ASR/ALD).
+- **Hosting:** Vercel (Edge Functions).
 
-- First platform to combine **real-time, offline, and multilingual transcription** for law enforcement.
-- Seamless **automated FIR voice logging** and direct evidence management.
-- Over **30 editing/reporting tools** available on unified dashboards.
-- **User-friendly** and accessible for both frontline officers and administrative personnel.
+---
 
-## Business Case
+## 🚀 Getting Started
 
-- Tackles inefficiencies in law enforcement documentation.
-- Reduces human error, paperwork, and long transcription times.
-- Improves real-time reporting, accuracy, and operational capacity—leading to better case outcomes and nationwide scalability.
+### 1. Prerequisites
+- Node.js (v18+)
+- MongoDB Atlas Account
+- Bhashini API Credentials ([Request here](https://bhashini.gov.in/))
 
-## Credits
+### 2. Environment Setup
+Create a `.env` file in the root directory:
+```env
+# Bhashini Credentials
+BHASHINI_USER_ID=your_user_id
+BHASHINI_ULCA_API_KEY=your_ulca_api_key
+BHASHINI_INFERENCE_API_KEY=your_inference_api_key
 
-Developed by BTech students, GGSIPU (VIPS-TC):
+# Database
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/soochna_sahayak
 
-- Avani Sehgal
-- Agam Dayal
-- Aryaman Sharma
-- Rajani Kant Jha
+# Security
+API_KEY=your_custom_secure_api_key_for_external_apps
+SESSION_SECRET=a_long_random_string
+```
 
+### 3. Installation
+```bash
+npm install
+npm run dev
+```
 
+---
 
-## How to Use
+## 🖥️ External App Integration
 
-1. **Record or Upload** audio/video evidence via the app.
-2. **Select Language** and transcribe using Bhashini integration.
-3. **Create/Edit FIR:** Use the transcription, manually add required details, or update case progress.
-4. **Manage Files:** Use file manager to organize and upload evidence.
-5. **Sync and Export:** Submit FIRs, sync with the dashboard, and export/share FIR documents.
-6. **Analytics:** Utilize dashboard for insights on case distribution, station performance, and crime types.
+Other applications (like mobile FIR recorders) can push data to this dashboard using the standard API.
 
-## Vision
+### **Endpoint: POST `/api/external/fir`**
+Used to push a full FIR entry with optional transcription.
+```json
+{
+  "complainant": "Rajani Kant Jha",
+  "phone": "9966442200",
+  "incidentType": "Theft",
+  "transcription": "Mobile phone stolen at Central Park..."
+}
+```
 
-To build a secure, efficient, and scalable digital platform that transforms how Indian police (and global law enforcement) document, transcribe, and manage field data—**setting a new standard for public safety technology**.
+### **Endpoint: POST `/api/external/transcription`**
+Used to push standalone transcriptions from field recordings.
+```json
+{
+  "caseId": "FIR-2025-000001",
+  "transcription": "Witness statement recorded by Officer X...",
+  "language": "hi"
+}
+```
+*Note: Include `x-api-key` in headers for authentication.*
 
-[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/48053028/7019475a-c082-4550-97c7-1650a2cade62/Soochna-Sahayak-Prototype-PPT.pdf
+---
+
+## ☁️ Deployment (Vercel)
+
+1. **Connect Repository:** Push your code to GitHub.
+2. **Import to Vercel:** Select the project.
+3. **Configure Environment Variables:** Add your `.env` keys in Vercel Dashboard Settings.
+4. **Deploy:** Vercel will automatically handle the serverless routing via `api/index.js` and `vercel.json`.
+
+---
+
+## 📊 Database Management Options
+
+| Choice | Best For | Connection Link |
+|---|---|---|
+| **MongoDB Atlas** | Production Scale | `mongodb+srv://...` |
+| **Supabase (Postgres)**| Relational Data | Needs `pg` adapter |
+| **Direct SQLite** | Local Prototyping | `filename: data.db` |
+
+*Recommendation: Use MongoDB Atlas for seamless object storage and flexible FIR schemas. It's the best choice for free-tier cloud hosting with high reliability.*
+
+---
+
+## 👨‍💻 Development Team
+- **Avani Sehgal**
+- **Agam Dayal**
+- **Aryaman Sharma**
+- **Rajani Kant Jha**
+
+---
+© 2026 Soochna Sahayak - Modernizing Public Safety.
